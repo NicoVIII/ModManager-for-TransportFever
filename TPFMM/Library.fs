@@ -1,6 +1,7 @@
 ﻿namespace TPFModManager
 
 open FSharp.Data
+open System
 
 // Internal logic to provide API functionality
 module private Internal =
@@ -32,9 +33,11 @@ module private Internal =
 
     let list () =
         printfn "%s" "Installed mods:"
-        // Print all installed mods
+        //printfn "%-60s %30s" "Name:" "Version:"
+        let printMod (m :Mods.InstalledMod) =
+            printfn "%-60s %30s" m.Name m.WebsiteVersion
         loadModsFrom "mods.json" |> List.sortBy (fun m -> m.Name) 
-        |> List.iter (fun m -> printfn "%s" m.Name)
+        |> List.iter printMod
 
     let install url =
         match modStatus url with
