@@ -1,7 +1,7 @@
 ﻿namespace TPFModManager
 
 // Module for console use
-module private Console =
+module private ConsoleApp =
     let println = printfn "%s"
 
     // Help Command
@@ -15,6 +15,6 @@ module private Console =
 
     let execCommand command args =
         match command with
+        | "-l" | "list" -> TPFMM.List()
         | "-i" | "install" -> TPFMM.InstallAll args
-        | "-l" | "list" -> TPFMM.List
         | "-h" | "help" | _ -> help

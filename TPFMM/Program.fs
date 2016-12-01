@@ -1,11 +1,21 @@
 ﻿module TPFModManager.Program
-    [<EntryPoint>]
-    let main argv = 
-        // Testing
-        Console.execCommand "install" ["https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/"]
 
-        (*let args = Array.toList argv
-        match args with
-        | [] -> TPFMM.List
-        | command::args -> Console.execCommand command args*)
-        0 // return an integer exit code
+open System
+
+let main argv = 
+    let args = Array.toList argv
+    match args with
+    | [] -> ConsoleApp.execCommand "help" []
+    | command::args -> ConsoleApp.execCommand command args
+    0
+
+[<EntryPoint>]
+// Testing
+let test args =
+    match System.Diagnostics.Debugger.IsAttached with
+    | true ->
+        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/" |] |> ignore
+        Console.ReadKey() |> ignore
+        0
+    | false ->
+        main args

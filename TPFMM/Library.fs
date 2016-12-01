@@ -14,19 +14,27 @@ module private Internal =
 
     let loadModsFrom (path :string) =
         let mods = Mods.Load(path)
-        mods.InstalledMods
-        |> Array.toList
+        mods.InstalledMods |> Array.toList
 
-    let loadMods = loadModsFrom "mods.json"
+    let loadMods () = loadModsFrom "mods.json"
 
     let modStatus url =
-        let installed = loadMods |> List.fold (fun state m -> state || m.Url = url) false
-        if (installed) then Installed else NotInstalled
+        let mods = loadMods()
+        let fold state (m :Mods.InstalledMod) = state || m.Url = url
+        let installed = List.fold fold false mods
+        match installed with
+        | true -> Installed 
+        | false -> NotInstalled
 
     // Functionality
     let downloadMod url =
-        // TODO
-        url |> ignore
+        printf "%s" "I download!" |> ignore
+
+    let list () =
+        printfn "%s" "Installed mods:"
+        // Print all installed mods
+        loadModsFrom "mods.json" |> List.sortBy (fun m -> m.Name) 
+        |> List.iter (fun m -> printfn "%s" m.Name)
 
     let install url =
         match modStatus url with
@@ -36,18 +44,10 @@ module private Internal =
             downloadMod url
 
     let installAll urls =
-        urls
-        |> List.iter (fun url -> install url)
-
-    let listMods =
-        printfn "%s" "Installed mods:"
-        // Print all installed mods
-        (*loadMods
-        |> List.sortBy (fun m -> m.Name)
-        |> List.iter (fun m -> printfn "%s" m.Name)*)
+        urls |> List.iter (fun url -> install url)
 
 // API
 type TPFMM =
+    static member List = Internal.list
     static member InstallAll urls = Internal.installAll urls
     static member Install url = Internal.install url
-    static member List = Internal.listMods
