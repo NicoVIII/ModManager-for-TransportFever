@@ -7,7 +7,7 @@ Attempt to create a tool to support users managing their mods for TransportFever
 3. Insert the path to the "mods" folder of your Transport Fever Installation. If you have problems to do this correctly, look [here](#settings).
 
    **For windows users:**
-   Please use "\\" or "/" as delimiter in the path. If you use the default "\" the program will NOT work.
+   Please use "\\\" or "/" as delimiter in the path. If you use the default "\" the program will NOT work.
    So use a path like "C:\\Spiele\\Transport Fever" or "C:/Spiele/Transport Fever".
 
 You need to open a terminal for all following steps. Under Windows you can simply hold SHIFT and rightclick into the folder where your "TPFMM.exe" is located and choose "Open command window here".
