@@ -19,11 +19,27 @@ module private Internal =
     
     type InstallStatus = | Installed | NotInstalled
 
+    let safeBytes (file :string) bytes =
+        let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
+        Directory.CreateDirectory directory |> ignore
+        File.WriteAllBytes(file, bytes)
+
+    let safeString (file :string) str =
+        let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
+        if directory.Length = 0 then () else Directory.CreateDirectory directory |> ignore
+        File.WriteAllText(file, str)
+
     let loadModsFrom (path :string) =
         let mods = Mods.Load(path)
         mods.InstalledMods |> Array.toList
 
-    let loadMods () = loadModsFrom "mods.json"
+    let loadMods() = loadModsFrom "mods.json"
+
+    let safeModsTo (mods :Mods.InstalledMod list) (path :string) =
+        let modsObj = new Mods.Root(Array.ofList mods)
+        safeString path (modsObj.ToString())
+
+    let safeMods mods = safeModsTo mods "mods.json"
 
     let modStatus (Url url) =
         let mods = loadMods()
@@ -92,32 +108,20 @@ module private Internal =
         | _ ->
             printfn "[Error] Mods with more than one downloadable file are not supported yet. %s" urlString
             None
-
-    let safeBytes (file :string) bytes =
-        let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
-        Directory.CreateDirectory directory |> ignore
-        File.WriteAllBytes(file, bytes)
     
-    let downloadMod url =
-        let (Url urlString) = url
-        let source = getSite url
-        let name = nameFromSite source url
-        let version = versionFromSite source url
-        let filePath = filePathFromSite source url
-        match filePath with
-        | Some filePath ->
-            printfn "%s - %s:" name version
+    let downloadMod (_mod :Mods.InstalledMod) filePath =
+            printfn "%s - %s:" _mod.Name _mod.WebsiteVersion
             printf "* Downloading..."
             match Http.Request(filePath, cookieContainer=cookieContainer).Body with
             | Text text ->
                 failwith "Invalid filepath!"
             | Binary bytes -> 
-                safeBytes ("tmp/"+name+"-"+version+".zip") bytes
+                safeBytes ("tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip") bytes
             printfn "\r%-16s" "* Downloaded."
-        | None -> ()
 
-    let installMod filePath =
+    let installMod _mod =
         printf "* Installing... (not implemented yet)" |> ignore
+        safeMods (_mod::loadMods())
         printfn "\r%-15s" "* Installed." |> ignore
 
     let downloadAndInstall url =
@@ -126,7 +130,17 @@ module private Internal =
         | Installed ->
             printfn "[Info] A mod with url '%s' is already installed." urlString
         | NotInstalled ->
-            downloadMod url
+            let (Url urlString) = url
+            let source = getSite url
+            let name = nameFromSite source url
+            let version = versionFromSite source url
+            let filePath = filePathFromSite source url
+            match filePath with
+            | Some filePath ->
+                let _mod = new Mods.InstalledMod(name, urlString, version)
+                downloadMod _mod filePath
+                installMod _mod
+            | None -> ()
         printfn ""
 
     let downloadAndInstallAll urls =
@@ -134,10 +148,10 @@ module private Internal =
 
     let list () =
         printfn "%s" "Installed mods:"
-        //printfn "%-60s %30s" "Name:" "Version:"
+        //printfn "%-50s %30s" "Name:" "Version:"
         let printMod (m :Mods.InstalledMod) =
-            printfn "%-60s %30s" m.Name m.WebsiteVersion
-        loadModsFrom "mods.json" |> List.sortBy (fun m -> m.Name) 
+            printfn "%-50s %20s" m.Name m.WebsiteVersion
+        loadMods() |> List.sortBy (fun m -> m.Name) 
         |> List.iter printMod
 
 // API

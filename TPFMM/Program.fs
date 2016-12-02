@@ -16,6 +16,7 @@ let test args =
     match System.Diagnostics.Debugger.IsAttached with
     | true ->
         main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/" ; "https://www.transportfever.net/filebase/index.php/Entry/2448-DMA-Modern-Buses/" ; "https://www.transportfever.net/filebase/index.php/Entry/2362-Bremswagon-Zugbooster/" |] |> ignore
+        main [| "list" |] |> ignore
         Console.ReadKey() |> ignore
         0
     | false ->

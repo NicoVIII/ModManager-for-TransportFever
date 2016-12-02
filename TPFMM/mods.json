@@ -1,15 +1,4 @@
 ﻿{
     "installed_mods":
-    	[
-            {
-                "name": "v200 in verschiedenen Versionen",
-                "url": "https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/",
-                "websiteVersion": "1.6"
-            },
-            {
-                "name": "Example mod",
-                "url": "URL",
-                "websiteVersion": "v1.0.0.0-alpha+win32"
-            }
-        ]
+    	[]
 }
