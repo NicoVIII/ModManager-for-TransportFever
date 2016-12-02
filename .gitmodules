@@ -1,0 +1,3 @@
+[submodule "ThirdParty/FSharp.Data"]
+	path = ThirdParty/FSharp.Data
+	url = https://github.com/fsharp/FSharp.Data.git

@@ -28,12 +28,12 @@ module private Internal =
 
     type InstallStatus = | Installed | NotInstalled
 
-    let safeBytes (file :string) bytes =
+    let saveBytes (file :string) bytes =
         let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
         Directory.CreateDirectory directory |> ignore
         File.WriteAllBytes(file, bytes)
 
-    let safeString (file :string) str =
+    let saveString (file :string) str =
         let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
         if directory.Length = 0 then () else Directory.CreateDirectory directory |> ignore
         File.WriteAllText(file, str)
@@ -44,11 +44,16 @@ module private Internal =
 
     let loadModInfo() = loadModInfoFrom "mods.json"
 
-    let safeModInfoTo (mods :Mods.InstalledMod list) (path :string) =
+    let saveModInfoTo (mods :Mods.InstalledMod list) (path :string) =
         let modsObj = new Mods.Root(Array.ofList mods)
-        safeString path (modsObj.ToString())
+        saveString path (modsObj.ToString())
 
-    let safeModInfo mods = safeModInfoTo mods "mods.json"
+    let saveModInfo mods = saveModInfoTo mods "mods.json"
+
+    let removeModInfo (_mod :Mods.InstalledMod) =
+        loadModInfo()
+        |> List.filter (fun m -> not (m.Url = _mod.Url))
+        |> saveModInfo
 
     let modStatus (Url url) =
         let mods = loadModInfo()
@@ -128,7 +133,7 @@ module private Internal =
             | Text text ->
                 failwith "Invalid filepath!"
             | Binary bytes -> 
-                safeBytes target bytes
+                saveBytes target bytes
             printfn "\r%-16s" "* Downloaded."
 
     let extractMod tpfModPath zipPath =
@@ -140,7 +145,7 @@ module private Internal =
     let installMod _mod tpfPath zipPath =
         printf "* Installing..." |> ignore
         extractMod tpfPath zipPath
-        safeModInfo (_mod::loadModInfo())
+        saveModInfo (_mod::loadModInfo())
         printfn "\r%-15s" "* Installed." |> ignore
 
     let downloadAndInstall (settings :Settings.Root) url =
@@ -203,6 +208,32 @@ module private Internal =
         |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
         |> Array.ofList
 
+    let upgrade (settings :Settings.Root) (_mod :Mods.InstalledMod) =
+        let site = tryGetSite (Url _mod.Url)
+        match site with
+        | Some site ->
+            let newVersion = versionFromSite site (Url _mod.Url)
+            if not (newVersion = Some _mod.WebsiteVersion) then
+                match newVersion with
+                | Some newVersion ->
+                    // Delete old version
+                    Directory.Delete(settings.TpfModPath+"/"+_mod.Folder, true)
+                    removeModInfo _mod
+                    downloadAndInstall settings (Url _mod.Url)
+                    if settings.DeleteZips && Directory.Exists("tmp") then Directory.Delete("tmp", true)
+                | None -> ()
+        | None -> ()
+
+    let upgradeAll () =
+        let settings = tryLoadSettings ()
+        match settings with
+        | Some settings ->
+            printfn "Upgrade started.\n"
+            loadModInfo() |> List.iter (fun _mod -> upgrade settings _mod)
+            printfn "Upgrade finished."
+        | None ->
+            ()
+
     let list () =
         loadModInfo()
         |> List.sortBy (fun m -> m.Name) 
@@ -216,3 +247,4 @@ type TPFMM =
         |> List.map (fun url -> Url url)
         |> Internal.downloadAndInstallAll
     static member Update = Internal.update ()
+    static member UpgradeAll = Internal.upgradeAll ()
