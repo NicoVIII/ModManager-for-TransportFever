@@ -2,16 +2,16 @@
 
 // Module for console use
 module private ConsoleApp =
-    let printCmd short long desc= printfn "%-14s %-20s %s" short long desc
+    let printCmd long desc= printfn "%-20s %s" long desc
 
     let help () =
         printfn "Transport Fever Mod Manager (TPFMM)"
         printfn ""
         printfn "Usage:"
-        printCmd "-h" "help" "Displays this help page"
-        printCmd "-i <url>.." "install <url>.." "Installs a mod from given url"
-        printCmd "-l" "list" "Shows a list of installed mods"
-        printCmd "-u" "update" "Shows a list of available mod updates"
+        printCmd "help" "Displays this help page"
+        printCmd "install <url>.." "Installs a mod from given url"
+        printCmd "list" "Shows a list of installed mods"
+        printCmd "update" "Shows a list of available mod updates"
     
     let list () =
         let printMod (m :Mods.InstalledMod) =
@@ -36,10 +36,10 @@ module private ConsoleApp =
 
     let execCommand command args =
         match command with
-        | "-u" | "update" -> update ()
-        | "-l" | "list" -> list ()
-        | "-i" | "install" ->
+        | "update" -> update ()
+        | "list" -> list ()
+        | "install" ->
             printfn "Uploading of downloaded mods to other sites is prohibited!\n"
             TPFMM.Install args
             printfn "Uploading of downloaded mods to other sites is prohibited!"
-        | "-h" | "help" | _ -> help ()
+        | "help" | _ -> help ()

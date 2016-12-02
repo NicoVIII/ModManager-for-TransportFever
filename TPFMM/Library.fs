@@ -10,8 +10,7 @@ open System.Text.RegularExpressions
 type private Url = Url of String
 type private WebCode = WebCode of String
 
-type Mods = JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s" }, { "name": "s", "url": "s", "websiteVersion": "s" } ] } """>
-
+type Mods = JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s", "folder": "s" }] } """>
 
 // Internal logic to provide API functionality
 module private Internal =
@@ -159,10 +158,19 @@ module private Internal =
                 let filePath = filePathFromSite source url
                 match (version, filePath) with
                 | (Some version, Some filePath) ->
-                    let _mod = new Mods.InstalledMod(name, urlString, version)
+                    let _mod = new Mods.InstalledMod(name, urlString, version, "")
                     let zipPath = "tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip"
                     downloadMod _mod filePath zipPath
-                    installMod _mod settings.TpfModPath zipPath
+                    let file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
+                    let filter (entry :ZipArchiveEntry) =
+                        let name = entry.FullName.TrimEnd '/'
+                        not (name.Contains "/")
+                    let entries = file.Entries |> Seq.toList |> List.filter filter
+                    match entries with
+                    | [folderEntry] -> 
+                        let _mod = new Mods.InstalledMod(_mod.Name, _mod.Url, _mod.WebsiteVersion, (folderEntry.FullName.TrimEnd '/'))
+                        installMod _mod settings.TpfModPath zipPath
+                    | list -> ()
                 | _ -> ()
             | None -> ()
         printfn ""
