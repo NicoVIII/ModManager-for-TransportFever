@@ -176,6 +176,25 @@ module private Internal =
             urls |> List.iter (fun url -> downloadAndInstall settings url)
             if Directory.Exists("tmp") then Directory.Delete("tmp", true)
 
+    let update () =
+        let fold list (_mod :Mods.InstalledMod) =
+            let site = tryGetSite (Url _mod.Url)
+            match site with
+            | Some site ->
+                let newVersion = versionFromSite site (Url _mod.Url)
+                if not (newVersion = Some _mod.WebsiteVersion) then
+                    match newVersion with
+                    | Some newVersion -> (_mod.Name, _mod.WebsiteVersion, newVersion)::list
+                    | None -> list
+                else
+                    list
+            | None -> list
+
+        loadModInfo()
+        |> List.fold fold []
+        |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
+        |> Array.ofList
+
     let list () =
         loadModInfo()
         |> List.sortBy (fun m -> m.Name) 
@@ -188,3 +207,4 @@ type TPFMM =
         Array.toList urls
         |> List.map (fun url -> Url url)
         |> Internal.downloadAndInstallAll
+    static member Update = Internal.update ()
