@@ -35,10 +35,15 @@ module private ConsoleApp =
         |> List.map (fun arr -> (arr.[0], arr.[1], arr.[2]))
         |> List.iter printUpdate
 
+    let upgrade () =
+        printfn "Upgrade started.\n"
+        TPFMM.UpgradeAll
+        printfn "Upgrade finished."
+
     let execCommand command args =
         match command with
         | "update" -> update ()
-        | "upgrade" -> TPFMM.UpgradeAll
+        | "upgrade" -> upgrade ()
         | "list" -> list ()
         | "install" ->
             printfn "Uploading of downloaded mods to other sites is prohibited!\n"

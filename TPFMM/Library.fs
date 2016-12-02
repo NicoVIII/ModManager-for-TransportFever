@@ -101,7 +101,9 @@ module private Internal =
     let nameFromSite (source :HtmlDocument) (Url urlString) =
         let node = source.CssSelect("#content header > h1 > a")
         match node with
-        | [header] -> HtmlNode.innerText header
+        | [header] ->
+            let name = HtmlNode.innerText header
+            name.Replace ("/", "_")
         | _ -> failwith "[Error] Unsupported layout of website! (name)"+urlString
 
     let versionFromSite (source :HtmlDocument) (Url urlString) =
@@ -147,7 +149,8 @@ module private Internal =
         extractMod tpfPath zipPath
         saveModInfo (_mod::loadModInfo())
         printfn "\r%-15s" "* Installed." |> ignore
-
+       
+    // TODO tidy up
     let downloadAndInstall (settings :Settings.Root) url =
         let (Url urlString) = url
         match modStatus url with
@@ -157,6 +160,7 @@ module private Internal =
             let (Url urlString) = url
             let source = tryGetSite url
             match source with
+            | None -> failwith "Site not reachable"
             | Some source ->
                 let name = nameFromSite source url
                 let version = versionFromSite source url
@@ -166,18 +170,23 @@ module private Internal =
                     let _mod = new Mods.InstalledMod(name, urlString, version, "")
                     let zipPath = "tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip"
                     downloadMod _mod filePath zipPath
-                    let file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
-                    let filter (entry :ZipArchiveEntry) =
-                        let name = entry.FullName.TrimEnd '/'
-                        not (name.Contains "/")
-                    let entries = file.Entries |> Seq.toList |> List.filter filter
+                    use file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
+                    let fold list (entry :ZipArchiveEntry) =
+                        let name = (entry.FullName.Split '/').[0]
+                        if List.forall (fun el -> not (el = name)) list then
+                            name::list
+                        else
+                            list
+                    let entries = file.Entries |> Seq.toList |> List.fold fold []
+                    file.Dispose ()
                     match entries with
-                    | [folderEntry] -> 
-                        let _mod = new Mods.InstalledMod(_mod.Name, _mod.Url, _mod.WebsiteVersion, (folderEntry.FullName.TrimEnd '/'))
+                    | [folder] -> 
+                        let _mod = new Mods.InstalledMod(_mod.Name, _mod.Url, _mod.WebsiteVersion, folder)
                         installMod _mod settings.TpfModPath zipPath
-                    | list -> ()
-                | _ -> ()
-            | None -> ()
+                    | list ->
+                        printfn "%A" list
+                        failwith "Mod is not well configured"
+                | _ -> failwith "Version or filepath invalid :("
         printfn ""
 
     let downloadAndInstallAll urls =
@@ -228,9 +237,7 @@ module private Internal =
         let settings = tryLoadSettings ()
         match settings with
         | Some settings ->
-            printfn "Upgrade started.\n"
             loadModInfo() |> List.iter (fun _mod -> upgrade settings _mod)
-            printfn "Upgrade finished."
         | None ->
             ()
 
