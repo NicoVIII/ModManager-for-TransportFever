@@ -16,5 +16,8 @@ module private ConsoleApp =
     let execCommand command args =
         match command with
         | "-l" | "list" -> TPFMM.List()
-        | "-i" | "install" -> TPFMM.InstallAll args
+        | "-i" | "install" ->
+            printfn "Uploading of downloaded mods to other sites is prohibited!\n"
+            TPFMM.InstallAll args
+            printfn "Uploading of downloaded mods to other sites is prohibited!"
         | "-h" | "help" | _ -> help

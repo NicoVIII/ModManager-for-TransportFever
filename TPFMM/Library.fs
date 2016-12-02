@@ -93,9 +93,10 @@ module private Internal =
             printfn "[Error] Mods with more than one downloadable file are not supported yet. %s" urlString
             None
 
-    let safeBytes name version bytes =
-        Directory.CreateDirectory("tmp") |> ignore
-        File.WriteAllBytes("tmp/"+name+"-"+version+".zip", bytes)
+    let safeBytes (file :string) bytes =
+        let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
+        Directory.CreateDirectory directory |> ignore
+        File.WriteAllBytes(file, bytes)
     
     let downloadMod url =
         let (Url urlString) = url
@@ -108,18 +109,18 @@ module private Internal =
             printfn "%s - %s:" name version
             printf "* Downloading..."
             match Http.Request(filePath, cookieContainer=cookieContainer).Body with
-            | Text text -> 
+            | Text text ->
                 failwith "Invalid filepath!"
             | Binary bytes -> 
-                safeBytes name version bytes
+                safeBytes ("tmp/"+name+"-"+version+".zip") bytes
             printfn "\r%-16s" "* Downloaded."
         | None -> ()
 
-    let extractMod() =
+    let installMod filePath =
         printf "* Installing... (not implemented yet)" |> ignore
         printfn "\r%-15s" "* Installed." |> ignore
 
-    let install url =
+    let downloadAndInstall url =
         let (Url urlString) = url
         match modStatus url with
         | Installed ->
@@ -128,10 +129,8 @@ module private Internal =
             downloadMod url
         printfn ""
 
-    let installAll urls =
-        printfn "Uploading of downloaded mods to other sites is prohibited!\n"
-        urls |> List.iter (fun url -> install url)
-        printfn "Uploading of downloaded mods to other sites is prohibited!"
+    let downloadAndInstallAll urls =
+        urls |> List.iter (fun url -> downloadAndInstall url)
 
     let list () =
         printfn "%s" "Installed mods:"
@@ -144,8 +143,8 @@ module private Internal =
 // API
 type TPFMM =
     static member List = Internal.list
-    static member Install url = Internal.install (Url url)
+    static member Install url = Internal.downloadAndInstall (Url url)
     static member InstallAll urls =
         Array.toList urls
         |> List.map (fun url -> Url url)
-        |> Internal.installAll
+        |> Internal.downloadAndInstallAll
