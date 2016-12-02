@@ -65,8 +65,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="..\ThirdParty\FSharp.Data\LICENSE_FSharp_Data.md">
+    <None Include="..\ThirdParty\FSharp.Data\LICENSE.md">
       <Link>LICENSE_FSharp_Data.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
