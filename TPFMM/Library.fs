@@ -29,20 +29,20 @@ module private Internal =
         if directory.Length = 0 then () else Directory.CreateDirectory directory |> ignore
         File.WriteAllText(file, str)
 
-    let loadModsFrom (path :string) =
+    let loadModInfoFrom (path :string) =
         let mods = Mods.Load(path)
         mods.InstalledMods |> Array.toList
 
-    let loadMods() = loadModsFrom "mods.json"
+    let loadModInfo() = loadModInfoFrom "mods.json"
 
-    let safeModsTo (mods :Mods.InstalledMod list) (path :string) =
+    let safeModInfoTo (mods :Mods.InstalledMod list) (path :string) =
         let modsObj = new Mods.Root(Array.ofList mods)
         safeString path (modsObj.ToString())
 
-    let safeMods mods = safeModsTo mods "mods.json"
+    let safeModInfo mods = safeModInfoTo mods "mods.json"
 
     let modStatus (Url url) =
-        let mods = loadMods()
+        let mods = loadModInfo()
         let fold state (m :Mods.InstalledMod) = state || m.Url = url
         let installed = List.fold fold false mods
         match installed with
@@ -92,8 +92,7 @@ module private Internal =
         match node with
         | [node] ->
             let text = node.ToString()
-            let m = Regex.Match(text, @"<dt>[\sA-z0-9]*?[Vv]ersion
-            [\sA-z0-9]*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
+            let m = Regex.Match(text, @"<dt>[\sA-z0-9]*?[Vv]ersion[\sA-z0-9]*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
             match m.Success with
             | true ->
                 m.Groups.[1].Value
@@ -122,7 +121,7 @@ module private Internal =
 
     let installMod _mod =
         printf "* Installing... (not implemented yet)" |> ignore
-        safeMods (_mod::loadMods())
+        safeModInfo (_mod::loadModInfo())
         printfn "\r%-15s" "* Installed." |> ignore
 
     let downloadAndInstall url =
@@ -152,7 +151,7 @@ module private Internal =
         //printfn "%-50s %30s" "Name:" "Version:"
         let printMod (m :Mods.InstalledMod) =
             printfn "%-50s %20s" m.Name m.WebsiteVersion
-        loadMods() |> List.sortBy (fun m -> m.Name) 
+        loadModInfo() |> List.sortBy (fun m -> m.Name) 
         |> List.iter printMod
 
 // API
