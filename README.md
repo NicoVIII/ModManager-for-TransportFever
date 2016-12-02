@@ -2,6 +2,7 @@
 Attempt to create a tool to support users managing their mods for TransportFever.
 
 ## How to use it
+0. **Prerequisites:** You need a version of .NET or Mono installed to run this program.
 1. Download the .zip file and extract it at any place you wish.
 2. Open the **settings.json** file with the editor of your choice.
 3. Insert the path to the "mods" folder of your Transport Fever Installation. If you have problems to do this correctly, look [here](#settings).
@@ -14,7 +15,7 @@ You need to open a terminal for all following steps. Under Windows you can simpl
 
 * To **install** new mods, go to http://transportfever.net and look for mods you like. Type into your terminal `TPFMM.exe install` followed by the urls of your chosen mods seperated by spaces. For now it is **not possible** to install mods, for which the creator uploaded **multiple zip files**.
 
-  **Note:** You probably have to write "mono TPFMM.exe" instead of "TPFMM.exe" if you are **not on a windows system.**
+  **For linux and mac users:** You have to install mono (http://www.mono-project.com/) and write "mono TPFMM.exe" instead of "TPFMM.exe".
 
   **Example:**
   ~~~~
