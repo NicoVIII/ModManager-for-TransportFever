@@ -16,7 +16,7 @@ type Mods = JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "we
 // Internal logic to provide API functionality
 module private Internal =
     // Setting Management
-    type Settings = JsonProvider<""" { "tpfModPath": "/path/to/tpf" } """>
+    type Settings = JsonProvider<""" { "tpfModPath": "/path/to/tpf", "deleteZips": true } """>
 
     let settingsFileExists settingsPath =
         File.Exists settingsPath
@@ -174,7 +174,7 @@ module private Internal =
         | (Some settings) when settings.TpfModPath = "" -> invalidOp "Please set a modPath"
         | Some settings ->
             urls |> List.iter (fun url -> downloadAndInstall settings url)
-            if Directory.Exists("tmp") then Directory.Delete("tmp", true)
+            if settings.DeleteZips && Directory.Exists("tmp") then Directory.Delete("tmp", true)
 
     let update () =
         let fold list (_mod :Mods.InstalledMod) =

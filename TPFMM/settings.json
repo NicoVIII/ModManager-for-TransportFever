@@ -1,3 +1,4 @@
 ﻿{
-    "tpfModPath": "mod_test"
+    "tpfModPath": "mod_test",
+    "deleteZips": true
 }
