@@ -4,13 +4,11 @@
             {
                 "name": "v200 in verschiedenen Versionen",
                 "url": "https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/",
-                "minorVersion": 6,
                 "websiteVersion": "1.6"
             },
             {
                 "name": "Example mod",
                 "url": "URL",
-                "minorVersion": 0,
                 "websiteVersion": "v1.0.0.0-alpha+win32"
             }
         ]

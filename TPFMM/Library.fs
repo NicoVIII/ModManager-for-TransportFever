@@ -15,7 +15,7 @@ module private Internal =
 
     // Mod Management
     type Mods =
-        JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "minorVersion": 0, "websiteVersion": "s" }, { "name": "s", "url": "s", "minorVersion": 0, "websiteVersion": "s" } ] } """>
+        JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s" }, { "name": "s", "url": "s", "websiteVersion": "s" } ] } """>
     
     type InstallStatus = | Installed | NotInstalled
 
