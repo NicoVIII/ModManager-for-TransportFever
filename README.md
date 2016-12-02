@@ -2,10 +2,10 @@
 Attempt to create a tool to support users managing their mods for TransportFever.
 
 ## How to use it
-0. **Prerequisites:** You need a version of .NET or Mono installed to run this program.
-1. Download the .zip file and extract it at any place you wish.
-2. Open the **settings.json** file with the editor of your choice.
-3. Insert the path to the "mods" folder of your Transport Fever Installation. If you have problems to do this correctly, look [here](#settings).
+1. **Prerequisites:** You need a version of .NET or Mono installed to run this program.
+2. Download the .zip file and extract it at any place you wish.
+3. Open the **settings.json** file with the editor of your choice.
+4. Insert the path to the "mods" folder of your Transport Fever Installation. If you have problems to do this correctly, look [here](#settings).
 
    **For windows users:**
    Please use "\\\" or "/" as delimiter in the path. If you use the default "\" the program will NOT work.
