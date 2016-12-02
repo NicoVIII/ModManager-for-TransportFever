@@ -8,7 +8,7 @@ Attempt to create a tool to support users managing their mods for TransportFever
 
    **For windows users:**
    Please use "\\\" or "/" as delimiter in the path. If you use the default "\" the program will NOT work.
-   So use a path like "C:\\Spiele\\Transport Fever" or "C:/Spiele/Transport Fever".
+   So use a path like "C:\\\Spiele\\\Transport Fever" or "C:/Spiele/Transport Fever".
 
 You need to open a terminal for all following steps. Under Windows you can simply hold SHIFT and rightclick into the folder where your "TPFMM.exe" is located and choose "Open command window here".
 
