@@ -92,7 +92,8 @@ module private Internal =
         match node with
         | [node] ->
             let text = node.ToString()
-            let m = Regex.Match(text, @"<dt>.*?[Vv]ersion.*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
+            let m = Regex.Match(text, @"<dt>[\sA-z0-9]*?[Vv]ersion
+            [\sA-z0-9]*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
             match m.Success with
             | true ->
                 m.Groups.[1].Value
