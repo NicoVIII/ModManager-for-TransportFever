@@ -3,20 +3,30 @@
 open FSharp.Data
 open System
 open System.IO
+open System.IO.Compression
 open System.Net
 open System.Text.RegularExpressions
 
 type private Url = Url of String
 type private WebCode = WebCode of String
 
+type Mods = JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s" }, { "name": "s", "url": "s", "websiteVersion": "s" } ] } """>
+
+
 // Internal logic to provide API functionality
 module private Internal =
-    type Settings = JsonProvider<""" { "tpfPath": "/path/to/tpf" } """>
+    // Setting Management
+    type Settings = JsonProvider<""" { "tpfModPath": "/path/to/tpf" } """>
 
-    // Mod Management
-    type Mods =
-        JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s" }, { "name": "s", "url": "s", "websiteVersion": "s" } ] } """>
-    
+    let settingsFileExists settingsPath =
+        File.Exists settingsPath
+
+    let tryLoadSettings () =
+        let settingsPath = "settings.json"
+        match settingsFileExists settingsPath with
+        | true -> Some (Settings.Load settingsPath)
+        | false -> None
+
     type InstallStatus = | Installed | NotInstalled
 
     let safeBytes (file :string) bytes =
@@ -76,10 +86,13 @@ module private Internal =
         else
             site
 
-    let getSite url =
+    let tryGetSite url =
         let (Url urlString) = url
-        let site = Http.RequestString (urlString, cookieContainer=cookieContainer) |> HtmlDocument.Parse
-        acceptTerms site url
+        try
+            let site = Http.RequestString (urlString, cookieContainer=cookieContainer) |> HtmlDocument.Parse
+            Some (acceptTerms site url)
+        with
+        | :? System.Net.WebException as ex -> None
 
     let nameFromSite (source :HtmlDocument) (Url urlString) =
         let node = source.CssSelect("#content header > h1 > a")
@@ -95,9 +108,9 @@ module private Internal =
             let m = Regex.Match(text, @"<dt>[\sA-z0-9]*?[Vv]ersion[\sA-z0-9]*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
             match m.Success with
             | true ->
-                m.Groups.[1].Value
-            | false -> failwith "[Error] Unsupported layout of website! (version)"+urlString
-        | _ -> failwith "[Error] Unsupported layout of website! (version)"+urlString
+                Some m.Groups.[1].Value
+            | false -> None
+        | _ -> None
 
     let filePathFromSite (source :HtmlDocument) (Url urlString) =
         let node = source.CssSelect(".filebaseFileList h3 > a")
@@ -109,56 +122,69 @@ module private Internal =
             printfn "[Error] Mods with more than one downloadable file are not supported yet. %s" urlString
             None
     
-    let downloadMod (_mod :Mods.InstalledMod) filePath =
+    let downloadMod (_mod :Mods.InstalledMod) fileUrl target =
             printfn "%s - %s:" _mod.Name _mod.WebsiteVersion
             printf "* Downloading..."
-            match Http.Request(filePath, cookieContainer=cookieContainer).Body with
+            match Http.Request(fileUrl, cookieContainer=cookieContainer).Body with
             | Text text ->
                 failwith "Invalid filepath!"
             | Binary bytes -> 
-                safeBytes ("tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip") bytes
+                safeBytes target bytes
             printfn "\r%-16s" "* Downloaded."
 
-    let installMod _mod =
-        printf "* Installing... (not implemented yet)" |> ignore
+    let extractMod tpfModPath zipPath =
+        try
+            ZipFile.ExtractToDirectory(zipPath, tpfModPath) |> ignore
+        with
+        | :? System.IO.IOException -> ()
+
+    let installMod _mod tpfPath zipPath =
+        printf "* Installing..." |> ignore
+        extractMod tpfPath zipPath
         safeModInfo (_mod::loadModInfo())
         printfn "\r%-15s" "* Installed." |> ignore
 
-    let downloadAndInstall url =
+    let downloadAndInstall (settings :Settings.Root) url =
         let (Url urlString) = url
         match modStatus url with
         | Installed ->
             printfn "[Info] A mod with url '%s' is already installed." urlString
         | NotInstalled ->
             let (Url urlString) = url
-            let source = getSite url
-            let name = nameFromSite source url
-            let version = versionFromSite source url
-            let filePath = filePathFromSite source url
-            match filePath with
-            | Some filePath ->
-                let _mod = new Mods.InstalledMod(name, urlString, version)
-                downloadMod _mod filePath
-                installMod _mod
+            let source = tryGetSite url
+            match source with
+            | Some source ->
+                let name = nameFromSite source url
+                let version = versionFromSite source url
+                let filePath = filePathFromSite source url
+                match (version, filePath) with
+                | (Some version, Some filePath) ->
+                    let _mod = new Mods.InstalledMod(name, urlString, version)
+                    let zipPath = "tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip"
+                    downloadMod _mod filePath zipPath
+                    installMod _mod settings.TpfModPath zipPath
+                | _ -> ()
             | None -> ()
         printfn ""
 
     let downloadAndInstallAll urls =
-        urls |> List.iter (fun url -> downloadAndInstall url)
+        let settings = tryLoadSettings ()
+        match settings with
+        | None -> invalidOp "Please set a modPath"
+        | (Some settings) when settings.TpfModPath = "" -> invalidOp "Please set a modPath"
+        | Some settings ->
+            urls |> List.iter (fun url -> downloadAndInstall settings url)
+            if Directory.Exists("tmp") then Directory.Delete("tmp", true)
 
     let list () =
-        printfn "%s" "Installed mods:"
-        //printfn "%-50s %30s" "Name:" "Version:"
-        let printMod (m :Mods.InstalledMod) =
-            printfn "%-50s %20s" m.Name m.WebsiteVersion
-        loadModInfo() |> List.sortBy (fun m -> m.Name) 
-        |> List.iter printMod
+        loadModInfo()
+        |> List.sortBy (fun m -> m.Name) 
+        |> Array.ofList
 
 // API
 type TPFMM =
-    static member List = Internal.list
-    static member Install url = Internal.downloadAndInstall (Url url)
-    static member InstallAll urls =
+    static member List = Internal.list ()
+    static member Install urls =
         Array.toList urls
         |> List.map (fun url -> Url url)
         |> Internal.downloadAndInstallAll
