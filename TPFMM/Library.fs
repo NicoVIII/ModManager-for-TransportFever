@@ -2,7 +2,9 @@
 
 open FSharp.Data
 open System
+open System.IO
 open System.Net
+open System.Text.RegularExpressions
 
 type private Url = Url of String
 type private WebCode = WebCode of String
@@ -34,7 +36,7 @@ module private Internal =
     // Functionality
     let cookieContainer = new CookieContainer()
 
-    let acceptTerms (Url urlString) =
+    let acceptTerms (site :HtmlDocument) (Url urlString) =
         let fold inputs input =
             let fold (n, v) (atr :HtmlAttribute) =
                 match atr.Name() with
@@ -42,33 +44,94 @@ module private Internal =
                 | "value" -> (n, atr.Value())
                 | _ -> (n, v)
             let atrPair = HtmlNode.attributes input |> List.fold fold ("", "")
-            let (name, value) = atrPair
-            printfn "%s-%s" name value
             atrPair::inputs
+        
+        let header = site.CssSelect("header h1").ToString()
+        if header.Contains "Terms" || header.Contains "Nutzungsbedingungen" then
+            let query = site.CssSelect("#content form input") |> List.fold fold []
+            let action = site.CssSelect("#content form")
+            match action with
+            | [action] ->
+                let action' = action |> HtmlNode.attribute "action"
+                // Send HttpRequest
+                Http.RequestString (action'.Value(), body = FormValues query, cookieContainer=cookieContainer) |> ignore
+                Http.RequestString (urlString, cookieContainer=cookieContainer) |> HtmlDocument.Parse
+            | _ -> failwith ("[Error] Confirmation of Terms failed! - "+urlString)
+        else
+            site
 
-        let site = HtmlDocument.Load(urlString)
-        let query = site.CssSelect("#content form input") |> List.fold fold []
-        let action = site.CssSelect("#content form")
-        match action with
-        | [action] ->
-            let action' = action |> HtmlNode.attribute "action"
-         // Send HttpRequest
-            Http.RequestString (action'.Value(), body = FormValues query, httpMethod="POST", cookieContainer=cookieContainer) |> ignore
-        | _ -> failwith ("[Error] Confirmation of Terms failed! - "+urlString)
+    let getSite url =
+        let (Url urlString) = url
+        let site = Http.RequestString (urlString, cookieContainer=cookieContainer) |> HtmlDocument.Parse
+        acceptTerms site url
 
-
-    let nameFromSite (Url urlString) =
-        let source = Http.RequestString (urlString, cookieContainer=cookieContainer)
-        let source' = HtmlDocument.Parse(source)
-        let node = source'.CssSelect("#content header > h1 > a")
+    let nameFromSite (source :HtmlDocument) (Url urlString) =
+        let node = source.CssSelect("#content header > h1 > a")
         match node with
         | [header] -> HtmlNode.innerText header
-        | _ -> failwith "[Error] Unsupported layout of website! - "+urlString
+        | _ -> failwith "[Error] Unsupported layout of website! (name)"+urlString
 
+    let versionFromSite (source :HtmlDocument) (Url urlString) =
+        let node = source.CssSelect(".messageBody")
+        match node with
+        | [node] ->
+            let text = node.ToString()
+            let m = Regex.Match(text, @"<dt>.*?[Vv]ersion.*?</dt>[\s\r\n]*<dd>[\s\r\n]*(.*?)[\s\r\n]*</dd>")
+            match m.Success with
+            | true ->
+                m.Groups.[1].Value
+            | false -> failwith "[Error] Unsupported layout of website! (version)"+urlString
+        | _ -> failwith "[Error] Unsupported layout of website! (version)"+urlString
+
+    let filePathFromSite (source :HtmlDocument) (Url urlString) =
+        let node = source.CssSelect(".filebaseFileList h3 > a")
+        match node with
+        | [node] ->
+            let atr = node.Attribute "href"
+            Some (atr.Value ())
+        | _ ->
+            printfn "[Error] Mods with more than one downloadable file are not supported yet. %s" urlString
+            None
+
+    let safeBytes name version bytes =
+        Directory.CreateDirectory("tmp") |> ignore
+        File.WriteAllBytes("tmp/"+name+"-"+version+".zip", bytes)
+    
     let downloadMod url =
         let (Url urlString) = url
-        acceptTerms url
-        printfn "%s" (nameFromSite url)
+        let source = getSite url
+        let name = nameFromSite source url
+        let version = versionFromSite source url
+        let filePath = filePathFromSite source url
+        match filePath with
+        | Some filePath ->
+            printfn "%s - %s:" name version
+            printf "* Downloading..."
+            match Http.Request(filePath, cookieContainer=cookieContainer).Body with
+            | Text text -> 
+                failwith "Invalid filepath!"
+            | Binary bytes -> 
+                safeBytes name version bytes
+            printfn "\r%-16s" "* Downloaded."
+        | None -> ()
+
+    let extractMod() =
+        printf "* Installing... (not implemented yet)" |> ignore
+        printfn "\r%-15s" "* Installed." |> ignore
+
+    let install url =
+        let (Url urlString) = url
+        match modStatus url with
+        | Installed ->
+            printfn "[Info] A mod with url '%s' is already installed." urlString
+        | NotInstalled ->
+            downloadMod url
+        printfn ""
+
+    let installAll urls =
+        printfn "Uploading of downloaded mods to other sites is prohibited!\n"
+        urls |> List.iter (fun url -> install url)
+        printfn "Uploading of downloaded mods to other sites is prohibited!"
 
     let list () =
         printfn "%s" "Installed mods:"
@@ -77,17 +140,6 @@ module private Internal =
             printfn "%-60s %30s" m.Name m.WebsiteVersion
         loadModsFrom "mods.json" |> List.sortBy (fun m -> m.Name) 
         |> List.iter printMod
-
-    let install url =
-        let (Url urlString) = url
-        match modStatus url with
-        | Installed ->
-            printfn "[Error] A mod with url '%s' is already installed." urlString
-        | NotInstalled ->
-            downloadMod url
-
-    let installAll urls =
-        urls |> List.iter (fun url -> install url)
 
 // API
 type TPFMM =
