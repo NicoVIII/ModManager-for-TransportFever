@@ -125,7 +125,7 @@ module private Internal =
             let atr = node.Attribute "href"
             Some (atr.Value ())
         | _ ->
-            printfn "[Error] Mods with more than one downloadable file are not supported yet. %s" urlString
+            printfn "[Error] Mods with more than one downloadable file are not supported yet.\n%s" urlString
             None
     
     let downloadMod (_mod :Mods.InstalledMod) fileUrl target =
@@ -155,7 +155,7 @@ module private Internal =
         let (Url urlString) = url
         match modStatus url with
         | Installed ->
-            printfn "[Info] A mod with url '%s' is already installed." urlString
+            printfn "[Info] A mod with this url is already installed.\n%s" urlString
         | NotInstalled ->
             let (Url urlString) = url
             let source = tryGetSite url
@@ -166,6 +166,10 @@ module private Internal =
                 let version = versionFromSite source url
                 let filePath = filePathFromSite source url
                 match (version, filePath) with
+                | (None, _) ->
+                    printfn "[Error] Mods without a version on the website are not supported yet.\n%s" urlString
+                | (_, None) ->
+                    failwith "There is something wrong with the filepath"
                 | (Some version, Some filePath) ->
                     let _mod = new Mods.InstalledMod(name, urlString, version, "")
                     let zipPath = "tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip"
@@ -191,7 +195,6 @@ module private Internal =
                         else 
                             printfn "%A" list
                             failwith "Mod is not well configured"
-                | _ -> failwith "Version or filepath invalid :("
         printfn ""
 
     let downloadAndInstallAll urls =

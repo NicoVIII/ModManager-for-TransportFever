@@ -18,7 +18,7 @@ let test args =
         main [| "list" |] |> ignore
         main [| "update" |] |> ignore
         main [| "upgrade" |] |> ignore
-        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2342-SBB-Zwergsignal/" |] |> ignore
+        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2342-SBB-Zwergsignal/" ; "https://www.transportfever.net/filebase/index.php/Entry/2505-Wartturm-Eichenzell-by-Schwarzfahrer/" |] |> ignore
         Console.ReadKey() |> ignore
         0
     | false ->
