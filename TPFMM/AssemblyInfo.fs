@@ -2,7 +2,7 @@
 open System.Reflection
 open System.Runtime.CompilerServices
 
-[<assembly: AssemblyTitle("TPFMM")>]
+[<assembly: AssemblyTitle("TPF-ModManager")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]

@@ -15,12 +15,14 @@ let test args =
     #if DEBUG
     match System.Diagnostics.Debugger.IsAttached with
     | true ->
-        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2322-v200-in-verschiedenen-Versionen/" ; "https://www.transportfever.net/filebase/index.php/Entry/2448-DMA-Modern-Buses/" ; "https://www.transportfever.net/filebase/index.php/Entry/2362-Bremswagon-Zugbooster/" |] |> ignore
+        main [| "list" |] |> ignore
+        main [| "update" |] |> ignore
         main [| "upgrade" |] |> ignore
+        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2342-SBB-Zwergsignal/" |] |> ignore
         Console.ReadKey() |> ignore
         0
     | false ->
         main args
-    #else
+	#else
     main args
-    #endif
+	#endif

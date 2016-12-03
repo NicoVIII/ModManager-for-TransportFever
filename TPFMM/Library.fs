@@ -172,9 +172,10 @@ module private Internal =
                     downloadMod _mod filePath zipPath
                     use file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
                     let fold list (entry :ZipArchiveEntry) =
-                        let name = (entry.FullName.Split '/').[0]
-                        if List.forall (fun el -> not (el = name)) list then
-                            name::list
+                        let name = entry.FullName.TrimEnd '/'
+                        let name' = (name.Split '/').[0]
+                        if List.forall (fun el -> not (el = name')) list then
+                            name'::list
                         else
                             list
                     let entries = file.Entries |> Seq.toList |> List.fold fold []
@@ -184,8 +185,12 @@ module private Internal =
                         let _mod = new Mods.InstalledMod(_mod.Name, _mod.Url, _mod.WebsiteVersion, folder)
                         installMod _mod settings.TpfModPath zipPath
                     | list ->
-                        printfn "%A" list
-                        failwith "Mod is not well configured"
+                        if list |> List.exists (fun el -> el = "mod.lua") then
+                            let _mod = new Mods.InstalledMod(_mod.Name, _mod.Url, _mod.WebsiteVersion, _mod.Name)
+                            installMod _mod (settings.TpfModPath+"/"+_mod.Name) zipPath
+                        else 
+                            printfn "%A" list
+                            failwith "Mod is not well configured"
                 | _ -> failwith "Version or filepath invalid :("
         printfn ""
 

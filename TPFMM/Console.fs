@@ -18,22 +18,28 @@ module private ConsoleApp =
         let printMod (m :Mods.InstalledMod) =
             printfn "%-50s %s" m.Name m.WebsiteVersion
 
+        let mods = TPFMM.List |> List.ofArray
         // Output
-        printfn "%s" "Installed mods:"
-        TPFMM.List
-        |> List.ofArray
-        |> List.iter printMod
+        match mods with
+        | [] ->
+            printfn "No mods installed."
+        | mods ->
+            printfn "%s" "Installed mods:"
+            mods
+            |> List.iter printMod
 
     let update () =
         let printUpdate (name, oldVersion, newVersion) =
             printfn "%-50s %-18s %s" name oldVersion newVersion
 
-        let updates = TPFMM.Update
-        printfn "%-50s %-18s %s" "Available Updates:" "Installed" "Available"
-        updates
-        |> List.ofArray
-        |> List.map (fun arr -> (arr.[0], arr.[1], arr.[2]))
-        |> List.iter printUpdate
+        let updates = TPFMM.Update |> List.ofArray |> List.map (fun arr -> (arr.[0], arr.[1], arr.[2]))
+        match updates with
+        | [] ->
+            printfn "No updates available."
+        | updates ->
+            printfn "%-50s %-18s %s" "Available Updates:" "Installed" "Available"
+            updates
+            |> List.iter printUpdate
 
     let upgrade () =
         printfn "Upgrade started.\n"
