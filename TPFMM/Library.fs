@@ -115,15 +115,25 @@ module private Internal =
             match m.Success with
             | true ->
                 Some m.Groups.[1].Value
-            | false -> None
-        | _ -> None
+            | false ->
+                printfn "[Error] Mods without a version on the website are not supported yet.\n%s" urlString
+                None
+        | _ ->
+            printfn "[Error] Mods without a version on the website are not supported yet.\n%s" urlString
+            None
 
     let filePathFromSite (source :HtmlDocument) (Url urlString) =
         let node = source.CssSelect(".filebaseFileList h3 > a")
         match node with
         | [node] ->
-            let atr = node.Attribute "href"
-            Some (atr.Value ())
+            let title =(node.Attribute "title").Value ()
+            let href = (node.Attribute "href").Value ()
+            if title.EndsWith ".zip" then
+                Some (href)
+            else
+                let (extension::_) = title.Split '.' |> List.ofArray |> List.rev
+                printfn "[Error] At the moment only zip archives are supported. This is a %s file.\n%s" extension urlString
+                None
         | _ ->
             printfn "[Error] Mods with more than one downloadable file are not supported yet.\n%s" urlString
             None
@@ -134,7 +144,7 @@ module private Internal =
             match Http.Request(fileUrl, cookieContainer=cookieContainer).Body with
             | Text text ->
                 failwith "Invalid filepath!"
-            | Binary bytes -> 
+            | Binary bytes ->
                 saveBytes target bytes
             printfn "\r%-16s" "* Downloaded."
 
@@ -166,10 +176,8 @@ module private Internal =
                 let version = versionFromSite source url
                 let filePath = filePathFromSite source url
                 match (version, filePath) with
-                | (None, _) ->
-                    printfn "[Error] Mods without a version on the website are not supported yet.\n%s" urlString
-                | (_, None) ->
-                    failwith "There is something wrong with the filepath"
+                | (None, _) | (_, None) ->
+                    ()
                 | (Some version, Some filePath) ->
                     let _mod = new Mods.InstalledMod(name, urlString, version, "")
                     let zipPath = "tmp/"+_mod.Name+"-"+_mod.WebsiteVersion+".zip"
