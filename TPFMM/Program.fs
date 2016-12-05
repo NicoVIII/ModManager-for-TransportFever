@@ -21,7 +21,7 @@ let test args =
         printfn "" |> ignore
         main [| "update" |] |> ignore
         printfn "" |> ignore
-        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2342-SBB-Zwergsignal/" ; "https://www.transportfever.net/filebase/index.php/Entry/2505-Wartturm-Eichenzell-by-Schwarzfahrer/" ; "https://www.transportfever.net/filebase/index.php/Entry/2396-kkStB-280-380/" |] |> ignore
+        main [| "install" ; "https://www.transportfever.net/filebase/index.php/Entry/2342-SBB-Zwergsignal/" ; "https://www.transportfever.net/filebase/index.php/Entry/2505-Wartturm-Eichenzell-by-Schwarzfahrer/" ; "https://www.transportfever.net/filebase/index.php/Entry/2396-kkStB-280-380/" ; "https://www.transportfever.net/filebase/index.php/Entry/2418-DB-BR-110-BR-140-BR-141-BR-150-Einheitsloks-der-Deutschen-Bundesbahn/" |] |> ignore
         printfn "" |> ignore
         main [| "list" |] |> ignore
         printfn "" |> ignore

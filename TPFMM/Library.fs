@@ -39,8 +39,12 @@ module private Internal =
         |> List.rev
         |> List.fold (fun path folder -> path+folder+"/") ""
 
+    let invalidFilePathChars = "/"::["|"]
+
     let saveBytes {name = name; version = version; url = url; bytes = bytes} =
-        let path = ("tmp/"+name+"-"+version+".zip")
+        // Replace invalid characters
+        let name' = invalidFilePathChars |> List.fold (fun (name :string) c -> name.Replace(c, "_")) name
+        let path = ("tmp/"+name'+"-"+version+".zip")
         directoryFromFile path
         |> Directory.CreateDirectory |> ignore
         File.WriteAllBytes(path, bytes)

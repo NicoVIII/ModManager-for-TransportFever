@@ -47,7 +47,7 @@ module private TransportFeverNet =
         match node with
         | [header] ->
             let name = HtmlNode.innerText header
-            Ok (name.Replace ("/", "_"))
+            Ok name
         | _ ->
             Error [UnsupportedLayout]
 
