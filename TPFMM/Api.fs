@@ -22,7 +22,10 @@ type TPFMM(settings :Settings) =
         |> List.map convertMod
         |> Array.ofList
     member this.Install url = Internal.installSingle this.Settings extractStartedEvent extractEndedEvent downloadStartedEvent downloadEndedEvent (Url url)
-    //member this.Update = Internal.update ()
+    member this.Update =
+        Internal.update ()
+        |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
+        |> Array.ofList
     //member this.UpgradeAll = Internal.upgradeAll this.Settings upgradeProcessEvent installProcessEvent
 
     // Callbacks

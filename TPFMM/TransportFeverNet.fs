@@ -51,7 +51,7 @@ module private TransportFeverNet =
         | _ ->
             Error [UnsupportedLayout]
 
-    let private getVersion (source :HtmlDocument) =
+    let private parseVersion {source = source} =
         let node = source.CssSelect(".messageBody")
         match node with
         | [node] ->
@@ -79,12 +79,17 @@ module private TransportFeverNet =
         | _ ->
             Error [MoreThanOneFile]
 
-    let extractInfo {url = url; source = source} =
-        match getName source, getVersion source, getFilePath source with
+    let private extractInfo urlCode =
+        let {url = url; source = source} = urlCode
+        match getName source, parseVersion urlCode, getFilePath source with
         | Ok n, Ok v, Ok f -> Ok {name=n; version=v; url=url; fileUrl=f}
         | Error e, Ok _, Ok _ | Ok _, Error e, Ok _ | Ok _, Ok _, Error e -> Error e
         | Error e1, Error e2, Ok _ | Error e1, Ok _, Error e2 | Ok _, Error e1, Error e2 -> Error (e1 @ e2)
         | Error e1, Error e2, Error e3 -> Error (e1 @ e2 @ e3)
+
+    let getVersion =
+        getSite
+        >> bind parseVersion
 
     let getInfo =
         getSite

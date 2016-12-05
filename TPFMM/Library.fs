@@ -25,26 +25,21 @@ module private Internal =
         | true -> Some (SettingsJson.Load settingsPath)
         | false -> None
 
-    (*let update () =
+    let update () =
         let fold list (_mod :Mod) =
-            let site = TransportFeverNet.tryGetSite (Url _mod.Url)
-            match site with
-            | Some site ->
-                let newVersion = TransportFeverNet.version site (Url _mod.Url)
-                if not (newVersion = Some _mod.WebsiteVersion) then
-                    match newVersion with
-                    | Some newVersion -> (_mod.Name, _mod.WebsiteVersion, newVersion)::list
-                    | None -> list
+            match TransportFeverNet.getVersion (Url _mod.url) with
+            | Ok newVersion ->
+                if not (newVersion = _mod.websiteVersion) then
+                    (_mod.name, _mod.websiteVersion, newVersion)::list
                 else
                     list
-            | None -> list
+            // HACK add error handling
+            | Error _ -> list
 
         loadModInfo()
         |> List.fold fold []
-        |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
-        |> Array.ofList
 
-    let upgrade (settings :Settings) upgradeEvent installEvent (_mod :Mod) =
+    (*let upgrade (settings :Settings) upgradeEvent installEvent (_mod :Mod) =
         let site = TransportFeverNet.tryGetSite (Url _mod.Url)
         match site with
         | Some site ->

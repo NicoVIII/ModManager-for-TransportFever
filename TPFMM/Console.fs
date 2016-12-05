@@ -33,7 +33,7 @@ module private ConsoleApp =
         printCmd "help" "Displays this help page"
         printCmd "install <url>.." "Installs a mod from given url"
         printCmd "list" "Shows a list of installed mods"
-        //printCmd "update" "Shows a list of available mod updates"
+        printCmd "update" "Shows a list of available mod updates"
         //printCmd "upgrade" "Upgrades all installed mods"
     
     let list () =
@@ -51,7 +51,7 @@ module private ConsoleApp =
             mods
             |> List.iter printMod
 
-    (*let update () =
+    let update () =
         let printUpdate (name, oldVersion, newVersion) =
             printfn "%-50s %-18s %s" name oldVersion newVersion
         
@@ -63,7 +63,7 @@ module private ConsoleApp =
         | updates ->
             printfn "%-50s %-18s %s" "Available Updates:" "Installed" "Available"
             updates
-            |> List.iter printUpdate*)
+            |> List.iter printUpdate
 
     (*let upgrade () =
         printfn "Upgrade started.\n"
@@ -110,7 +110,7 @@ module private ConsoleApp =
 
     let execCommand command args =
         match command with
-        //| "update"      -> update ()
+        | "update"      -> update ()
         //| "upgrade"     -> upgrade ()
         | "list"        -> list ()
         | "install"     -> installAll args
