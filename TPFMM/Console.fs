@@ -78,7 +78,7 @@ module private ConsoleApp =
         | AlreadyInstalled ->
             printfn "[Error] Mod is already installed."
         | ExtractionFailed ->
-            printfn "[Error] Extraction of mod could not be completed. Did you install this mod manually? Delete the mod folder and restart installation."
+            printfn "\n[Error] Extraction of mod could not be completed. Did you install this mod manually? Delete the mod folder and restart installation."
         | ModInvalid ->
             printfn "[Error] Requested mod has no supported format."
         | MoreThanOneFile ->

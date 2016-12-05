@@ -1,21 +1,21 @@
 ﻿namespace TPFModManager.Api
 
 [<AllowNullLiteral>]
-type ModInfo (name :string, version :string, url :string, fileUrl :string) =
+type ModInfo (name :string, url :string, version :string, fileUrl :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version
     member this.FileUrl = fileUrl
 
 [<AllowNullLiteral>]
-type ModDownloadedInfo (name :string, version :string, url :string, zipPath :string) =
+type ModDownloadedInfo (name :string, url :string, version :string, zipPath :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version
     member this.ZipPath = zipPath
 
 [<AllowNullLiteral>]
-type ModExtractInfo (name :string, version :string, url :string, zipPath :string, extractPath :string, folder :string) =
+type ModExtractInfo (name :string, url :string, version :string, zipPath :string, extractPath :string, folder :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version

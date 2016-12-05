@@ -24,63 +24,8 @@ module private Internal =
         match File.Exists settingsPath with
         | true -> Some (SettingsJson.Load settingsPath)
         | false -> None
-    
-    (*let downloadMod (installEvent :Event<_>) fileUrl (_mod :Mod) =
 
-
-    let extractMod tpfModPath zipPath =
-        try
-            ZipFile.ExtractToDirectory(zipPath, tpfModPath) |> ignore
-        with
-        | :? System.IO.IOException -> ()
-
-    let installMod _mod (installEvent :Event<_>) tpfPath zipPath =
-        installEvent.Trigger(InstallProcessEventType.InstallationStarted, _mod)
-        extractMod tpfPath zipPath
-        saveModInfo (_mod::loadModInfo())
-        installEvent.Trigger(InstallProcessEventType.InstallationEnded, _mod)
-
-    let createModFromInfo (name,url,version) =
-        new Mod(name, url, version, "")
-
-    let downloadAndInstall (settings :Settings) (installEvent :Event<_>) =
-        checkModInstalled
-        >> bind TransportFeverNet.getInfo
-        >> map createModFromInfo
-            let zipPath = 
-            downloadMod _mod installEvent filePath
-            use file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
-            let fold list (entry :ZipArchiveEntry) =
-                let name = entry.FullName.TrimEnd '/'
-                let name' = (name.Split '/').[0]
-                if List.forall (fun el -> not (el = name')) list then
-                    name'::list
-                else
-                    list
-            let entries = file.Entries |> Seq.toList |> List.fold fold []
-            file.Dispose ()
-            match entries with
-            | [folder] -> 
-                let _mod = new Mod(_mod.Name, _mod.Url, _mod.WebsiteVersion, folder)
-                installMod _mod installEvent settings.TpfModPath zipPath
-                Ok ()
-            | list ->
-                if list |> List.exists (fun el -> el = "mod.lua") then
-                    let _mod = new Mod(_mod.Name, _mod.Url, _mod.WebsiteVersion, _mod.Name)
-                    installMod _mod installEvent (settings.TpfModPath+"/"+_mod.Name) zipPath
-                    Ok ()
-                else 
-                    printfn "%A" list
-                    failwith "Mod is not well configured"*)
-
-    (*let downloadAndInstallAll settings event urls =
-        let downloadAndInstall url = downloadAndInstall settings event url
-        let res = urls |> List.fold (fun res url -> downloadAndInstall url |> combineErrors res) (Ok ())
-        if settings.DeleteZips && Directory.Exists("tmp") then
-            Directory.Delete("tmp", true)
-        res
-
-    let update () =
+    (*let update () =
         let fold list (_mod :Mod) =
             let site = TransportFeverNet.tryGetSite (Url _mod.Url)
             match site with
@@ -180,9 +125,10 @@ module private Internal =
             else 
                 Error [ModInvalid]
 
-    let performExtract {modDownloadedInfo = {name = name; version = version; url = url; zipPath = zipPath}; folder = folder; extractPath = extractPath} =
+    let performExtract (settings :Settings) {modDownloadedInfo = {name = name; version = version; url = url; zipPath = zipPath}; folder = folder; extractPath = extractPath} =
         try
             ZipFile.ExtractToDirectory(zipPath, extractPath) |> ignore
+            if settings.DeleteZips then File.Delete(zipPath)
             Ok {name = name; websiteVersion = version; url = url; folder = folder}
         with
         | :? System.IO.IOException -> Error [ExtractionFailed]
@@ -190,7 +136,7 @@ module private Internal =
     let extract (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
         prepareExtract settings
         >> map (tee (ApiHelper.convertExtractInfo >> extractStartedEvent.Trigger))
-        >> bind performExtract
+        >> bind (performExtract settings)
         >> map (tee (ApiHelper.convertMod >> extractEndedEvent.Trigger))
 
     let install (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) =
