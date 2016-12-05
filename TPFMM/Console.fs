@@ -5,8 +5,6 @@ open TPFModManager.Api
 
 // Module for console use
 module private ConsoleApp =
-    let printCmd long desc= printfn "%-10s %s" long desc
-
     let downloadStarted (modInfo :ModInfo) :unit =
         printfn "%s - %s:" modInfo.Name modInfo.Version
         printf "* Downloading..."
@@ -26,6 +24,8 @@ module private ConsoleApp =
         tpfmm.RegisterExtractStartedListener(extractStarted)
         tpfmm.RegisterExtractEndedListener(extractEnded)
 
+    let printCmd long desc= printfn "%-20s %s" long desc
+
     let help () =
         printfn "Transport Fever Mod Manager (TPFMM)"
         printfn ""
@@ -34,7 +34,7 @@ module private ConsoleApp =
         printCmd "install <url>.." "Installs a mod from given url"
         printCmd "list" "Shows a list of installed mods"
         printCmd "update" "Shows a list of available mod updates"
-        //printCmd "upgrade" "Upgrades all installed mods"
+        printCmd "upgrade" "Upgrades all installed mods"
     
     let list () =
         let printMod (m :Mod) =
@@ -78,7 +78,7 @@ module private ConsoleApp =
         | AlreadyInstalled ->
             printfn "[Error] Mod is already installed."
         | ExtractionFailed ->
-            printfn "\n[Error] Extraction of mod could not be completed. Did you install this mod manually? Delete the mod folder and restart installation."
+            printfn "\n[Error] Extraction of mod could not be completed. Did you install this mod manually?\nIf that's the case, delete this specific mod folder and restart installation."
         | ModInvalid ->
             printfn "[Error] Requested mod has no supported format."
         | MoreThanOneFile ->
