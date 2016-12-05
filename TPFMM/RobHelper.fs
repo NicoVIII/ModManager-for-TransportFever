@@ -1,4 +1,9 @@
-﻿module RobHelper
+﻿[<AutoOpen>]
+module RobHelper
+
+type Result<'TSuccess, 'TError> =
+    | Ok of 'TSuccess
+    | Error of 'TError
 
 // convert a single value into a two-track result
 let succeed x = 
