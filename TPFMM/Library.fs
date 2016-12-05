@@ -24,42 +24,6 @@ module private Internal =
         match File.Exists settingsPath with
         | true -> Some (SettingsJson.Load settingsPath)
         | false -> None
-
-    let update () =
-        let fold list (_mod :Mod) =
-            match TransportFeverNet.getVersion (Url _mod.url) with
-            | Ok newVersion ->
-                if not (newVersion = _mod.websiteVersion) then
-                    (_mod.name, _mod.websiteVersion, newVersion)::list
-                else
-                    list
-            // HACK add error handling
-            | Error _ -> list
-
-        loadModInfo()
-        |> List.fold fold []
-
-    (*let upgrade (settings :Settings) upgradeEvent installEvent (_mod :Mod) =
-        let site = TransportFeverNet.tryGetSite (Url _mod.Url)
-        match site with
-        | Some site ->
-            let newVersion = TransportFeverNet.version site (Url _mod.Url)
-            if not (newVersion = Some _mod.WebsiteVersion) then
-                match newVersion with
-                | Some newVersion ->
-                    // Delete old version
-                    Directory.Delete(settings.TpfModPath+"/"+_mod.Folder, true)
-                    removeModInfo _mod
-                    downloadAndInstall settings installEvent (Url _mod.Url)
-                    if settings.DeleteZips && Directory.Exists("tmp") then Directory.Delete("tmp", true)
-                | None -> ()
-        | None -> ()
-
-    let upgradeAll (settings :Settings) upgradeEvent installEvent =
-        let upgrade = upgrade settings upgradeEvent installEvent
-
-        loadModInfo()
-        |> List.iter (fun _mod -> upgrade _mod)*)
     
     // List
     let list () =
@@ -134,11 +98,37 @@ module private Internal =
         >> bind (performExtract settings)
         >> map (tee (ApiHelper.convertMod >> extractEndedEvent.Trigger))
 
-    let install (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) =
+    let install (settings :Settings) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
         checkModInstalled
         >> bind (download downloadStartedEvent downloadEndedEvent)
         >> bind (extract settings extractStartedEvent extractEndedEvent)
 
-    let installSingle (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) =
-        install settings extractStartedEvent extractEndedEvent downloadStartedEvent downloadEndedEvent
+    let installSingle (settings :Settings) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
+        install settings downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent 
         >> map addMod
+
+    let update () =
+        let fold list (_mod :Mod) =
+            match TransportFeverNet.getVersion (Url _mod.url) with
+            | Ok newVersion ->
+                if not (newVersion = _mod.websiteVersion) then
+                    (_mod.name, _mod.websiteVersion, newVersion)::list
+                else
+                    list
+            // HACK add error handling
+            | Error _ -> list
+
+        loadModInfo()
+        |> List.fold fold []
+
+    let upgrade (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) (_mod :Mod) =
+        match TransportFeverNet.getVersion (Url _mod.url) with
+        | Ok newVersion ->
+            if not (newVersion = _mod.websiteVersion) then
+                Directory.Delete(settings.TpfModPath+"/"+_mod.folder, true)
+                removeModInfo _mod
+                installSingle settings extractStartedEvent extractEndedEvent downloadStartedEvent downloadEndedEvent (Url _mod.url)
+            else
+                Ok ()
+        // HACK add error handling
+        | Error _ -> Error []

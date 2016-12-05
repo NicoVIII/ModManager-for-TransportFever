@@ -26,6 +26,12 @@ let test args =
         main [| "list" |] |> ignore
         printfn "" |> ignore
         main [| "update" |] |> ignore
+        printfn "" |> ignore
+        main [| "upgrade" |] |> ignore
+        printfn "" |> ignore
+        main [| "list" |] |> ignore
+        printfn "" |> ignore
+        main [| "update" |] |> ignore
         Console.ReadKey() |> ignore
         0
     | false ->

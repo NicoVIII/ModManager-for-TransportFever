@@ -18,3 +18,6 @@ module private ApiHelper =
     let convertMod _mod =
         let {name = name; url = url; websiteVersion = version; folder = folder} = _mod
         new Api.Mod(name, url, version, folder)
+
+    let deconvertMod (_mod :Api.Mod) =
+        {name = _mod.Name; url = _mod.Url; websiteVersion = _mod.WebsiteVersion; folder = _mod.Folder}

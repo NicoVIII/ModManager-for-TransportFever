@@ -65,12 +65,6 @@ module private ConsoleApp =
             updates
             |> List.iter printUpdate
 
-    (*let upgrade () =
-        printfn "Upgrade started.\n"
-        let tpfmm = new TPFMM(TPFMM.loadSettings);
-        tpfmm.UpgradeAll
-        printfn "Upgrade finished."*)
-
     let outputError (error :TPFMMError) =
         match error with
         | NoConnection ->
@@ -108,10 +102,29 @@ module private ConsoleApp =
         args |> List.iter (installSingle tpfmm)
         printfn "Uploading of downloaded mods to other sites is prohibited!"
 
+    let upgradeSingle (tpfmm :TPFMM) (_mod :Mod) =
+        let result = tpfmm.Upgrade _mod
+        match result with
+        | Ok _ -> ()
+        | Error errors -> outputErrors errors
+        printfn ""
+
+    let upgradeAll () =
+        let tpfmm = new TPFMM(TPFMM.loadSettings);
+        registerListeners tpfmm
+        if tpfmm.Update |> List.ofArray = [] then
+            printfn "Nothing to upgrade."
+        else
+            printfn "Upgrade started.\n"
+            tpfmm.List
+            |> List.ofArray
+            |> List.iter (upgradeSingle tpfmm)
+            printfn "Upgrade finished."
+
     let execCommand command args =
         match command with
         | "update"      -> update ()
-        //| "upgrade"     -> upgrade ()
+        | "upgrade"     -> upgradeAll ()
         | "list"        -> list ()
         | "install"     -> installAll args
         | "help" | _    -> help ()

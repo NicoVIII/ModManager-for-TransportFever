@@ -1,5 +1,6 @@
 ﻿namespace TPFModManager.Api
 
+open RobHelper
 open TPFModManager
 open TPFModManager.ApiHelper
 open TPFModManager.ModInfo
@@ -21,12 +22,15 @@ type TPFMM(settings :Settings) =
         Internal.list ()
         |> List.map convertMod
         |> Array.ofList
-    member this.Install url = Internal.installSingle this.Settings extractStartedEvent extractEndedEvent downloadStartedEvent downloadEndedEvent (Url url)
+    member this.Install url =
+        Internal.installSingle this.Settings downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent (Url url)
     member this.Update =
         Internal.update ()
         |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
         |> Array.ofList
-    //member this.UpgradeAll = Internal.upgradeAll this.Settings upgradeProcessEvent installProcessEvent
+    member this.Upgrade =
+        deconvertMod
+        >> Internal.upgrade this.Settings downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent
 
     // Callbacks
     member this.RegisterDownloadStartedListener handler = Event.add handler downloadStartedEvent.Publish

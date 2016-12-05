@@ -37,7 +37,7 @@ module private ModInfo =
     let addMod modi =
         addMods [modi]
 
-    let removeModInfo {url = modUrl} =
+    let removeModInfo (_mod :Mod) =
         loadModInfo ()
-        |> List.filter (fun {url=url} -> not (url = modUrl))
+        |> List.filter (fun {url=url} -> not (url = _mod.url))
         |> saveModInfo
