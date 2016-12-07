@@ -112,6 +112,8 @@ module private ConsoleApp =
             outputErrors errors
             printfn ""
 
+    // TODO optimize to reduce traffic: Use update results to call upgrade
+    // TODO additional: cache previous results of update to use them to call upgrade. Only update if last update is older than e.g. 30 minutes
     let upgradeAll () =
         let tpfmm = new TPFMM(TPFMM.loadSettings);
         registerListeners tpfmm
