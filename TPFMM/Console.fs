@@ -105,9 +105,12 @@ module private ConsoleApp =
     let upgradeSingle (tpfmm :TPFMM) (_mod :Mod) =
         let result = tpfmm.Upgrade _mod
         match result with
-        | Ok _ -> ()
-        | Error errors -> outputErrors errors
-        printfn ""
+        | Ok _ ->
+            printfn ""
+        | Error [] -> ()
+        | Error errors ->
+            outputErrors errors
+            printfn ""
 
     let upgradeAll () =
         let tpfmm = new TPFMM(TPFMM.loadSettings);
