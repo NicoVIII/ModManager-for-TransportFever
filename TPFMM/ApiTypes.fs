@@ -29,3 +29,8 @@ type Mod (name :string, url :string, websiteVersion :string, folder :string) =
     member this.Url = url
     member this.WebsiteVersion = websiteVersion
     member this.Folder = folder
+
+[<AllowNullLiteral>]
+type Settings (tpfModPath :string, deleteZips :bool) =
+    member this.TpfModPath = tpfModPath
+    member this.DeleteZips = deleteZips

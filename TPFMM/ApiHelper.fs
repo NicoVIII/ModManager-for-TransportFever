@@ -21,3 +21,10 @@ module private ApiHelper =
 
     let deconvertMod (_mod :Api.Mod) =
         {name = _mod.Name; url = _mod.Url; websiteVersion = _mod.WebsiteVersion; folder = _mod.Folder}
+
+    let convertSettings (settings :Settings) =
+        let {tpfModPath = tpfModPath; deleteZips = deleteZips} = settings
+        new Api.Settings(tpfModPath, deleteZips)
+
+    let deconvertSettings (settings :Api.Settings) =
+        {tpfModPath = settings.TpfModPath; deleteZips = settings.DeleteZips}

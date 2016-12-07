@@ -14,5 +14,8 @@ module private Types =
     type Mod =
         {name :string; websiteVersion :string; url :string; folder :string}
 
+    type Settings =
+        {tpfModPath :string; deleteZips :bool}
+
     type Url = Url of string
     type UrlCode = {url :string; source :HtmlDocument}

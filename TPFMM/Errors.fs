@@ -1,5 +1,8 @@
 ﻿namespace TPFModManager
 
+type SettingsError =
+    | NoValidTpfPath
+
 type TPFMMError =
     // TransportFeverNet - Site
     | NoConnection

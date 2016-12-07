@@ -55,6 +55,8 @@
     <Compile Include="Types.fs" />
     <Compile Include="ApiTypes.fs" />
     <Compile Include="ApiHelper.fs" />
+    <Compile Include="IO.fs" />
+    <Compile Include="Settings.fs" />
     <Compile Include="ModInfo.fs" />
     <Compile Include="TransportFeverNet.fs" />
     <Compile Include="Library.fs" />

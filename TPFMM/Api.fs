@@ -7,7 +7,7 @@ open TPFModManager.ModInfo
 open TPFModManager.Types
 
 // API
-type TPFMM(settings :Settings) =
+type TPFMM(settings :Api.Settings) =
     // Events
     let downloadStartedEvent = new Event<_>()
     let downloadEndedEvent = new Event<_>()
@@ -23,14 +23,14 @@ type TPFMM(settings :Settings) =
         |> List.map convertMod
         |> Array.ofList
     member this.Install url =
-        Internal.installSingle this.Settings downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent (Url url)
+        Internal.installSingle (deconvertSettings this.Settings) downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent (Url url)
     member this.Update =
         Internal.update ()
         |> List.map (fun (name, oldVersion, newVersion) -> [| name ; oldVersion ; newVersion |])
         |> Array.ofList
     member this.Upgrade =
         deconvertMod
-        >> Internal.upgrade this.Settings downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent
+        >> Internal.upgrade(deconvertSettings this.Settings) downloadStartedEvent downloadEndedEvent extractStartedEvent extractEndedEvent
 
     // Callbacks
     member this.RegisterDownloadStartedListener handler = Event.add handler downloadStartedEvent.Publish
@@ -40,6 +40,6 @@ type TPFMM(settings :Settings) =
 
     // Static methods
     static member loadSettings =
-        match Internal.tryLoadSettings () with
-        | Some settings -> new Settings(settings.TpfModPath, settings.DeleteZips)
-        | None -> null
+        match Settings.loadSettings () with
+        | Ok settings -> (convertSettings settings)
+        | Error error -> null

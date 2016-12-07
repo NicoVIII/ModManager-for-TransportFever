@@ -1,18 +1,13 @@
 ﻿namespace TPFModManager
 
 open FSharp.Data
-open System.IO
+open IO
 open Types
 
 module private ModInfo =
     let modInfoPath = "mods.json"
 
     type ModsJson = JsonProvider<""" { "installed_mods": [{ "name": "s", "url": "s", "websiteVersion": "s", "folder": "s" }] } """>
-
-    let private saveString (file :string) str =
-        let directory = file.Split [| '/' |] |> Array.toList |> List.rev |> List.tail |> List.rev |> List.fold (fun path folder -> path+folder+"/") ""
-        if directory.Length = 0 then () else Directory.CreateDirectory directory |> ignore
-        File.WriteAllText(file, str)
 
     let private loadModInfoFrom (path :string) =
         let mods = ModsJson.Load(path)

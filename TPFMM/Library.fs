@@ -10,21 +10,8 @@ open Types
 
 type ModUrl = ModUrl of String
 
-[<AllowNullLiteral>]
-type Settings (tpfModPath :string, deleteZips :bool) =
-    member this.TpfModPath = tpfModPath
-    member this.DeleteZips = deleteZips
-
 // Internal logic to provide API functionality
 module private Internal =
-    type SettingsJson = JsonProvider<""" { "tpfModPath": "/path/to/tpf", "deleteZips": true } """>
-
-    let tryLoadSettings () =
-        let settingsPath = "settings.json"
-        match File.Exists settingsPath with
-        | true -> Some (SettingsJson.Load settingsPath)
-        | false -> None
-    
     // List
     let list () =
         loadModInfo()
@@ -81,17 +68,17 @@ module private Internal =
         file.Dispose ()
         match entries with
         | [folder] -> 
-            Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.TpfModPath; folder = folder}
+            Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath; folder = folder}
         | list ->
             if list |> List.exists (fun el -> el = "mod.lua") then
-                Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.TpfModPath+"/"+name; folder = name}
+                Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath+"/"+name; folder = name}
             else 
                 Error [ModInvalid]
 
     let performExtract (settings :Settings) {modDownloadedInfo = {name = name; version = version; url = url; zipPath = zipPath}; folder = folder; extractPath = extractPath} =
         try
             ZipFile.ExtractToDirectory(zipPath, extractPath) |> ignore
-            if settings.DeleteZips then File.Delete(zipPath)
+            if settings.deleteZips then File.Delete(zipPath)
             Ok {name = name; websiteVersion = version; url = url; folder = folder}
         with
         | :? System.IO.IOException -> Error [ExtractionFailed]
@@ -129,7 +116,7 @@ module private Internal =
         match TransportFeverNet.getVersion (Url _mod.url) with
         | Ok newVersion ->
             if not (newVersion = _mod.websiteVersion) then
-                Directory.Delete(settings.TpfModPath+"/"+_mod.folder, true)
+                Directory.Delete(settings.tpfModPath+"/"+_mod.folder, true)
                 removeModInfo _mod
                 installSingle settings extractStartedEvent extractEndedEvent downloadStartedEvent downloadEndedEvent (Url _mod.url)
             else
