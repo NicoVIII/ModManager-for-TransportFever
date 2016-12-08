@@ -71,8 +71,8 @@ module private TransportFeverNet =
         | [node] ->
             let title =(node.Attribute "title").Value ()
             let href = (node.Attribute "href").Value ()
-            if title.EndsWith ".zip" then
-                Ok href
+            if title.EndsWith ".zip" || title.EndsWith ".rar" then
+                Ok (href, title)
             else
                 let (extension::_) = title.Split '.' |> List.ofArray |> List.rev
                 Error [NotSupportedFormat extension]
@@ -82,7 +82,7 @@ module private TransportFeverNet =
     let private extractInfo urlCode =
         let {url = url; source = source} = urlCode
         match getName source, parseVersion urlCode, getFilePath source with
-        | Ok n, Ok v, Ok f -> Ok {name=n; version=v; url=url; fileUrl=f}
+        | Ok n, Ok v, Ok (f,t) -> Ok {name=n; version=v; url=url; fileUrl=f; title=t}
         | Error e, Ok _, Ok _ | Ok _, Error e, Ok _ | Ok _, Ok _, Error e -> Error e
         | Error e1, Error e2, Ok _ | Error e1, Ok _, Error e2 | Ok _, Error e1, Error e2 -> Error (e1 @ e2)
         | Error e1, Error e2, Error e3 -> Error (e1 @ e2 @ e3)
@@ -96,9 +96,9 @@ module private TransportFeverNet =
         >> bind extractInfo
 
     let getFileBytes modInfo =
-        let {name = name; version = version; url = url; fileUrl = fileUrl} = modInfo
+        let {name = name; version = version; url = url; fileUrl = fileUrl; title = title} = modInfo
         match Http.Request(fileUrl, cookieContainer=cookieContainer).Body with
         | Text text ->
             Error [NotBinary]
         | Binary bytes ->
-            Ok {name = name; version = version; url = url; bytes = bytes}
+            Ok {name = name; version = version; url = url; bytes = bytes; title = title}

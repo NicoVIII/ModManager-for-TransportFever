@@ -3,6 +3,8 @@
 open FSharp.Data
 open ModInfo
 open RobHelper
+open SharpCompress.Archives
+open SharpCompress.Readers
 open System
 open System.IO
 open System.IO.Compression
@@ -26,16 +28,17 @@ module private Internal =
         |> List.rev
         |> List.fold (fun path folder -> path+folder+"/") ""
 
-    let invalidFilePathChars = "/"::["|"]
+    let invalidFilePathChars = "\\"::"/"::["|"]
 
-    let saveBytes {name = name; version = version; url = url; bytes = bytes} =
+    let saveBytes {name = name; version = version; url = url; bytes = bytes; title = title} =
         // Replace invalid characters
         let name' = invalidFilePathChars |> List.fold (fun (name :string) c -> name.Replace(c, "_")) name
-        let path = ("tmp/"+name'+"-"+version+".zip")
+        let extension::_ = title.Split '.' |> List.ofArray |> List.rev
+        let path = ("tmp/"+name'+"-"+version+"."+extension)
         directoryFromFile path
         |> Directory.CreateDirectory |> ignore
         File.WriteAllBytes(path, bytes)
-        {name = name; version = version; url = url; zipPath = path}
+        {name = name; version = version; url = url; archivePath = path}
 
     let download (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) =
         TransportFeverNet.getInfo
@@ -55,7 +58,48 @@ module private Internal =
         | false -> Ok url
     
     let prepareExtract (settings :Settings) modInfoDownloaded =
-        let {name = name; version = version; url = url; zipPath = zipPath} = modInfoDownloaded
+        let {name = name; version = version; url = url; archivePath = archivePath} = modInfoDownloaded
+        use archive = ArchiveFactory.Open archivePath
+        let fold list (entry :IArchiveEntry) =
+            let name = entry.Key.TrimEnd '/'
+            let name' = (name.Split [| '\\'; '/'|]).[0]
+            if List.forall (fun el -> not (el = name')) list then
+                name'::list
+            else
+                list
+        let entries = archive.Entries |> Seq.toList |> List.fold fold []
+        archive.Dispose ()
+        match entries with
+        | [folder] -> 
+            Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath; folder = folder}
+        | list ->
+            if list |> List.exists (fun el -> el = "mod.lua") then
+                Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath+"/"+name; folder = name}
+            else 
+                Error [ModInvalid]
+
+    let performExtract (settings :Settings) {modDownloadedInfo = {name = name; version = version; url = url; archivePath = archivePath}; folder = folder; extractPath = extractPath} =
+        try
+            use archive = ArchiveFactory.Open archivePath
+            use reader = archive.ExtractAllEntries()
+            let eo = new ExtractionOptions()
+            eo.ExtractFullPath <- true
+            reader.WriteAllToDirectory (extractPath,eo)
+            reader.Dispose()
+            archive.Dispose()
+            if settings.deleteArchives then File.Delete(archivePath)
+            Ok {name = name; websiteVersion = version; url = url; folder = folder}
+        with
+        | :? System.IO.IOException -> Error [ExtractionFailed]
+
+    let extract (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
+        prepareExtract settings
+        >> map (tee (ApiHelper.convertExtractInfo >> extractStartedEvent.Trigger))
+        >> bind (performExtract settings)
+        >> map (tee (ApiHelper.convertMod >> extractEndedEvent.Trigger))
+
+    (*let prepareExtractZip (settings :Settings) modInfoDownloaded =
+        let {name = name; version = version; url = url; archivePath = zipPath} = modInfoDownloaded
         use file = ZipFile.Open(zipPath, ZipArchiveMode.Read)
         let fold list (entry :ZipArchiveEntry) =
             let name = entry.FullName.TrimEnd '/'
@@ -75,19 +119,27 @@ module private Internal =
             else 
                 Error [ModInvalid]
 
-    let performExtract (settings :Settings) {modDownloadedInfo = {name = name; version = version; url = url; zipPath = zipPath}; folder = folder; extractPath = extractPath} =
+    let performExtractZip (settings :Settings) {modDownloadedInfo = {name = name; version = version; url = url; archivePath = zipPath}; folder = folder; extractPath = extractPath} =
         try
             ZipFile.ExtractToDirectory(zipPath, extractPath) |> ignore
-            if settings.deleteZips then File.Delete(zipPath)
+            if settings.deleteArchives then File.Delete(zipPath)
             Ok {name = name; websiteVersion = version; url = url; folder = folder}
         with
         | :? System.IO.IOException -> Error [ExtractionFailed]
 
-    let extract (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
-        prepareExtract settings
+    let extractZip (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
+        prepareExtractZip settings
         >> map (tee (ApiHelper.convertExtractInfo >> extractStartedEvent.Trigger))
-        >> bind (performExtract settings)
-        >> map (tee (ApiHelper.convertMod >> extractEndedEvent.Trigger))
+        >> bind (performExtractZip settings)
+        >> map (tee (ApiHelper.convertMod >> extractEndedEvent.Trigger))*)
+
+    (*let extract (settings :Settings) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) (modInfoDownloaded :ModDownloadedInfo) =
+        if modInfoDownloaded.archivePath.EndsWith ".zip" then
+            extractZip settings extractStartedEvent extractEndedEvent modInfoDownloaded
+        else if modInfoDownloaded.archivePath.EndsWith ".rar" then
+            extractRar settings extractStartedEvent extractEndedEvent modInfoDownloaded
+        else
+            Error [NotSupportedFormat "?"]*)
 
     let install (settings :Settings) (downloadStartedEvent :Event<_>) (downloadEndedEvent :Event<_>) (extractStartedEvent :Event<_>) (extractEndedEvent :Event<_>) =
         checkModInstalled

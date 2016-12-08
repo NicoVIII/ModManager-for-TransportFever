@@ -1,25 +1,26 @@
 ﻿namespace TPFModManager.Api
 
 [<AllowNullLiteral>]
-type ModInfo (name :string, url :string, version :string, fileUrl :string) =
+type ModInfo (name :string, url :string, version :string, fileUrl :string, title :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version
     member this.FileUrl = fileUrl
+    member this.Title = title
 
 [<AllowNullLiteral>]
-type ModDownloadedInfo (name :string, url :string, version :string, zipPath :string) =
+type ModDownloadedInfo (name :string, url :string, version :string, archivePath :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version
-    member this.ZipPath = zipPath
+    member this.ArchivePath = archivePath
 
 [<AllowNullLiteral>]
-type ModExtractInfo (name :string, url :string, version :string, zipPath :string, extractPath :string, folder :string) =
+type ModExtractInfo (name :string, url :string, version :string, archivePath :string, extractPath :string, folder :string) =
     member this.Name = name
     member this.Url = url
     member this.Version = version
-    member this.ZipPath = zipPath
+    member this.ArchivePath = archivePath
     member this.ExtractPath = extractPath
     member this.Folder = folder
 
@@ -31,6 +32,6 @@ type Mod (name :string, url :string, websiteVersion :string, folder :string) =
     member this.Folder = folder
 
 [<AllowNullLiteral>]
-type Settings (tpfModPath :string, deleteZips :bool) =
+type Settings (tpfModPath :string, deleteArchives :bool) =
     member this.TpfModPath = tpfModPath
-    member this.DeleteZips = deleteZips
+    member this.DeleteArchives = deleteArchives

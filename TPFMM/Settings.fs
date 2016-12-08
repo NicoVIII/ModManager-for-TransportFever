@@ -5,7 +5,7 @@ open IO
 open System.IO
 open Types
 
-type SettingsJson = JsonProvider<""" { "tpfModPath": "/path/to/tpf", "deleteZips": true } """>
+type SettingsJson = JsonProvider<""" { "tpfModPath": "/path/to/tpf", "deleteArchives": true } """>
 
 let settingsPath = "settings.json"
 
@@ -25,4 +25,4 @@ let loadSettings () =
         if settings.TpfModPath = "" then
             Error NoValidTpfPath
         else
-            Ok {tpfModPath = settings.TpfModPath; deleteZips = settings.DeleteZips}
+            Ok {tpfModPath = settings.TpfModPath; deleteArchives = settings.DeleteArchives}
