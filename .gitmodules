@@ -1,3 +1,6 @@
 [submodule "ThirdParty/FSharp.Data"]
 	path = ThirdParty/FSharp.Data
 	url = https://github.com/fsharp/FSharp.Data.git
+[submodule "ThirdParty/SharpCompress"]
+	path = ThirdParty/SharpCompress
+	url = https://github.com/adamhathcock/sharpcompress.git
