@@ -7,7 +7,7 @@
     <RootNamespace>TPFMM</RootNamespace>
     <AssemblyName>TPFMM</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>0.1.0-alpha.3</ReleaseVersion>
+    <ReleaseVersion>0.1.0-alpha.4</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,8 +79,16 @@
       <Link>LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\ThirdParty\FSharp\LICENSE">
+      <Link>FSharp_LICENSE</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\ThirdParty\FSharp.Data\LICENSE.md">
-      <Link>LICENSE_FSharp_Data.md</Link>
+      <Link>FSharp.Data_LICENSE.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ThirdParty\SharpCompress\LICENSE.txt">
+      <Link>SharpCompress_LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\README.md">
