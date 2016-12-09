@@ -31,7 +31,7 @@ module private ConsoleApp =
         printfn ""
         printfn "Usage:"
         printCmd "help" "Displays this help page"
-        printCmd "install <url>.." "Installs a mod from given url"
+        printCmd "install <url>.." "Install mods from given urls"
         printCmd "list" "Shows a list of installed mods"
         printCmd "update" "Shows a list of available mod updates"
         printCmd "upgrade" "Upgrades all installed mods"
@@ -53,7 +53,11 @@ module private ConsoleApp =
 
     let update () =
         let printUpdate (name, oldVersion, newVersion) =
-            printfn "%-50s %-18s %s" name oldVersion newVersion
+            match String.length name with
+            | len when len > 47 ->
+                printfn "%-50s %-18s %s" name oldVersion newVersion
+            | _ ->
+                printfn "%-50s %-18s %s" (name.Substring (0, 47) + "...") oldVersion newVersion
         
         let tpfmm = new TPFMM(null);
         let updates = tpfmm.Update |> List.ofArray |> List.map (fun arr -> (arr.[0], arr.[1], arr.[2]))
