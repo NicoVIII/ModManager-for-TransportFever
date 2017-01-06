@@ -29,7 +29,7 @@ namespace TPFMM_Gui {
 
 			Box container = new VBox();
 			container.Margin = new WidgetSpacing(5, 5, 5, 5);
-			container.BackgroundColor = Colors.Black;
+			container.PackStart(new ModList(), true);
 			mainWindow.Content = container;
 
 			mainWindow.MainMenu = new MainMenu();
