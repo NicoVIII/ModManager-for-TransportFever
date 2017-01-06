@@ -30,14 +30,6 @@ namespace TpfModManager.Gui {
 				Height = 600
 			};
 
-			// Init basic layout
-			Box container = new VBox();
-			container.Margin = new WidgetSpacing(5, 5, 5, 5);
-			container.PackStart(new ModList(), true);
-			mainWindow.Content = container;
-
-			mainWindow.MainMenu = new MainMenu();
-
 			// Set up Tpf mods Path
 			if (modManager.Settings == null) {
 				var folderDialog = new SelectFolderDialog("Select TPF mods folder");
@@ -47,6 +39,14 @@ namespace TpfModManager.Gui {
 				settings.Save();
 				modManager.Settings = settings;
 			}
+
+			// Init basic layout
+			Box container = new VBox();
+			container.Margin = new WidgetSpacing(5, 5, 5, 5);
+			container.PackStart(new ModList(), true);
+			mainWindow.Content = container;
+
+			mainWindow.MainMenu = new MainMenu();
 
 			// Start Application
 			mainWindow.Show();
