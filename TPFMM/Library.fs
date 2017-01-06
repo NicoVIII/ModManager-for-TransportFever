@@ -73,7 +73,7 @@ module private Internal =
             Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath; folder = folder}
         | list ->
             if list |> List.exists (fun el -> el = "mod.lua") then
-                Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath+"/"+name; folder = name}
+                Ok {modDownloadedInfo=modInfoDownloaded; extractPath = settings.tpfModPath+"/"+"tpfmm_"+name+"_1"; folder = name}
             else 
                 Error [ModInvalid]
 
