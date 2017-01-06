@@ -1,7 +1,7 @@
 ﻿using System;
 using Xwt;
 
-namespace TPFMM_Gui {
+namespace TpfModManager.Gui {
 	public class ModList : Table {
 		public ModList() {
 			AddHeader();
