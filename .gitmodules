@@ -7,3 +7,6 @@
 [submodule "ThirdParty/FSharp"]
 	path = ThirdParty/FSharp
 	url = https://github.com/fsharp/fsharp
+[submodule "ThirdParty/XWT"]
+	path = ThirdParty/XWT
+	url = https://github.com/mono/xwt
