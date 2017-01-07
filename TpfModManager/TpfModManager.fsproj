@@ -34,7 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -47,6 +49,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="IOHelper.fs" />
     <Compile Include="Settings.fs" />
+    <Compile Include="ModList.fs" />
     <Compile Include="Api.fs" />
   </ItemGroup>
   <ItemGroup>

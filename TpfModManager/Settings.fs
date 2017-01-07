@@ -9,16 +9,16 @@ module SettingsModule =
     type SettingsJson = JsonProvider<""" { "tpfModPath": "/path/to/tpf", "deleteArchives": true } """>
 
     module Convert =
-        let FromJson (json :SettingsJson.Root) =
+        let fromJson (json :SettingsJson.Root) =
             {tpfModPath = json.TpfModPath}
 
-        let ToJson settings =
+        let toJson settings =
             new SettingsJson.Root(settings.tpfModPath, true)
 
     let settingsPath = "settings.json"
 
     let saveSettings settings =
-        (Convert.ToJson settings).ToString()
+        (Convert.toJson settings).ToString()
         |> saveString settingsPath
 
     let loadSettings () =

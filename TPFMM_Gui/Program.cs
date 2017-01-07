@@ -16,8 +16,15 @@ namespace TpfModManager.Gui {
 				case PlatformID.Win32NT:
 					Application.Initialize(ToolkitType.Wpf);
 					break;
-				//case PlatformID.MacOSX:
-				//case PlatformID.Unix:
+				case PlatformID.MacOSX:
+				case PlatformID.Unix:
+					//try {
+						Application.Initialize(ToolkitType.Cocoa);
+					/*} catch {
+						Application.Initialize(ToolkitType.Gtk);
+						Console.WriteLine()
+					}*/
+					break;
 				default:
 					Application.Initialize(ToolkitType.Gtk);
 					break;
@@ -31,27 +38,36 @@ namespace TpfModManager.Gui {
 			};
 
 			// Set up Tpf mods Path
-			if (modManager.Settings == null) {
+			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
 				var folderDialog = new SelectFolderDialog("Select TPF mods folder");
 				folderDialog.Run();
-				Settings settings = new Settings();
-				settings.TpfModPath = folderDialog.Folder;
-				settings.Save();
-				modManager.Settings = settings;
+				var folder = folderDialog.Folder;
+				// TODO look into this
+				if (folder.EndsWith("mods")) {
+					// Update TpfModPath
+					Settings settings = new Settings();
+					settings.TpfModPath = folderDialog.Folder;
+					settings.Save();
+					modManager.Settings = settings;
+				}
 			}
 
-			// Init basic layout
-			Box container = new VBox();
-			container.Margin = new WidgetSpacing(5, 5, 5, 5);
-			container.PackStart(new ModList(), true);
-			mainWindow.Content = container;
+			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
+				MessageDialog.ShowError("Please set the path to Transport Fever's 'mods' folder!");
+			} else {
+				// Init basic layout
+				Box container = new VBox();
+				container.Margin = new WidgetSpacing(5, 5, 5, 5);
+				container.PackStart(new ModList(), true);
+				mainWindow.Content = container;
 
-			mainWindow.MainMenu = new MainMenu();
+				mainWindow.MainMenu = new MainMenu();
 
-			// Start Application
-			mainWindow.Show();
-			Application.Run();
-			mainWindow.Dispose();
+				// Start Application
+				mainWindow.Show();
+				Application.Run();
+				mainWindow.Dispose();
+			}
 		}
 	}
 }
