@@ -4,36 +4,30 @@ using Xwt;
 using Xwt.Drawing;
 
 namespace TpfModManager.Gui {
-	public class ModList : ScrollView {
-		ModManager modManager;
-		Table table = new Table();
+	public class ModList : ListView {
+		DataField<Image> icon = new DataField<Image>();
+		DataField<string> name = new DataField<string>();
+		DataField<string> version = new DataField<string>();
+		DataField<string> remoteVersion = new DataField<string>();
 
 		public ModList(ModManager modManager) {
-			this.modManager = modManager;
-			this.Content = table;
+			SelectionMode = SelectionMode.Multiple;
+			ListStore store = new ListStore(icon, name, version, remoteVersion);
+			DataSource = store;
+			Columns.Add("", icon);
+			Columns.Add("Name", name);
+			Columns.Add("Version", version);
+			Columns.Add("RemoteVersion", remoteVersion);
 
-			AddHeader();
-			Update();
-		}
-
-		private void AddHeader() {
-			table.Add(new Label(""), 0, 0);
-			table.Add(new Label("Name"), 1, 0, hexpand: true);
-			table.Add(new Label("Version"), 2, 0);
-			table.Add(new Label("Remote Version"), 3, 0);
-		}
-
-		public void Update() {
-			var list = modManager.ModList;
-			for (int i = 0; i < list.Length; i++) {
-				var m = list[i];
+			for (int i = 0; i < modManager.ModList.Length; i++) {
+				var r = store.AddRow();
+				var m = modManager.ModList[i];
 				if (m.Image != "") {
-					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
-					//table.Add(new ImageView(Image.FromFile(imagePath).WithSize(20,20)), i, 0);
+					//store.SetValue(r, icon, Image.FromFile(Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image)));
 				}
-				table.Add(new Label(m.Name), 1, i + 1);
-				table.Add(new Label(m.Version.Major+"."+m.Version.Minor), 2, i+1);
-				table.Add(new Label("-"), 3, i+1);
+				store.SetValue(r, name, m.Name);
+				store.SetValue(r, version, m.Version.Major+"."+m.Version.Minor);
+				store.SetValue(r, remoteVersion, "-");
 			}
 		}
 	}
