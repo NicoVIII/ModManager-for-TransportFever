@@ -35,11 +35,13 @@ namespace TpfModManager.Gui {
 				Width = 800,
 				Height = 600
 			};
+			mainWindow.Show();
+			mainWindow.MainMenu = new MainMenu();
 
 			// Set up Tpf mods Path
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
 				var folderDialog = new SelectFolderDialog("Select TPF mods folder");
-				folderDialog.Run();
+				folderDialog.Run(mainWindow);
 				var folder = folderDialog.Folder;
 				// TODO look into this
 				if (folder.EndsWith("mods")) {
@@ -52,7 +54,7 @@ namespace TpfModManager.Gui {
 			}
 
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
-				MessageDialog.ShowError("Please set the path to Transport Fever's 'mods' folder!");
+				MessageDialog.ShowError(mainWindow, "Please set the path to Transport Fever's 'mods' folder!");
 			} else {
 				// Init basic layout
 				Box container = new VBox();
@@ -60,13 +62,10 @@ namespace TpfModManager.Gui {
 				container.PackStart(new ModList(), true);
 				mainWindow.Content = container;
 
-				mainWindow.MainMenu = new MainMenu();
-
 				// Start Application
-				mainWindow.Show();
 				Application.Run();
-				mainWindow.Dispose();
 			}
+			mainWindow.Dispose();
 		}
 	}
 }
