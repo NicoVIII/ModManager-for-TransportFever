@@ -34,7 +34,9 @@ type ModManager() =
         SettingsModule.loadSettings()
         |> SettingsAPI.convert
         with get, set
+    member val ModList =
+        ModList.loadModList()
+        with get, set
 
-    member x.Check =
-        // TODO
-        ()
+    member x.Check() =
+        x.ModList <- ModList.createModListFromPath x.Settings.TpfModPath

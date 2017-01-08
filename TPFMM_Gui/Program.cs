@@ -36,7 +36,7 @@ namespace TpfModManager.Gui {
 				Height = 600
 			};
 			mainWindow.Show();
-			mainWindow.MainMenu = new MainMenu();
+			mainWindow.MainMenu = new MainMenu(modManager, mainWindow);
 
 			// Set up Tpf mods Path
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
