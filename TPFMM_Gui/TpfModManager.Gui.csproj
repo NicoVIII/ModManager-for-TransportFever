@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -34,6 +33,7 @@
     <ProjectReference Include="..\TpfModManager\TpfModManager.fsproj">
       <Project>{E550C556-AEB7-490D-9D9C-39C4B568A868}</Project>
       <Name>TpfModManager</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -75,9 +75,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Xwt">
-		<HintPath>lib/Xwt.dll</HintPath>
-		<Private>False</Private>
-	</Reference>
+      <HintPath>lib/Xwt.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TpfModManager">
+      <HintPath>..\TpfModManager\bin\Debug\TpfModManager.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

@@ -6,6 +6,7 @@ using Xwt.Drawing;
 namespace TpfModManager.Gui {
 	class Program {
 		static ModManager modManager = new ModManager();
+		static ModList modList;
 
 		[STAThread]
 		static void Main(string[] args) {
@@ -36,7 +37,8 @@ namespace TpfModManager.Gui {
 				Height = 600
 			};
 			mainWindow.Show();
-			mainWindow.MainMenu = new MainMenu(modManager, mainWindow);
+			modList = new ModList(modManager);
+			mainWindow.MainMenu = new MainMenu(modManager, mainWindow, modList);
 
 			// Set up Tpf mods Path
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
@@ -50,6 +52,7 @@ namespace TpfModManager.Gui {
 					settings.TpfModPath = folderDialog.Folder;
 					settings.Save();
 					modManager.Settings = settings;
+					modManager.Check();
 				}
 			}
 
@@ -59,7 +62,7 @@ namespace TpfModManager.Gui {
 				// Init basic layout
 				Box container = new VBox();
 				container.Margin = new WidgetSpacing(5, 5, 5, 5);
-				container.PackStart(new ModList(), true);
+				container.PackStart(modList, true);
 				mainWindow.Content = container;
 
 				// Start Application

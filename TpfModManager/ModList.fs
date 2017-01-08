@@ -2,13 +2,15 @@
 
 open FSharp.Data
 open IOHelper
+open MoonSharp.Interpreter
+open MoonSharp.Interpreter.Loaders
 open System.IO
 open System.Text.RegularExpressions
 
 module ModList =
     type Version = {major: int; minor: int}
-    type Mod = {folder: string; image: string option; version: Version}
-    type ModListJson = JsonProvider<""" { "mods": [{ "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2 }] } """>
+    type Mod = {name: string; folder: string; image: string option; version: Version}
+    type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2 }] } """>
 
     module Convert =
         let fromJson (json :ModListJson.Root) =
@@ -24,7 +26,7 @@ module ModList =
                 {``mod`` with version = {major = major; minor = minor}}
 
             let map (modJson :ModListJson.Mod) =
-                {folder = modJson.Folder; image = None; version = {major = 0; minor = 0}}
+                {name = modJson.Name; folder = modJson.Folder; image = None; version = {major = 0; minor = 0}}
                 |> convertImage modJson.Image
                 |> convertVersion modJson.Major modJson.Minor
 
@@ -39,7 +41,7 @@ module ModList =
                 | Some img -> img
 
             let convertMod ``mod`` =
-                new ModListJson.Mod(``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor)
+                new ModListJson.Mod(``mod``.name, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor)
             
             let mods =
                 modList
@@ -50,11 +52,43 @@ module ModList =
     let modListPath = "mods.json"
     let folderRegex = ".*_([0-9][0-9]*)$"
 
-    let getFolderFromPath (path :string)=
-        path.Split [|'/';'\\'|]
-        |> Array.toList
-        |> List.rev
-        |> List.head
+    let getNameWithoutStringsLua modLua =
+        let script = new Script()
+        // TODO add support for require
+        (*let tpfPath =
+            modLua
+            |> Path.GetDirectoryName
+            |> Path.GetDirectoryName
+            |> Path.GetDirectoryName
+        let scriptPath = Path.Combine(tpfPath, "res", "scripts").Replace(Path.DirectorySeparatorChar, '/')
+        printfn "%s" scriptPath
+        (script.Options.ScriptLoader :?> ScriptLoaderBase).ModulePaths <- [|"../"|]*)
+
+        script.DoString(@"function _ (s) return s; end") |> ignore
+        let file = File.ReadAllText modLua
+        Regex.Replace(file, "require .*", "")
+        |> script.DoString |> ignore//*)
+        //script.DoFile modLua |> ignore
+        let info =
+            script.Globals.["data"]
+            |> script.Call
+        DynValue.FromObject(script, info.Table.["info"]).Table.["name"]
+        |> string
+
+    let getNameFromFolder path =
+        let stringsLua = Path.Combine(path, "strings.lua")
+        let modLua = Path.Combine(path, "mod.lua")
+        if File.Exists stringsLua then
+            (*let script = new Script()
+            script.DoFile(stringsLua) |> ignore
+            let value = script.Globals.["data"] |> script.Call 
+            let translations = DynValue.FromObject(script, value.Table.["en"]).Table*)
+            ""
+        else
+            getNameWithoutStringsLua modLua
+
+    let getFolderFromPath (path :string) =
+        Path.GetFileName path
 
     let getImageFromFolder path =
             let image =
@@ -76,10 +110,11 @@ module ModList =
         {major = getMajor path; minor = getMinor path}
 
     let createModFromFolder path =
+        let name = getNameFromFolder path
         let folder = getFolderFromPath path
         let image = getImageFromFolder path
         let version = getVersionFromFolder path
-        {folder = folder; image = image; version = version}
+        {name = name; folder = folder; image = image; version = version}
 
     let saveModList modList =
         (Convert.toJson modList).ToString()
@@ -94,8 +129,8 @@ module ModList =
         | false ->
             createModList modListPath
         | true ->
-            (ModListJson.Load modListPath).Mods
-            |> Array.toList
+            (ModListJson.Load modListPath)
+            |> Convert.fromJson
 
     let createModListFromPath path =
         Directory.GetDirectories(path)

@@ -12,31 +12,53 @@ type Settings(``internal``: SettingsModule.T) =
             ``internal`` <- {``internal`` with tpfModPath = value}
     new () = Settings({tpfModPath = ""})
 
-module private SettingsAPI =
+module private SettingsApi =
     let convert settings =
         match settings with
         | None -> null
         | Some settings -> new Settings(settings)
 
 type Version(``internal``: ModList.Version) =
-    let mutable ``internal`` = ``internal``
-
-    member x.Major = ``internal``.major
-    member x.Minor = ``internal``.minor
+    member val Major =
+        ``internal``.major
+        with get, set
+    member val Minor =
+        ``internal``.minor
+        with get, set
 
 type Mod(``internal``: ModList.Mod) =
-    let mutable ``internal`` = ``internal``
+    member val Image =
+        match ``internal``.image with
+        | None -> ""
+        | Some i -> i
+        with get, set
+    member val Folder =
+        ``internal``.folder
+        with get, set
+    member val Name =
+        ``internal``.name
+        with get, set
+    member val Version =
+        new Version(``internal``.version)
+        with get, set
 
-    member x.Version = ``internal``.version
+module private ModApi =
+    let convert ``mod`` =
+        new Mod(``mod``)
 
 type ModManager() =
     member val Settings =
         SettingsModule.loadSettings()
-        |> SettingsAPI.convert
+        |> SettingsApi.convert
         with get, set
     member val ModList =
         ModList.loadModList()
+        |> List.map ModApi.convert
+        |> List.toArray
         with get, set
 
     member x.Check() =
-        x.ModList <- ModList.createModListFromPath x.Settings.TpfModPath
+        x.ModList <-
+            ModList.createModListFromPath x.Settings.TpfModPath
+            |> List.map ModApi.convert
+            |> List.toArray
