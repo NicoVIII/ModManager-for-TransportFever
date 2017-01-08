@@ -18,12 +18,11 @@ namespace TpfModManager.Gui {
 					break;
 				case PlatformID.MacOSX:
 				case PlatformID.Unix:
-					//try {
+					try {
 						Application.Initialize(ToolkitType.Cocoa);
-					/*} catch {
+					} catch {
 						Application.Initialize(ToolkitType.Gtk);
-						Console.WriteLine()
-					}*/
+					}
 					break;
 				default:
 					Application.Initialize(ToolkitType.Gtk);

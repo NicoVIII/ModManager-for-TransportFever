@@ -55,11 +55,11 @@ module ModList =
     let loadModList () =
         let createModList path =
             saveModList []
-            None
+            []
 
         match File.Exists modListPath with
         | false ->
             createModList modListPath
         | true ->
-            ModListJson.Load modListPath
-            |> Some
+            (ModListJson.Load modListPath).Mods
+            |> Array.toList
