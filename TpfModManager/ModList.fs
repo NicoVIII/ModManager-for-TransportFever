@@ -2,8 +2,6 @@
 
 open FSharp.Data
 open IOHelper
-open MoonSharp.Interpreter
-open MoonSharp.Interpreter.Loaders
 open System.IO
 open System.Text.RegularExpressions
 
@@ -52,65 +50,30 @@ module ModList =
     let modListPath = "mods.json"
     let folderRegex = ".*_([0-9][0-9]*)$"
 
-    let getNameWithoutStringsLua modLua =
-        let script = new Script()
-        // TODO add support for require
-        (*let tpfPath =
-            modLua
-            |> Path.GetDirectoryName
-            |> Path.GetDirectoryName
-            |> Path.GetDirectoryName
-        let scriptPath = Path.Combine(tpfPath, "res", "scripts").Replace(Path.DirectorySeparatorChar, '/')
-        printfn "%s" scriptPath
-        (script.Options.ScriptLoader :?> ScriptLoaderBase).ModulePaths <- [|"../"|]*)
-
-        script.DoString(@"function _ (s) return s; end") |> ignore
-        let file = File.ReadAllText modLua
-        Regex.Replace(file, "require .*", "")
-        |> script.DoString |> ignore//*)
-        //script.DoFile modLua |> ignore
-        let info =
-            script.Globals.["data"]
-            |> script.Call
-        DynValue.FromObject(script, info.Table.["info"]).Table.["name"]
-        |> string
-
-    let getNameFromFolder path =
-        let stringsLua = Path.Combine(path, "strings.lua")
-        let modLua = Path.Combine(path, "mod.lua")
-        if File.Exists stringsLua then
-            (*let script = new Script()
-            script.DoFile(stringsLua) |> ignore
-            let value = script.Globals.["data"] |> script.Call 
-            let translations = DynValue.FromObject(script, value.Table.["en"]).Table*)
-            ""
-        else
-            getNameWithoutStringsLua modLua
-
-    let getFolderFromPath (path :string) =
-        Path.GetFileName path
-
-    let getImageFromFolder path =
-            let image =
-                Directory.GetFiles(path, "image_00.tga")
-                |> Array.toList
-            match image with
-            | [image] -> Some "image_00.tga"
-            | [] -> None
-            | _::_ -> None
-
-    let getVersionFromFolder path =
-        let getMajor path =
-            let m = Regex.Match(path, folderRegex)
-            int (m.Groups.Item(1).Value)
-        let getMinor path =
-            // TODO
-            1
-
-        {major = getMajor path; minor = getMinor path}
-
     let createModFromFolder path =
-        let name = getNameFromFolder path
+        let getFolderFromPath (path :string) =
+            Path.GetFileName path
+
+        let getImageFromFolder path =
+                let image =
+                    Directory.GetFiles(path, "image_00.tga")
+                    |> Array.toList
+                match image with
+                | [image] -> Some "image_00.tga"
+                | [] -> None
+                | _::_ -> None
+
+        let getVersionFromFolder path =
+            let getMajor path =
+                let m = Regex.Match(path, folderRegex)
+                int (m.Groups.Item(1).Value)
+            let getMinor path =
+                // TODO
+                1
+
+            {major = getMajor path; minor = getMinor path}
+
+        let name = Lua.getNameFromFolder path
         let folder = getFolderFromPath path
         let image = getImageFromFolder path
         let version = getVersionFromFolder path
