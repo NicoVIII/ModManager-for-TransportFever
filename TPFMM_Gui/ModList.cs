@@ -4,9 +4,12 @@ using Xwt;
 using Xwt.Drawing;
 
 namespace TpfModManager.Gui {
-	public class ModList : ListView {
+	public class ModList : VBox {
 		ModManager modManager;
+
+		ListView listView;
 		ListStore store;
+
 		DataField<Image> icon = new DataField<Image>();
 		DataField<string> name = new DataField<string>();
 		DataField<string> version = new DataField<string>();
@@ -14,14 +17,19 @@ namespace TpfModManager.Gui {
 
 		public ModList(ModManager modManager) {
 			this.modManager = modManager;
+
+			listView = new ListView();
 			store = new ListStore(/*icon, */name, version, remoteVersion);
 
-			SelectionMode = SelectionMode.Multiple;
-			DataSource = store;
+			listView.SelectionMode = SelectionMode.Multiple;
+			listView.DataSource = store;
 			//Columns.Add("", icon);
-			Columns.Add("Name", name);
-			Columns.Add("Version", version);
-			Columns.Add("RemoteVersion", remoteVersion);
+			listView.Columns.Add("Name", name);
+			listView.Columns.Add("Version", version);
+			listView.Columns.Add("RemoteVersion", remoteVersion);
+
+			PackStart(listView, true);
+			PackEnd(new Label("* = uses a translation key, which is not listed in the existing strings.lua"));
 			Update();
 		}
 

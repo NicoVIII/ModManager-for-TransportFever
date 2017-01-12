@@ -14,9 +14,9 @@ namespace TpfModManager.Gui {
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {
-				case PlatformID.Win32NT:
+				/*case PlatformID.Win32NT:
 					Application.Initialize(ToolkitType.Wpf);
-					break;
+					break;//*/
 				case PlatformID.MacOSX:
 				case PlatformID.Unix:
 					try {
