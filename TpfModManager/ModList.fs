@@ -7,8 +7,8 @@ open System.Text.RegularExpressions
 
 module ModList =
     type Version = {major: int; minor: int}
-    type Mod = {name: string; folder: string; image: string option; version: Version}
-    type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2 }] } """>
+    type Mod = {name: string; authors: string list; folder: string; image: string option; version: Version}
+    type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "authors": ["author1"], "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2 }] } """>
 
     module private Convert =
         let fromJson (json :ModListJson.Root) =
@@ -24,7 +24,7 @@ module ModList =
                 {``mod`` with version = {major = major; minor = minor}}
 
             let map (modJson :ModListJson.Mod) =
-                {name = modJson.Name; folder = modJson.Folder; image = None; version = {major = 0; minor = 0}}
+                {name = modJson.Name; authors = modJson.Authors |> Array.toList; folder = modJson.Folder; image = None; version = {major = 0; minor = 0}}
                 |> convertImage modJson.Image
                 |> convertVersion modJson.Major modJson.Minor
 
@@ -39,7 +39,7 @@ module ModList =
                 | Some img -> img
 
             let convertMod ``mod`` =
-                new ModListJson.Mod(``mod``.name, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor)
+                new ModListJson.Mod(``mod``.name, ``mod``.authors |> List.toArray, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor)
             
             let mods =
                 modList
@@ -80,26 +80,28 @@ module ModList =
                     | [] -> None
                     | _::_ -> None
 
-            let getVersionFromFolder path =
+            let getVersion path (luaInfo :Lua.LuaInfo) =
                 let getMajor path =
                     let m = Regex.Match(path, folderRegex)
                     int (m.Groups.Item(1).Value)
-                let getMinor path =
-                    // TODO
-                    1
 
-                {major = getMajor path; minor = getMinor path}
+                {major = getMajor path; minor = luaInfo.minorVersion}
             
             // TODO use language specific names/descriptions
             let luaInfo = Lua.getInfoFromLuaFiles "en" path
-            let folder = getFolderFromPath path
-            let image = getImageFromFolder path
-            let version = getVersionFromFolder path
-            {name = luaInfo.name; folder = folder; image = image; version = version}
+            match luaInfo with
+            | None -> None
+            | Some luaInfo ->
+                let folder = getFolderFromPath path
+                let image = getImageFromFolder path
+                let version = getVersion path luaInfo
+                Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version}
 
         Directory.GetDirectories(path)
         |> Array.toList
         |> List.filter (fun dir -> Regex.IsMatch(dir, folderRegex))
         |> List.map createModFromFolder
+        |> List.filter Option.isSome
+        |> List.map OptionHelper.unwrap
         |> saveModList
         loadModList()

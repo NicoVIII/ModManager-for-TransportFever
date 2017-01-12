@@ -2,88 +2,104 @@
 
 open MoonSharp.Interpreter
 open MoonSharp.Interpreter.Loaders
+open System
 open System.IO
 open System.Text.RegularExpressions
 open Tuple2Helper
 
 module Lua =
-    type LuaInfo = {name: string}
+    type LuaInfo = {name: string; authors: string list; minorVersion: int}
 
     let getInfoFromLuaFiles langKey path =
-        let getNameFromFolder path =
-            let callModLua modLua (script :Script) =
-                (*let tpfPath =
-                    modLua
-                    |> Path.GetDirectoryName
-                    |> Path.GetDirectoryName
-                    |> Path.GetDirectoryName
-                let scriptPath = Path.Combine(tpfPath, "res", "scripts").Replace(Path.DirectorySeparatorChar, '/')
-                printfn "%s" scriptPath
-                (script.Options.ScriptLoader :?> ScriptLoaderBase).ModulePaths <- [|"../"|]*)
+        let getScriptWithoutStringsLua =
+            let script = new Script()
+            script.DoString(@"function _ (s) return s; end") |> ignore
+            script
 
-                //script.DoFile modLua |> ignore
-                // HACK removes all requires for now
-                try
-                    let file = File.ReadAllText modLua
-                    Regex.Replace(file, "require .*", "")
-                    |> script.DoString |> ignore
+        let getScriptWithStringsLua (langKey :string) stringsLua modLua =
+            let script = new Script()
+            script.DoFile(stringsLua) |> ignore
+            let value = script.Globals.["data"] |> script.Call 
+            let translations = value.Table.Get(langKey).Table
+            if not (translations = null) then
+                // Build custom _-function
+                let luaFunction =
+                    let buildIfClause (beginning, first) (keyValuePair :TablePair) =
+                        let escape (s :string) =
+                            s.Replace("\n", "\\n").Replace("\"", "\\\"")
 
-                    let info =
-                        script.Globals.["data"]
-                        |> script.Call
-                    DynValue.FromObject(script, info.Table.["info"]).Table.["name"]
-                    |> string
-                with
-                    | :? SyntaxErrorException -> "not readable mod.info :("
+                        let key (pair :TablePair) =
+                            pair.Key.String
+                            |> escape
 
-            let getNameWithStringsLua (langKey :string) stringsLua modLua =
-                let script = new Script()
-                script.DoFile(stringsLua) |> ignore
-                let value = script.Globals.["data"] |> script.Call 
-                let translations = DynValue.FromObject(script, value.Table.[langKey]).Table
-                if not (translations = null) then
-                    // Build custom _-function
-                    let luaFunction =
-                        let buildIfClause (beginning, first) (keyValuePair :TablePair) =
-                            let escape (s :string) =
-                                s.Replace("\n", "\\n").Replace("\"", "\\\"")
+                        let value (pair :TablePair) =
+                            pair.Value.String
+                            |> escape
 
-                            let key (pair :TablePair) =
-                                pair.Key.String
-                                |> escape
+                        let ifClause = "if s == \""+(key keyValuePair)+"\" then return \""+(value keyValuePair)+"\"\n"
+                        if first then
+                            (beginning + ifClause, false)
+                        else
+                            (beginning + "else"+ifClause, false)
 
-                            let value (pair :TablePair) =
-                                pair.Value.String
-                                |> escape
+                    translations.Pairs
+                    |> Seq.toList
+                    |> List.fold buildIfClause ("function _(s)\n", true)
+                    |> first
+                    |> (+) <| "else return \"*\"..s end\nend"
+                script.DoString(luaFunction) |> ignore
+                script
+            else
+                getScriptWithoutStringsLua
 
-                            let ifClause = "if s == \""+(key keyValuePair)+"\" then return \""+(value keyValuePair)+"\"\n"
-                            if first then
-                                (beginning + ifClause, false)
-                            else
-                                (beginning + "else"+ifClause, false)
+        let callModLua modLua (script :Script) =
+            (* let tpfPath =
+                modLua
+                |> Path.GetDirectoryName
+                |> Path.GetDirectoryName
+                |> Path.GetDirectoryName
+            let scriptPath = Path.Combine(tpfPath, "res", "scripts").Replace(Path.DirectorySeparatorChar, '/')
+            printfn "%s" scriptPath
+            (script.Options.ScriptLoader :?> ScriptLoaderBase).ModulePaths <- [|"../"|]*)
 
-                        translations.Pairs
-                        |> Seq.toList
-                        |> List.fold buildIfClause ("function _(s)\n", true)
-                        |> first
-                        |> (+) <| "else return \"*\"..s end\nend"
-                    script.DoString(luaFunction) |> ignore
-                    callModLua modLua script
-                else
-                    printfn "%s" (Path.GetDirectoryName modLua)
-                    "wtf happened?"
+            //script.DoFile modLua |> ignore
+            // HACK removes all requires for now
+            try
+                let file = File.ReadAllText modLua
+                Regex.Replace(file, "require .*", "")
+                |> script.DoString |> ignore
 
-            let getNameWithoutStringsLua modLua =
-                let script = new Script()
-                script.DoString(@"function _ (s) return s; end") |> ignore
-                callModLua modLua script
+                let info =
+                    script.Globals.["data"]
+                    |> script.Call
+                info.Table.Get("info").Table
+                |> Some
+            with
+                | :? SyntaxErrorException -> None
 
+        let getInfo langKey path =
             let stringsLua = Path.Combine(path, "strings.lua")
             let modLua = Path.Combine(path, "mod.lua")
             if File.Exists stringsLua then
-                getNameWithStringsLua langKey stringsLua modLua
+                getScriptWithStringsLua langKey stringsLua modLua
+                |> callModLua modLua
             else
-                getNameWithoutStringsLua modLua
+                getScriptWithoutStringsLua
+                |> callModLua modLua
 
-        {name = getNameFromFolder path}
+        let info = getInfo langKey path
+        match info with
+        | None -> None
+        | Some info ->
+            let name = info.Get("name").String
+            let authors =
+                try
+                    info.Get("authors").Table.Values
+                    |> Seq.toList
+                    |> List.fold (fun authors author -> author.Table.Get("name").String::authors) []
+                    |> List.rev
+                with
+                | :? NullReferenceException -> []
+            let minor = info.Get("minorVersion").Number |> int
 
+            Some {name = name; authors = authors; minorVersion = minor}

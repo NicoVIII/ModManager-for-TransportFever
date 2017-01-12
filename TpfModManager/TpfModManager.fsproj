@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="OptionHelper.fs" />
     <Compile Include="TupleHelper.fs" />
     <Compile Include="IOHelper.fs" />
     <Compile Include="Settings.fs" />

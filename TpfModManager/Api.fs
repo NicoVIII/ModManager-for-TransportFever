@@ -38,6 +38,10 @@ type Mod(``internal``: ModList.Mod) =
     member val Name =
         ``internal``.name
         with get, set
+    member val Authors =
+        ``internal``.authors
+        |> List.toArray
+        with get, set
     member val Version =
         new Version(``internal``.version)
         with get, set

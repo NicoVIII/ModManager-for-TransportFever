@@ -12,6 +12,7 @@ namespace TpfModManager.Gui {
 
 		DataField<Image> icon = new DataField<Image>();
 		DataField<string> name = new DataField<string>();
+		DataField<string> authors = new DataField<string>();
 		DataField<string> version = new DataField<string>();
 		DataField<string> remoteVersion = new DataField<string>();
 
@@ -19,12 +20,13 @@ namespace TpfModManager.Gui {
 			this.modManager = modManager;
 
 			listView = new ListView();
-			store = new ListStore(/*icon, */name, version, remoteVersion);
+			store = new ListStore(/*icon, */name, authors, version, remoteVersion);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
 			//Columns.Add("", icon);
 			listView.Columns.Add("Name", name);
+			listView.Columns.Add("Author(s)", authors);
 			listView.Columns.Add("Version", version);
 			listView.Columns.Add("RemoteVersion", remoteVersion);
 
@@ -42,6 +44,7 @@ namespace TpfModManager.Gui {
 					//store.SetValue(r, icon, Image.FromFile(Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image)));
 				}
 				store.SetValue(r, name, m.Name);
+				store.SetValue(r, authors, string.Join(", ", m.Authors));
 				store.SetValue(r, version, m.Version.Major + "." + m.Version.Minor);
 				store.SetValue(r, remoteVersion, "-");
 			}
