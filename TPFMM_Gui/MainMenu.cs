@@ -13,6 +13,9 @@ namespace TpfModManager.Gui {
 			MenuItem checkItem = new MenuItem("Search for installed mods");
 			checkItem.Clicked += (sender, e) => { manager.Check(); modList.Update(); MessageDialog.ShowMessage(mainWindow, "Search complete."); };
 			fileMenu.Items.Add(checkItem);
+			// TODO for test purposes add "is mod installed" <----- NEXT TIME
+
+			// TODO add Exit
 
 			fileItem.SubMenu = fileMenu;
 

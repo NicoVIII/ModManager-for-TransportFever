@@ -49,6 +49,17 @@ type Mod(``internal``: ModList.Mod) =
 module private ModApi =
     let convert ``mod`` =
         new Mod(``mod``)
+    let deconvert (``mod`` :Mod) =
+        {
+            ModList.Mod.name = ``mod``.Name;
+            ModList.Mod.authors = ``mod``.Authors |> Array.toList;
+            ModList.Mod.folder = ``mod``.Folder;
+            ModList.Mod.image =
+                match ``mod``.Image with
+                | "" -> None
+                | image -> Some image
+            ModList.Mod.version = {major = ``mod``.Version.Major; minor = ``mod``.Version.Minor}
+        }
 
 type ModManager() =
     member val Settings =
@@ -66,3 +77,9 @@ type ModManager() =
             ModList.createModListFromPath x.Settings.TpfModPath
             |> List.map ModApi.convert
             |> List.toArray
+    member x.IsModInstalled(modArchivePath) =
+        let modList =
+            x.ModList
+            |> Array.toList
+            |> List.map ModApi.deconvert
+        Installation.checkIfModIsAlreadyInstalled modList modArchivePath
