@@ -31,7 +31,6 @@ namespace TpfModManager.Gui {
 			listView.Columns.Add("RemoteVersion", remoteVersion);
 
 			PackStart(listView, true);
-			PackEnd(new Label("* = uses a translation key, which is not listed in the existing strings.lua"));
 			Update();
 		}
 

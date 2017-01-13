@@ -46,7 +46,7 @@ module Lua =
                     |> Seq.toList
                     |> List.fold buildIfClause ("function _(s)\n", true)
                     |> first
-                    |> (+) <| "else return \"*\"..s end\nend"
+                    |> (+) <| "else return s end\nend"
                 script.DoString(luaFunction) |> ignore
                 script
             else

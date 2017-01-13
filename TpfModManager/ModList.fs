@@ -100,6 +100,7 @@ module ModList =
         Directory.GetDirectories(path)
         |> Array.toList
         |> List.filter (fun dir -> Regex.IsMatch(dir, folderRegex))
+        |> List.filter (fun dir -> not (Regex.IsMatch(dir, Regex.Escape((System.Convert.ToString Path.DirectorySeparatorChar)+"urbangames_"))))
         |> List.map createModFromFolder
         |> List.filter Option.isSome
         |> List.map OptionHelper.unwrap

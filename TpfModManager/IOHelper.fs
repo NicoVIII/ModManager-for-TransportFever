@@ -3,6 +3,10 @@
 open System.IO
 
 module private IOHelper =
+    let pipePrintfn regex arg =
+        printfn regex arg
+        arg
+
     let saveString (file :string) str =
         let directory =
             file.Split [| '/' |]
