@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using TpfModManager;
 using Xwt;
 
@@ -15,6 +16,13 @@ namespace TpfModManager.Gui {
 			fileMenu.Items.Add(checkItem);
 			// TODO for test purposes add "is mod installed" <----- NEXT TIME
 
+			MenuItem testItem = new MenuItem("Is mod already installed?");
+			testItem.Clicked += (sender, e) => {
+				var dialog = new OpenFileDialog("Choose mod archive");
+				dialog.Run(mainWindow);
+				MessageDialog.ShowMessage(manager.IsModInstalled(dialog.FileName).ToString());
+			};
+			fileMenu.Items.Add(testItem);
 			// TODO add Exit
 
 			fileItem.SubMenu = fileMenu;

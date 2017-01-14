@@ -82,4 +82,6 @@ type ModManager() =
             x.ModList
             |> Array.toList
             |> List.map ModApi.deconvert
-        Installation.checkIfModIsAlreadyInstalled modList modArchivePath
+        match Installation.checkIfModIsAlreadyInstalled modList modArchivePath with
+        | Ok result -> result
+        | Error error -> failwith "error"

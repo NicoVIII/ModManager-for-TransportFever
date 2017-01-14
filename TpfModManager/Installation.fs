@@ -3,6 +3,7 @@
 open ModList
 open SharpCompress.Archives
 open SharpCompress.Readers
+open System
 open System.IO
 
 module Installation =
@@ -12,9 +13,16 @@ module Installation =
 
     let getModFolderFromArchive (modArchivePath :string) =
         let getTopLevelFolders list (entry :IArchiveEntry) =
+            let determineDirectorySeperator (path :string) =
+                if path.Contains (Convert.ToString '\\') then
+                    '\\'
+                else
+                    '/'
+
             let name =
-                entry.Key.TrimEnd '/'
-                |> Path.GetPathRoot
+                let n = entry.Key
+                let splitter = determineDirectorySeperator n
+                (n.Split splitter).[0]
             if List.forall (fun el -> not (el = name)) list then
                 name::list
             else
