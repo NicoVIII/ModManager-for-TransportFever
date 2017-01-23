@@ -50,6 +50,9 @@
     <Reference Include="SharpCompress">
       <HintPath>..\packages\SharpCompress.0.14.1\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
+    <Reference Include="DevILSharp">
+      <HintPath>..\packages\DevILSharp.0.0.13\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />

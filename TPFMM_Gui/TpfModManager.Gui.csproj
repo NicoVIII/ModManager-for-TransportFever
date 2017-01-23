@@ -88,6 +88,14 @@
     <None Include="lib\Xwt.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
+    <None Include="lib\DevIL.dll" />
+    <None Include="lib\DevILSharp.dll.config" />
+    <None Include="lib\ILU.dll" />
+    <None Include="lib\ILUT.dll" />
+    <None Include="lib\libIL.so" />
+    <None Include="lib\libILU.so" />
+    <None Include="lib\libILUT.so" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -97,6 +105,9 @@
     </Reference>
     <Reference Include="TpfModManager">
       <HintPath>..\TpfModManager\bin\Debug\TpfModManager.dll</HintPath>
+    </Reference>
+    <Reference Include="DevILSharp">
+      <HintPath>..\packages\DevILSharp.0.0.13\lib\net45\DevILSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

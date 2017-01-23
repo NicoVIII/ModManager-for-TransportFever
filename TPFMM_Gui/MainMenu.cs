@@ -12,10 +12,15 @@ namespace TpfModManager.Gui {
 			Menu fileMenu = new Menu();
 
 			MenuItem checkItem = new MenuItem("Search for installed mods");
-			checkItem.Clicked += (sender, e) => { manager.Check(); modList.Update(); MessageDialog.ShowMessage(mainWindow, "Search complete."); };
+			checkItem.Clicked += (sender, e) => {
+				manager.Check();
+				modList.GenerateModImagePng();
+				modList.Update();
+				MessageDialog.ShowMessage(mainWindow, "Search complete.");
+			};
 			fileMenu.Items.Add(checkItem);
-			// TODO for test purposes add "is mod installed" <----- NEXT TIME
 
+			// TODO for test purposes add "is mod installed"
 			MenuItem testItem = new MenuItem("Is mod already installed?");
 			testItem.Clicked += (sender, e) => {
 				var dialog = new OpenFileDialog("Choose mod archive");

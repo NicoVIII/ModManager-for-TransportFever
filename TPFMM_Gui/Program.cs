@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using TpfModManager;
 using Xwt;
 using Xwt.Drawing;
@@ -7,6 +8,8 @@ namespace TpfModManager.Gui {
 	class Program {
 		static ModManager modManager = new ModManager();
 		static ModList modList;
+
+
 
 		[STAThread]
 		static void Main(string[] args) {
@@ -59,6 +62,9 @@ namespace TpfModManager.Gui {
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
 				MessageDialog.ShowError(mainWindow, "Please set the path to Transport Fever's 'mods' folder!");
 			} else {
+				modList.GenerateModImagePng();
+				modList.Update();
+
 				// Init basic layout
 				Box container = new VBox();
 				container.Margin = new WidgetSpacing(5, 5, 5, 5);

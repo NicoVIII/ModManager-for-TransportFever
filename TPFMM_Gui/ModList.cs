@@ -20,17 +20,32 @@ namespace TpfModManager.Gui {
 			this.modManager = modManager;
 
 			listView = new ListView();
-			store = new ListStore(/*icon, */name, authors, version, remoteVersion);
+			store = new ListStore(icon, name, authors, version, remoteVersion);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
-			//Columns.Add("", icon);
+			listView.Columns.Add("", icon);
 			listView.Columns.Add("Name", name);
 			listView.Columns.Add("Author(s)", authors);
 			listView.Columns.Add("Version", version);
 			listView.Columns.Add("RemoteVersion", remoteVersion);
 
 			PackStart(listView, true);
+		}
+
+		public void GenerateModImagePng() {
+			// Generate png if necessary
+			DevILSharp.IL.Init();
+			// TODO remove png on update
+			foreach (Mod m in modManager.ModList) {
+				var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
+				var pngPath = Path.ChangeExtension(imagePath, "png");
+
+				if (!File.Exists(pngPath)) {
+					var image = DevILSharp.Image.Load(imagePath);
+					image.Save(pngPath, DevILSharp.ImageType.Png);
+				}
+			}
 			Update();
 		}
 
@@ -40,7 +55,9 @@ namespace TpfModManager.Gui {
 				var r = store.AddRow();
 				var m = modManager.ModList[i];
 				if (m.Image != "") {
-					//store.SetValue(r, icon, Image.FromFile(Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image)));
+					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
+					var pngPath = Path.ChangeExtension(imagePath, "png");
+					store.SetValue(r, icon, Image.FromFile(pngPath).WithBoxSize(80));
 				}
 				store.SetValue(r, name, m.Name);
 				store.SetValue(r, authors, string.Join(", ", m.Authors));
