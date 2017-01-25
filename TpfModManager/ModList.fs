@@ -66,37 +66,36 @@ module ModList =
             (ModListJson.Load modListPath)
             |> Convert.fromJson
 
+    let createModFromFolder path =
+        let getFolderFromPath (path :string) =
+            Path.GetFileName path
+
+        let getImageFromFolder path =
+                let image =
+                    Directory.GetFiles(path, "image_00.tga")
+                    |> Array.toList
+                match image with
+                | [image] -> Some "image_00.tga"
+                | _ -> None
+
+        let getVersion path (luaInfo :Lua.LuaInfo) =
+            let getMajor path =
+                let m = Regex.Match(path, folderRegex)
+                int (m.Groups.Item(1).Value)
+
+            {major = getMajor path; minor = luaInfo.minorVersion}
+        
+        // TODO use language specific names/descriptions
+        let luaInfo = Lua.getInfoFromLuaFiles "en" path
+        match luaInfo with
+        | None -> None
+        | Some luaInfo ->
+            let folder = getFolderFromPath path
+            let image = getImageFromFolder path
+            let version = getVersion path luaInfo
+            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version}
+
     let createModListFromPath path =
-        let createModFromFolder path =
-            let getFolderFromPath (path :string) =
-                Path.GetFileName path
-
-            let getImageFromFolder path =
-                    let image =
-                        Directory.GetFiles(path, "image_00.tga")
-                        |> Array.toList
-                    match image with
-                    | [image] -> Some "image_00.tga"
-                    | [] -> None
-                    | _::_ -> None
-
-            let getVersion path (luaInfo :Lua.LuaInfo) =
-                let getMajor path =
-                    let m = Regex.Match(path, folderRegex)
-                    int (m.Groups.Item(1).Value)
-
-                {major = getMajor path; minor = luaInfo.minorVersion}
-            
-            // TODO use language specific names/descriptions
-            let luaInfo = Lua.getInfoFromLuaFiles "en" path
-            match luaInfo with
-            | None -> None
-            | Some luaInfo ->
-                let folder = getFolderFromPath path
-                let image = getImageFromFolder path
-                let version = getVersion path luaInfo
-                Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version}
-
         Directory.GetDirectories(path)
         |> Array.toList
         |> List.filter (fun dir -> Regex.IsMatch(dir, folderRegex))

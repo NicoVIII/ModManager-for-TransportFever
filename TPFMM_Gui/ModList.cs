@@ -33,23 +33,26 @@ namespace TpfModManager.Gui {
 			PackStart(listView, true);
 		}
 
-		public void GenerateModImagePng() {
+		private void GenerateModImagePng() {
 			// Generate png if necessary
 			DevILSharp.IL.Init();
 			// TODO remove png on update
 			foreach (Mod m in modManager.ModList) {
-				var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
-				var pngPath = Path.ChangeExtension(imagePath, "png");
+				if (m.Image != "") {
+					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
+					var pngPath = Path.ChangeExtension(imagePath, "png");
 
-				if (!File.Exists(pngPath)) {
-					var image = DevILSharp.Image.Load(imagePath);
-					image.Save(pngPath, DevILSharp.ImageType.Png);
+					if (!File.Exists(pngPath)) {
+						var image = DevILSharp.Image.Load(imagePath);
+						image.Save(pngPath, DevILSharp.ImageType.Png);
+					}
 				}
 			}
-			Update();
 		}
 
 		public void Update() {
+			GenerateModImagePng();
+
 			store.Clear();
 			for (int i = 0; i < modManager.ModList.Length; i++) {
 				var r = store.AddRow();

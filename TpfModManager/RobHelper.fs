@@ -62,6 +62,11 @@ let plus addSuccess addFailure switch1 switch2 x =
     | Ok _ , Error f2    -> Error f2
     | Error f1, Error f2 -> Error (addFailure f1 f2)
 
+let optionToResult noneError optionValue =
+    match optionValue with
+    | None -> Error noneError
+    | Some some -> Ok some
+
 (*let combineBoth res1 res2 =
     match res1,res2 with
     | Ok o1, Ok o2       -> Ok ()

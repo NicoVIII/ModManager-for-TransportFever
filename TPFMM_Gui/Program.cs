@@ -9,11 +9,9 @@ namespace TpfModManager.Gui {
 		static ModManager modManager = new ModManager();
 		static ModList modList;
 
-
-
 		[STAThread]
 		static void Main(string[] args) {
-			string title = "TPF-ModManager v0.1-alpha.5";
+			string title = "TPF-ModManager v0.1.0-alpha.5";
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {
@@ -62,7 +60,6 @@ namespace TpfModManager.Gui {
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
 				MessageDialog.ShowError(mainWindow, "Please set the path to Transport Fever's 'mods' folder!");
 			} else {
-				modList.GenerateModImagePng();
 				modList.Update();
 
 				// Init basic layout

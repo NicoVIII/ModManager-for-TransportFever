@@ -61,6 +61,12 @@ module private ModApi =
             ModList.Mod.version = {major = ``mod``.Version.Major; minor = ``mod``.Version.Minor}
         }
 
+type InstallationResult =
+    | Success = 0
+    | AlreadyInstalled = 1
+    | ModInvalid = 2
+    | NotSupported = 3
+
 type ModManager() =
     member val Settings =
         SettingsModule.loadSettings()
@@ -77,11 +83,27 @@ type ModManager() =
             ModList.createModListFromPath x.Settings.TpfModPath
             |> List.map ModApi.convert
             |> List.toArray
-    member x.IsModInstalled(modArchivePath) =
+    member x.Install(modArchivePath) =
         let modList =
             x.ModList
             |> Array.toList
             |> List.map ModApi.deconvert
-        match Installation.checkIfModIsAlreadyInstalled modList modArchivePath with
-        | Ok result -> result
-        | Error error -> failwith "error"
+        match Installation.install modList x.Settings.TpfModPath modArchivePath with
+        | Ok result ->
+            x.ModList <-
+                result
+                |> List.map ModApi.convert
+                |> List.toArray
+            InstallationResult.Success
+        | Error error ->
+            match error with
+            | Installation.AlreadyInstalled ->
+                InstallationResult.AlreadyInstalled
+            | Installation.ModInvalid ->
+                InstallationResult.ModInvalid
+            | Installation.ModListError
+            | Installation.NoFolderIncluded ->
+                InstallationResult.NotSupported
+            | Installation.ExtractionFailed ->
+                printfn "%A" error
+                failwith "error"
