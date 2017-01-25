@@ -42,10 +42,6 @@
     <Compile Include="MainMenu.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ThirdParty\XWT\LICENSE.txt">
-      <Link>Xwt_LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="lib\MonoMac.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -64,24 +60,8 @@
     <None Include="lib\Xwt.XamMac.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\LICENSE.txt">
-      <Link>LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\ThirdParty\FSharp\LICENSE">
-      <Link>FSharp_LICENSE</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\ThirdParty\SharpCompress\LICENSE.txt">
-      <Link>SharpCompress_LICENSE.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\README.md">
       <Link>README.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\ThirdParty\FSharp.Data\LICENSE.md">
-      <Link>FSharp.Data_LICENSE.md</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.config" />
@@ -96,6 +76,29 @@
     <None Include="lib\libIL.so" />
     <None Include="lib\libILU.so" />
     <None Include="lib\libILUT.so" />
+    <None Include="license\DevILSharp_LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ThirdParty\FSharp.Data\LICENSE.md">
+      <Link>license\FSharp.Data_LICENSE.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ThirdParty\FSharp\LICENSE">
+      <Link>license\FSharp_LICENSE</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\LICENSE.txt">
+      <Link>license\LICENSE.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ThirdParty\SharpCompress\LICENSE.txt">
+      <Link>license\SharpCompress_LICENSE.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ThirdParty\XWT\LICENSE.txt">
+      <Link>license\Xwt_LICENSE.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -113,6 +116,7 @@
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="lib\" />
+    <Folder Include="license\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\resource.en-US.txt" />
