@@ -76,6 +76,10 @@
     <None Include="lib\libIL.so" />
     <None Include="lib\libILU.so" />
     <None Include="lib\libILUT.so" />
+    <None Include="..\ThirdParty\DevIL\LICENSE">
+      <Link>license\DevIL_LICENSE</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="license\DevILSharp_LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
