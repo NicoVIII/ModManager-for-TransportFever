@@ -1,13 +1,13 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "TPFMM", "TPFMM\TPFMM.fsproj", "{A1D90B85-4D29-437A-9BAF-ED014F66FF36}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TpfModManager.Gui", "TPFMM_Gui\TpfModManager.Gui.csproj", "{AE3E7034-2D27-4525-89F8-905E44E2AEBB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Third-Party", "Third-Party", "{244A5908-C9AA-4A49-BBFF-AD08577BED24}"
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "TpfModManager", "TpfModManager\TpfModManager.fsproj", "{E550C556-AEB7-490D-9D9C-39C4B568A868}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "TPFMM", "TPFMM\TPFMM.fsproj", "{E575CA52-B9D4-4484-8E5B-EC43166FA2C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TpfModManager.Gui", "TpfModManager_Gui\TpfModManager.Gui.csproj", "{AE3E7034-2D27-4525-89F8-905E44E2AEBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +15,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Debug|x86.ActiveCfg = Debug|x86
-		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Debug|x86.Build.0 = Debug|x86
-		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Release|x86.ActiveCfg = Release|x86
-		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Release|x86.Build.0 = Release|x86
-		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Debug|x86.ActiveCfg = Debug|x86
-		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Debug|x86.Build.0 = Debug|x86
-		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.ActiveCfg = Release|x86
-		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.Build.0 = Release|x86
 		{E550C556-AEB7-490D-9D9C-39C4B568A868}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E550C556-AEB7-490D-9D9C-39C4B568A868}.Debug|x86.Build.0 = Debug|Any CPU
 		{E550C556-AEB7-490D-9D9C-39C4B568A868}.Release|x86.ActiveCfg = Release|Any CPU
 		{E550C556-AEB7-490D-9D9C-39C4B568A868}.Release|x86.Build.0 = Release|Any CPU
+		{E575CA52-B9D4-4484-8E5B-EC43166FA2C9}.Debug|x86.ActiveCfg = Debug|x86
+		{E575CA52-B9D4-4484-8E5B-EC43166FA2C9}.Debug|x86.Build.0 = Debug|x86
+		{E575CA52-B9D4-4484-8E5B-EC43166FA2C9}.Release|x86.ActiveCfg = Release|x86
+		{E575CA52-B9D4-4484-8E5B-EC43166FA2C9}.Release|x86.Build.0 = Release|x86
+		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Debug|x86.ActiveCfg = Debug|x86
+		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Debug|x86.Build.0 = Debug|x86
+		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.ActiveCfg = Release|x86
+		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

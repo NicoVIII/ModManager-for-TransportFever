@@ -30,6 +30,7 @@ module private AuthorApi =
     let deconvert (author :Author) =
         {Types.Author.name = author.Name; Types.Author.tpfNetId = author.TpfNetId}
 
+[<AllowNullLiteralAttribute>]
 type Version(``internal``: ModList.Version) =
     member val Major =
         ``internal``.major
@@ -63,7 +64,7 @@ type Mod(``internal``: ModList.Mod) =
         with get, set
     member val RemoteVersion =
         match ``internal``.remoteVersion with
-        | None -> new Version({major = -1; minor = -1})
+        | None -> null
         | Some remoteVersion -> new Version(remoteVersion)
         with get, set
 
@@ -111,8 +112,17 @@ type ModManager() =
         |> List.toArray
         with get, set
 
-    //member x.LookUpRemoteVersions() =
-
+    member x.LookUpRemoteVersions() =
+        match csv with
+        | None -> ()
+        | Some csv ->
+            x.ModList <-
+                x.ModList
+                |> Array.toList
+                |> List.map ModApi.deconvert
+                |> List.map (function ``mod`` -> {``mod`` with remoteVersion = ModList.lookUpRemoteVersion csv ``mod``})
+                |> List.map ModApi.convert
+                |> List.toArray
 
     member x.Check() =
         x.ModList <-

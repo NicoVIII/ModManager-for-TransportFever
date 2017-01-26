@@ -4,8 +4,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{AE3E7034-2D27-4525-89F8-905E44E2AEBB}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TPFMM_Gui</RootNamespace>
-    <AssemblyName>TPFMM_Gui</AssemblyName>
+    <RootNamespace>TpfModManager</RootNamespace>
+    <AssemblyName>TpfModManager_Gui</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.1.0-alpha.5</ReleaseVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

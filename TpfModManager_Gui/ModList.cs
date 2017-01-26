@@ -57,20 +57,35 @@ namespace TpfModManager.Gui {
 			for (int i = 0; i < modManager.ModList.Length; i++) {
 				var r = store.AddRow();
 				var m = modManager.ModList[i];
+
+				// Image
 				if (m.Image != "") {
 					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
 					var pngPath = Path.ChangeExtension(imagePath, "png");
 					store.SetValue(r, icon, Image.FromFile(pngPath).WithBoxSize(80));
 				}
+
+				// Name
 				store.SetValue(r, name, m.Name);
+
+				// Authors
 				var authorNameArray = new string[m.Authors.Length];
 				for (int j = 0; j < m.Authors.Length; j++) {
 					authorNameArray[j] = m.Authors[j].Name;
 				}
-					
 				store.SetValue(r, authors, string.Join(", ", authorNameArray));
+
+				// Version
 				store.SetValue(r, version, m.Version.Major + "." + m.Version.Minor);
-				store.SetValue(r, remoteVersion, "-");
+
+				// Remote version
+				string remoteVersionString;
+				if (m.RemoteVersion == null)
+					remoteVersionString = "-";
+				else
+					remoteVersionString = m.RemoteVersion.Major + "." + m.RemoteVersion.Minor;
+				
+				store.SetValue(r, remoteVersion, remoteVersionString);
 			}
 		}
 	}

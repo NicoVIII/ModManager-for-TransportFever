@@ -2,6 +2,7 @@
 
 open FSharp.Data
 open IOHelper
+open RegexHelper
 open System.IO
 open System.Text.RegularExpressions
 open TpfNet
@@ -9,7 +10,7 @@ open Types
 
 module ModList =
     type Version = {major: int; minor: int}
-    type Mod = {name: string; authors: Author list; folder: string; image: string option; version: Version; tpfNetId: int; remoteVersion: Version option}
+    type Mod = {name: string; authors: Author list; folder: string; image: string option; version: Version; tpfNetId: int option; remoteVersion: Version option}
     type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "authors": [{"name": "author1", "tpfNetId": 12345}], "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2, "tpfNetId": 12345 }] } """>
 
     module private Convert =
@@ -29,8 +30,12 @@ module ModList =
                     |> List.map convertAuthor
                 let image =
                     convertImage modJson.Image
+                let tpfNetId =
+                    match modJson.TpfNetId with
+                    | -1 -> None
+                    | id -> Some id
 
-                {name = modJson.Name; authors = authors; folder = modJson.Folder; image = image; version = {major = modJson.Major; minor = modJson.Minor}; tpfNetId = modJson.TpfNetId; remoteVersion = None}
+                {name = modJson.Name; authors = authors; folder = modJson.Folder; image = image; version = {major = modJson.Major; minor = modJson.Minor}; tpfNetId = tpfNetId; remoteVersion = None}
 
             json.Mods
             |> List.ofArray
@@ -51,7 +56,11 @@ module ModList =
                     ``mod``.authors
                     |> List.map convertAuthor
                     |> List.toArray
-                new ModListJson.Mod(``mod``.name, authors, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor, ``mod``.tpfNetId)
+                let tpfNetId =
+                    match ``mod``.tpfNetId with
+                    | None -> -1
+                    | Some id -> id
+                new ModListJson.Mod(``mod``.name, authors, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor, tpfNetId)
             
             let mods =
                 modList
@@ -105,7 +114,7 @@ module ModList =
             let folder = getFolderFromPath path
             let image = getImageFromFolder path
             let version = getVersion path luaInfo
-            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = 0; remoteVersion = None}
+            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = None; remoteVersion = None}
 
     let createModListFromPath path =
         Directory.GetDirectories(path)
@@ -118,16 +127,26 @@ module ModList =
         |> saveModList
         loadModList()
 
-    (*let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
+    // TODO add error types
+    let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
         let parseVersion version =
+            match version with
+            | Regex "([0-9]*?)\.([0-9]*?)" wellFormed ->
+                Some {major = wellFormed.Item 0 |> System.Convert.ToInt32; minor = wellFormed.Item 1 |> System.Convert.ToInt32}
+            | _ ->
+                None
 
-
-        let {tpfNetId = id} = ``mod``
-        let modRow =
-            csv.Rows
-            |> Seq.toList
-            |> List.tryFind (function row -> row.ID = id)
-        match modRow with
+        let {Mod.tpfNetId = id} = ``mod``
+        match id with
         | None -> None
-        | Some modRow ->
-            modRow.VERSION*)
+        | Some id -> 
+            let modRow =
+                csv.Rows
+                |> Seq.toList
+                |> List.tryFind (function row -> row.ID = id)
+            match modRow with
+            | None -> None
+            | Some modRow ->
+                match parseVersion modRow.VERSION with
+                | None -> None
+                | Some version -> Some version
