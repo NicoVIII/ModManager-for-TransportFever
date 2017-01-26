@@ -121,7 +121,7 @@ module ModList =
             let folder = getFolderFromPath path
             let image = getImageFromFolder path
             let version = getVersion path luaInfo
-            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = None; remoteVersion = None}
+            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = luaInfo.tpfNetId; remoteVersion = None}
 
     let createModListFromPath path =
         Directory.GetDirectories(path)

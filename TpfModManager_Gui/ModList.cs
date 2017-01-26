@@ -53,6 +53,9 @@ namespace TpfModManager.Gui {
 		public void Update() {
 			GenerateModImagePng();
 
+			// Load remote versions
+			modManager.LookUpRemoteVersions();
+
 			store.Clear();
 			for (int i = 0; i < modManager.ModList.Length; i++) {
 				var r = store.AddRow();

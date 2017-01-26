@@ -57,9 +57,6 @@ namespace TpfModManager.Gui {
 				}
 			}
 
-			// Load remote versions
-			modManager.LookUpRemoteVersions();
-
 			// Load UI
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
 				MessageDialog.ShowError(mainWindow, "Please set the path to Transport Fever's 'mods' folder!");
