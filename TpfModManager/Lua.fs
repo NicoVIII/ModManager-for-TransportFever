@@ -97,7 +97,14 @@ module Lua =
                 try
                     info.Get("authors").Table.Values
                     |> Seq.toList
-                    |> List.fold (fun authors author -> {name = author.Table.Get("name").String; tpfNetId = int (author.Table.Get("tpfNetId").Number)}::authors) []
+                    |> List.fold (fun authors author ->
+                            let tpfNetId =
+                                match int (author.Table.Get("tpfNetId").Number) with
+                                | -1 -> None
+                                | id -> Some id
+                            let author = {name = author.Table.Get("name").String; tpfNetId = tpfNetId}
+                            author::authors
+                        ) []
                     |> List.rev
                 with
                 | :? NullReferenceException -> []

@@ -120,7 +120,7 @@ type ModManager() =
                 x.ModList
                 |> Array.toList
                 |> List.map ModApi.deconvert
-                |> List.map (function ``mod`` -> {``mod`` with remoteVersion = ModList.lookUpRemoteVersion csv ``mod``})
+                |> List.map (function ``mod`` -> {``mod`` with remoteVersion = TpfNet.lookUpRemoteVersion csv ``mod``})
                 |> List.map ModApi.convert
                 |> List.toArray
 

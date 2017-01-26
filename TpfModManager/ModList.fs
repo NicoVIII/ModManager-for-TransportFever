@@ -5,7 +5,6 @@ open IOHelper
 open RegexHelper
 open System.IO
 open System.Text.RegularExpressions
-open TpfNet
 open Types
 
 module ModList =
@@ -21,7 +20,11 @@ module ModList =
                 | img -> Some img
 
             let convertAuthor (jsonAuthor :ModListJson.Author) =
-                {Author.name = jsonAuthor.Name; tpfNetId = jsonAuthor.TpfNetId}
+                let tpfNetId =
+                    match jsonAuthor.TpfNetId with
+                    | -1 -> None
+                    | id -> Some id
+                {Author.name = jsonAuthor.Name; tpfNetId = tpfNetId}
 
             let convertMod (modJson :ModListJson.Mod) =
                 let authors =
@@ -49,7 +52,11 @@ module ModList =
 
             let convertAuthor author =
                 let {Author.name = name; tpfNetId = tpfNetId} = author
-                new ModListJson.Author(name, tpfNetId)
+                let tpfNetId' =
+                    match tpfNetId with
+                    | None -> -1
+                    | Some id -> id
+                new ModListJson.Author(name, tpfNetId')
 
             let convertMod ``mod`` =
                 let authors =
@@ -126,27 +133,3 @@ module ModList =
         |> List.map OptionHelper.unwrap
         |> saveModList
         loadModList()
-
-    // TODO add error types
-    let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
-        let parseVersion version =
-            match version with
-            | Regex "([0-9]*?)\.([0-9]*?)" wellFormed ->
-                Some {major = wellFormed.Item 0 |> System.Convert.ToInt32; minor = wellFormed.Item 1 |> System.Convert.ToInt32}
-            | _ ->
-                None
-
-        let {Mod.tpfNetId = id} = ``mod``
-        match id with
-        | None -> None
-        | Some id -> 
-            let modRow =
-                csv.Rows
-                |> Seq.toList
-                |> List.tryFind (function row -> row.ID = id)
-            match modRow with
-            | None -> None
-            | Some modRow ->
-                match parseVersion modRow.VERSION with
-                | None -> None
-                | Some version -> Some version
