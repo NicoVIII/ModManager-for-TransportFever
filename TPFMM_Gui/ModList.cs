@@ -63,7 +63,12 @@ namespace TpfModManager.Gui {
 					store.SetValue(r, icon, Image.FromFile(pngPath).WithBoxSize(80));
 				}
 				store.SetValue(r, name, m.Name);
-				store.SetValue(r, authors, string.Join(", ", m.Authors));
+				var authorNameArray = new string[m.Authors.Length];
+				for (int j = 0; j < m.Authors.Length; j++) {
+					authorNameArray[j] = m.Authors[j].Name;
+				}
+					
+				store.SetValue(r, authors, string.Join(", ", authorNameArray));
 				store.SetValue(r, version, m.Version.Major + "." + m.Version.Minor);
 				store.SetValue(r, remoteVersion, "-");
 			}

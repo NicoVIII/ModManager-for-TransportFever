@@ -18,6 +18,18 @@ module private SettingsApi =
         | None -> null
         | Some settings -> new Settings(settings)
 
+type Author(``internal`` :Types.Author) =
+    member val Name =
+        ``internal``.name
+        with get, set
+    member val TpfNetId =
+        ``internal``.tpfNetId
+        with get, set
+
+module private AuthorApi =
+    let deconvert (author :Author) =
+        {Types.Author.name = author.Name; Types.Author.tpfNetId = author.TpfNetId}
+
 type Version(``internal``: ModList.Version) =
     member val Major =
         ``internal``.major
@@ -40,10 +52,19 @@ type Mod(``internal``: ModList.Mod) =
         with get, set
     member val Authors =
         ``internal``.authors
+        |> List.map (fun author -> new Author(author))
         |> List.toArray
         with get, set
     member val Version =
         new Version(``internal``.version)
+        with get, set
+    member val TpfNetId =
+        ``internal``.tpfNetId
+        with get, set
+    member val RemoteVersion =
+        match ``internal``.remoteVersion with
+        | None -> new Version({major = -1; minor = -1})
+        | Some remoteVersion -> new Version(remoteVersion)
         with get, set
 
 module private ModApi =
@@ -52,13 +73,23 @@ module private ModApi =
     let deconvert (``mod`` :Mod) =
         {
             ModList.Mod.name = ``mod``.Name;
-            ModList.Mod.authors = ``mod``.Authors |> Array.toList;
+            ModList.Mod.authors =
+                ``mod``.Authors
+                |> Array.toList
+                |> List.map AuthorApi.deconvert;
             ModList.Mod.folder = ``mod``.Folder;
             ModList.Mod.image =
                 match ``mod``.Image with
                 | "" -> None
                 | image -> Some image
             ModList.Mod.version = {major = ``mod``.Version.Major; minor = ``mod``.Version.Minor}
+            ModList.Mod.tpfNetId = ``mod``.TpfNetId
+            ModList.Mod.remoteVersion =
+                match (``mod``.RemoteVersion.Major, ``mod``.RemoteVersion.Minor) with
+                | (_, -1)
+                | (-1, _) -> None
+                | (major, minor) -> 
+                    Some {major = major; minor = minor}
         }
 
 type InstallationResult =
@@ -68,6 +99,8 @@ type InstallationResult =
     | NotSupported = 3
 
 type ModManager() =
+    let csv = TransportFeverNet.getCSV()
+
     member val Settings =
         SettingsModule.loadSettings()
         |> SettingsApi.convert

@@ -5,10 +5,11 @@ open MoonSharp.Interpreter.Loaders
 open System
 open System.IO
 open System.Text.RegularExpressions
+open Types
 open Tuple2Helper
 
 module Lua =
-    type LuaInfo = {name: string; authors: string list; minorVersion: int}
+    type LuaInfo = {name: string; authors: Author list; minorVersion: int}
 
     let getInfoFromLuaFiles langKey path =
         let getScriptWithoutStringsLua =
@@ -96,7 +97,7 @@ module Lua =
                 try
                     info.Get("authors").Table.Values
                     |> Seq.toList
-                    |> List.fold (fun authors author -> author.Table.Get("name").String::authors) []
+                    |> List.fold (fun authors author -> {name = author.Table.Get("name").String; tpfNetId = int (author.Table.Get("tpfNetId").Number)}::authors) []
                     |> List.rev
                 with
                 | :? NullReferenceException -> []

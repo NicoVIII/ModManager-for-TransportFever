@@ -4,33 +4,36 @@ open FSharp.Data
 open IOHelper
 open System.IO
 open System.Text.RegularExpressions
+open Types
 
 module ModList =
     type Version = {major: int; minor: int}
-    type Mod = {name: string; authors: string list; folder: string; image: string option; version: Version}
-    type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "authors": ["author1"], "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2 }] } """>
+    type Mod = {name: string; authors: Author list; folder: string; image: string option; version: Version; tpfNetId: int; remoteVersion: Version option}
+    type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "authors": [{"name": "author1", "tpfNetId": 12345}], "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2, "tpfNetId": 12345 }] } """>
 
     module private Convert =
         let fromJson (json :ModListJson.Root) =
-            let changeImage image ``mod`` =
-                {``mod`` with image = image}
-
-            let convertImage image ``mod`` =
+            let convertImage image =
                 match image with
-                | "" -> changeImage None ``mod``
-                | img -> changeImage (Some img) ``mod``
+                | "" -> None
+                | img -> Some img
 
-            let convertVersion major minor ``mod`` =
-                {``mod`` with version = {major = major; minor = minor}}
+            let convertAuthor (jsonAuthor :ModListJson.Author) =
+                {Author.name = jsonAuthor.Name; tpfNetId = jsonAuthor.TpfNetId}
 
-            let map (modJson :ModListJson.Mod) =
-                {name = modJson.Name; authors = modJson.Authors |> Array.toList; folder = modJson.Folder; image = None; version = {major = 0; minor = 0}}
-                |> convertImage modJson.Image
-                |> convertVersion modJson.Major modJson.Minor
+            let convertMod (modJson :ModListJson.Mod) =
+                let authors =
+                    modJson.Authors
+                    |> Array.toList
+                    |> List.map convertAuthor
+                let image =
+                    convertImage modJson.Image
+
+                {name = modJson.Name; authors = authors; folder = modJson.Folder; image = image; version = {major = modJson.Major; minor = modJson.Minor}; tpfNetId = modJson.TpfNetId; remoteVersion = None}
 
             json.Mods
             |> List.ofArray
-            |> List.map map
+            |> List.map convertMod
 
         let toJson modList =
             let convertImage image =
@@ -38,8 +41,16 @@ module ModList =
                 | None -> ""
                 | Some img -> img
 
+            let convertAuthor author =
+                let {Author.name = name; tpfNetId = tpfNetId} = author
+                new ModListJson.Author(name, tpfNetId)
+
             let convertMod ``mod`` =
-                new ModListJson.Mod(``mod``.name, ``mod``.authors |> List.toArray, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor)
+                let authors =
+                    ``mod``.authors
+                    |> List.map convertAuthor
+                    |> List.toArray
+                new ModListJson.Mod(``mod``.name, authors, ``mod``.folder, convertImage ``mod``.image, ``mod``.version.major, ``mod``.version.minor, ``mod``.tpfNetId)
             
             let mods =
                 modList
@@ -93,7 +104,7 @@ module ModList =
             let folder = getFolderFromPath path
             let image = getImageFromFolder path
             let version = getVersion path luaInfo
-            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version}
+            Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = 0; remoteVersion = None}
 
     let createModListFromPath path =
         Directory.GetDirectories(path)
