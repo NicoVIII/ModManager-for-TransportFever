@@ -1,4 +1,6 @@
-﻿using Xwt;
+﻿using System;
+using System.IO;
+using Xwt;
 
 namespace TpfModManager.Gui {
 	public class MainMenu : Menu {
@@ -20,6 +22,34 @@ namespace TpfModManager.Gui {
 			MenuItem installItem = new MenuItem("Install");
 			Menu installMenu = new Menu();
 			installItem.SubMenu = installMenu;
+
+			MenuItem installFromFolderItem = new MenuItem("From folder...");
+			installFromFolderItem.Clicked += (sender, e) => {
+				var dialog = new SelectFolderDialog("Choose folder with mod archives");
+				dialog.Run(mainWindow);
+				var folderName = dialog.Folder;
+				if (folderName != "") {
+					foreach (var file in Directory.GetFiles(folderName)) {
+						// TODO write function for this
+						switch (manager.Install(Path.Combine(folderName, file))) {
+							case InstallationResult.Success:
+								modList.Update();
+								MessageDialog.ShowMessage("Installation complete.");
+								break;
+							case InstallationResult.AlreadyInstalled:
+								MessageDialog.ShowMessage("Mod is already installed.");
+								break;
+							case InstallationResult.ModInvalid:
+								MessageDialog.ShowMessage("Something is wrong with this mod :(");
+								break;
+							case InstallationResult.NotSupported:
+								MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
+								break;
+						}
+					}
+				}
+			};
+			installMenu.Items.Add(installFromFolderItem);
 
 			MenuItem installFromFileItem = new MenuItem("From file...");
 			installFromFileItem.Clicked += (sender, e) => {

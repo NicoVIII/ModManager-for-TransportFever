@@ -14,7 +14,7 @@ module Installation =
         | AlreadyInstalled
         | ModListError
 
-    let getModFolderFromArchive (modArchivePath :string) =
+    let getModFolderFromArchive (handler :IArchive) =
         let getTopLevelFolders list (entry :IArchiveEntry) =
             let determineDirectorySeperator (path :string) =
                 if path.Contains (Convert.ToString '\\') then
@@ -31,12 +31,10 @@ module Installation =
             else
                 list
 
-        use archive = ArchiveFactory.Open modArchivePath
         let topLevelDirectories =
-            archive.Entries
+            handler.Entries
             |> Seq.toList
             |> List.fold getTopLevelFolders []
-        archive.Dispose ()
         match topLevelDirectories with
         | [directory] -> 
             Ok directory
@@ -47,7 +45,13 @@ module Installation =
             else 
                 Error ModInvalid
 
-    let install modList tpfPath modArchivePath =
+    let install modList tpfPath (modArchivePath :string) =
+        let getArchiveHandler (modArchivePath :string) =
+            try
+                Some (ArchiveFactory.Open modArchivePath)
+            with
+            | :? InvalidOperationException -> None
+
         let checkIfModIsAlreadyInstalled modList modArchivePath =
             let folder = getModFolderFromArchive modArchivePath
             match folder with
@@ -56,37 +60,42 @@ module Installation =
             | Error err ->
                 Error err
 
-        let performInstallation tpfPath (modArchivePath :string) =
+        let performInstallation tpfPath (handler :IArchive) =
             try
-                use archive = ArchiveFactory.Open modArchivePath
-                use reader = archive.ExtractAllEntries()
+                use reader = handler.ExtractAllEntries()
                 let eo = new ExtractionOptions()
                 eo.ExtractFullPath <- true
                 reader.WriteAllToDirectory (tpfPath, eo)
                 reader.Dispose()
-                archive.Dispose()
                 let getNewMod =
                     getModFolderFromArchive
                     >> map (PathHelper.combine tpfPath)
                     >> bind (ModList.createModFromFolder >> optionToResult ModListError)
-                getNewMod modArchivePath
+                getNewMod handler
             with
             | :? System.IO.IOException ->
                 Error ExtractionFailed
-
-        match checkIfModIsAlreadyInstalled modList modArchivePath with
-        | Ok result ->
-            match result with
-            | true ->
-                // TODO upgrade
-                Error AlreadyInstalled
-            | false ->
-                match performInstallation tpfPath modArchivePath with
-                | Ok ``mod`` ->
-                    let modList' = modList @ [``mod``]
-                    saveModList modList'
-                    Ok modList'
-                | Error error ->
-                    Error error
-        | Error error ->
-            Error error
+       
+        match getArchiveHandler modArchivePath with
+        // Not an archive
+        | None -> Ok modList
+        | Some handler ->
+            match checkIfModIsAlreadyInstalled modList handler with
+            | Ok result ->
+                match result with
+                | true ->
+                    // TODO upgrade
+                    Error AlreadyInstalled
+                | false ->
+                    match performInstallation tpfPath handler with
+                    | Ok ``mod`` ->
+                        handler.Dispose()
+                        let modList' = modList @ [``mod``]
+                        saveModList modList'
+                        Ok modList'
+                    | Error error ->
+                        handler.Dispose()
+                        Error error
+            | Error error ->
+                handler.Dispose()
+                Error error
