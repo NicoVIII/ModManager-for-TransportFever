@@ -1,4 +1,4 @@
 ﻿namespace TpfModManager
 
-module TPFnet =
+module TpfNetOptions =
     let csvPath = ""

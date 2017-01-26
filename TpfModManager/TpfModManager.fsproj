@@ -56,22 +56,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="IOHelper.fs" />
-    <Compile Include="OptionHelper.fs" />
-    <Compile Include="PathHelper.fs" />
-    <Compile Include="RobHelper.fs" />
-    <Compile Include="TupleHelper.fs" />
+    <Compile Include="Helper\IOHelper.fs" />
+    <Compile Include="Helper\OptionHelper.fs" />
+    <Compile Include="Helper\PathHelper.fs" />
+    <Compile Include="Helper\RegexHelper.fs" />
+    <Compile Include="Helper\RobHelper.fs" />
+    <Compile Include="Helper\TupleHelper.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Settings.fs" />
-    <Compile Include="TPFnet.fs" />
-    <Compile Include="TransportFeverNet.fs" />
+    <Compile Include="TpfNetOptions.fs" />
+    <Compile Include="TpfNet.fs" />
     <Compile Include="Lua.fs" />
     <Compile Include="ModList.fs" />
     <Compile Include="Installation.fs" />
     <Compile Include="Api.fs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="Helper\" />
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
 </Project>

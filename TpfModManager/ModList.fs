@@ -4,6 +4,7 @@ open FSharp.Data
 open IOHelper
 open System.IO
 open System.Text.RegularExpressions
+open TpfNet
 open Types
 
 module ModList =
@@ -116,3 +117,17 @@ module ModList =
         |> List.map OptionHelper.unwrap
         |> saveModList
         loadModList()
+
+    (*let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
+        let parseVersion version =
+
+
+        let {tpfNetId = id} = ``mod``
+        let modRow =
+            csv.Rows
+            |> Seq.toList
+            |> List.tryFind (function row -> row.ID = id)
+        match modRow with
+        | None -> None
+        | Some modRow ->
+            modRow.VERSION*)

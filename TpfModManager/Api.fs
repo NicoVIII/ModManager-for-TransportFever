@@ -99,7 +99,7 @@ type InstallationResult =
     | NotSupported = 3
 
 type ModManager() =
-    let csv = TransportFeverNet.getCSV()
+    let csv = TpfNet.getCSV()
 
     member val Settings =
         SettingsModule.loadSettings()
@@ -110,6 +110,9 @@ type ModManager() =
         |> List.map ModApi.convert
         |> List.toArray
         with get, set
+
+    //member x.LookUpRemoteVersions() =
+
 
     member x.Check() =
         x.ModList <-
