@@ -25,20 +25,23 @@ namespace TpfModManager.Gui {
 			installFromFileItem.Clicked += (sender, e) => {
 				var dialog = new OpenFileDialog("Choose mod archive");
 				dialog.Run(mainWindow);
-				switch (manager.Install(dialog.FileName)) {
-					case InstallationResult.Success:
-						modList.Update();
-						MessageDialog.ShowMessage("Installation complete.");
-						break;
-					case InstallationResult.AlreadyInstalled:
-						MessageDialog.ShowMessage("Mod is already installed.");
-						break;
-					case InstallationResult.ModInvalid:
-						MessageDialog.ShowMessage("Something is wrong with this mod :(");
-						break;
-					case InstallationResult.NotSupported:
-						MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
-						break;
+				var fileName = dialog.FileName;
+				if (fileName != null) {
+					switch (manager.Install(fileName)) {
+						case InstallationResult.Success:
+							modList.Update();
+							MessageDialog.ShowMessage("Installation complete.");
+							break;
+						case InstallationResult.AlreadyInstalled:
+							MessageDialog.ShowMessage("Mod is already installed.");
+							break;
+						case InstallationResult.ModInvalid:
+							MessageDialog.ShowMessage("Something is wrong with this mod :(");
+							break;
+						case InstallationResult.NotSupported:
+							MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
+							break;
+					}
 				}
 			};
 			installMenu.Items.Add(installFromFileItem);
