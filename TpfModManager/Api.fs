@@ -86,11 +86,10 @@ module private ModApi =
             ModList.Mod.version = {major = ``mod``.Version.Major; minor = ``mod``.Version.Minor}
             ModList.Mod.tpfNetId = ``mod``.TpfNetId
             ModList.Mod.remoteVersion =
-                match (``mod``.RemoteVersion.Major, ``mod``.RemoteVersion.Minor) with
-                | (_, -1)
-                | (-1, _) -> None
-                | (major, minor) -> 
-                    Some {major = major; minor = minor}
+                match ``mod``.RemoteVersion with
+                | null -> None
+                | version -> 
+                    Some {major = version.Major; minor = version.Minor}
         }
 
 type InstallationResult =
