@@ -1,4 +1,4 @@
-# TPF-ModManager
+# TransportFever-ModManager
 Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de) with support for TransportFeverNet as mod source (https://www.transportfever.net).
 
 ## Installation
