@@ -69,13 +69,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="lib\DevIL.dll" />
-    <None Include="lib\DevILSharp.dll.config" />
-    <None Include="lib\ILU.dll" />
-    <None Include="lib\ILUT.dll" />
-    <None Include="lib\libIL.so" />
-    <None Include="lib\libILU.so" />
-    <None Include="lib\libILUT.so" />
+    <None Include="lib\DevIL.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\ILU.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\ILUT.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\ThirdParty\DevIL\LICENSE">
       <Link>license\DevIL_LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -101,6 +103,18 @@
     </None>
     <None Include="..\ThirdParty\XWT\LICENSE.txt">
       <Link>license\Xwt_LICENSE.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\DevILSharp.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\libIL.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\libILU.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\libILUT.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
