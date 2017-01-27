@@ -11,7 +11,7 @@ namespace TpfModManager.Gui {
 
 		[STAThread]
 		static void Main(string[] args) {
-			string title = "TPF-ModManager v0.1.0-alpha.5";
+			string title = "TPF-ModManager v0.1.0-alpha.6";
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {
