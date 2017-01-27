@@ -84,13 +84,9 @@
       <Link>license\SharpCompress_LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="license\DevILSharp_LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helper\" />
-    <Folder Include="lib\" />
     <Folder Include="license\" />
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
