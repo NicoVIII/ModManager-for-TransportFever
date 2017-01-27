@@ -16,7 +16,7 @@ module TpfNet =
     let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
         let parseVersion version =
             match version with
-            | Regex "^([0-9]+?)\.([0-9]+?)" wellFormed ->
+            | Regex "^([0-9]+)\.([0-9]+)$" wellFormed ->
                 Some {major = wellFormed.Item 0 |> System.Convert.ToInt32; minor = wellFormed.Item 1 |> System.Convert.ToInt32}
             | _ ->
                 None

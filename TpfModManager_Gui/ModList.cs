@@ -59,6 +59,18 @@ namespace TpfModManager.Gui {
 			listView.Columns.Add(remoteVersionColumn);
 
 			PackStart(listView, true);
+
+			// Add menu handler
+			Menu contextMenu = new Menu();
+			contextMenu.Items.Add(new MenuItem("Open mod url"));
+			listView.ButtonPressed += delegate (object sender, ButtonEventArgs e) {
+				int row = listView.GetRowAtPosition(new Point(e.X, e.Y));
+				if (e.Button == PointerButton.Right && row >= 0) {
+					// Set actual row to selected
+					listView.SelectRow(row);
+					contextMenu.Popup(listView, e.X, e.Y);
+				}
+			};
 		}
 
 		private void GenerateModImagePng() {

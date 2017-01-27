@@ -15,6 +15,7 @@ namespace TpfModManager.Gui {
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {
+				// TODO Use WPF if XWT finally fixed all the issues with ListView and WPF
 				/*case PlatformID.Win32NT:
 					Application.Initialize(ToolkitType.Wpf);
 					break;//*/
