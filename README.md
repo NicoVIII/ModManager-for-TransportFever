@@ -1,12 +1,16 @@
 # TransportFever-ModManager
 Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de) with support for TransportFeverNet as mod source (https://www.transportfever.net).
 
+## Prerequisites
+* Mono (http://www.mono-project.com) or .NET v4.5
+* GtkSharp (http://www.mono-project.com/docs/gui/gtksharp/)
+
 ## Installation
 1. **Prerequisites:** You need a version of .NET or Mono installed to run this program.
 2. Download the .zip file and extract it at any place you wish. Be aware that the application will create some files at its location.
 3. Start the Application
 
-**For linux and mac users:** You have to install mono (http://www.mono-project.com) and use that to start the program. You can call it from console with "mono TpfModManager_Gui.exe".
+**For linux and mac users:** You have to use Mono to start the program. You can call it from console with "mono TpfModManager_Gui.exe".
   
 ## Development
 ### Versioning
