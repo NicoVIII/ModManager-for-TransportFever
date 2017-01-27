@@ -14,13 +14,15 @@ namespace TpfModManager.Gui {
 		DataField<string> name = new DataField<string>();
 		DataField<string> authors = new DataField<string>();
 		DataField<string> version = new DataField<string>();
+		DataField<string> updateAvailable = new DataField<string>();
 		DataField<string> remoteVersion = new DataField<string>();
 
 		public ModList(ModManager modManager) {
 			this.modManager = modManager;
 
 			listView = new ListView();
-			store = new ListStore(icon, name, authors, version, remoteVersion);
+			listView.GridLinesVisible = GridLines.Horizontal;
+			store = new ListStore(icon, name, authors, version, updateAvailable, remoteVersion);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
@@ -43,6 +45,12 @@ namespace TpfModManager.Gui {
 			versionColumn.CanResize = true;
 			versionColumn.SortDataField = version;
 			listView.Columns.Add(versionColumn);
+
+			// Update available
+			var updateColumn = new ListViewColumn("Update\navailable", new TextCellView(updateAvailable));
+			updateColumn.CanResize = true;
+			updateColumn.SortDataField = updateAvailable;
+			listView.Columns.Add(updateColumn);
 
 			// Remote version
 			var remoteVersionColumn = new ListViewColumn("RemoteVersion", new TextCellView(remoteVersion));
@@ -109,6 +117,15 @@ namespace TpfModManager.Gui {
 					remoteVersionString = m.RemoteVersion.Major + "." + m.RemoteVersion.Minor;
 				
 				store.SetValue(r, remoteVersion, remoteVersionString);
+
+				// Update available
+				string updateAvailableString;
+				if (m.RemoteVersion != null && (m.RemoteVersion.Major > m.Version.Major || m.RemoteVersion.Major == m.Version.Major && m.RemoteVersion.Minor > m.Version.Minor)) {
+					updateAvailableString = "X";
+				} else {
+					updateAvailableString = "";
+				}
+				store.SetValue(r, updateAvailable, updateAvailableString);
 			}
 		}
 	}
