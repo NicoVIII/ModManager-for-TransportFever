@@ -1,5 +1,5 @@
 # TPF-ModManager
-Attempt to create a tool to support users managing their mods for TransportFever.
+Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de/) with support for TransportFeverNet as mod source (https://www.transportfever.net/).
 
 ## Installation
 1. **Prerequisites:** You need a version of .NET or Mono installed to run this program.
