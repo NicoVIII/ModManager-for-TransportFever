@@ -48,7 +48,7 @@ namespace TpfModManager.Gui {
 				folderDialog.Run(mainWindow);
 				var folder = folderDialog.Folder;
 				// TODO look into this
-				if (folder.EndsWith("mods")) {
+				if (folder != null && folder.EndsWith("mods")) {
 					// Update TpfModPath
 					Settings settings = new Settings();
 					settings.TpfModPath = folderDialog.Folder;
