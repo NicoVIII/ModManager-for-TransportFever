@@ -96,7 +96,8 @@ type InstallationResult =
     | Success = 0
     | AlreadyInstalled = 1
     | ModInvalid = 2
-    | NotSupported = 3
+    | NotAnArchive = 3
+    | NotSupported = 4
 
 type ModManager() =
     let csv = TpfNet.getCSV()
@@ -146,6 +147,8 @@ type ModManager() =
                 InstallationResult.AlreadyInstalled
             | Installation.ModInvalid ->
                 InstallationResult.ModInvalid
+            | Installation.NotAnArchive ->
+                InstallationResult.NotAnArchive
             | Installation.ModListError
             | Installation.NoFolderIncluded ->
                 InstallationResult.NotSupported

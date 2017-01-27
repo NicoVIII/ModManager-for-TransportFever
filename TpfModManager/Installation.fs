@@ -13,6 +13,7 @@ module Installation =
         | ExtractionFailed
         | AlreadyInstalled
         | ModListError
+        | NotAnArchive
 
     let getModFolderFromArchive (handler :IArchive) =
         let getTopLevelFolders list (entry :IArchiveEntry) =
@@ -78,7 +79,7 @@ module Installation =
        
         match getArchiveHandler modArchivePath with
         // Not an archive
-        | None -> Ok modList
+        | None -> Error NotAnArchive
         | Some handler ->
             match checkIfModIsAlreadyInstalled modList handler with
             | Ok result ->

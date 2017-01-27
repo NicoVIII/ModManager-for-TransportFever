@@ -25,10 +25,30 @@ namespace TpfModManager.Gui {
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
 			listView.Columns.Add("", icon);
-			listView.Columns.Add("Name", name);
-			listView.Columns.Add("Author(s)", authors);
-			listView.Columns.Add("Version", version);
-			listView.Columns.Add("RemoteVersion", remoteVersion);
+
+			// Name
+			var nameColumn = new ListViewColumn("Name", new TextCellView(name));
+			nameColumn.CanResize = true;
+			nameColumn.SortDataField = name;
+			listView.Columns.Add(nameColumn);
+
+			// Author(s)
+			var authorsColumn = new ListViewColumn("Author(s)", new TextCellView(authors));
+			authorsColumn.CanResize = true;
+			authorsColumn.SortDataField = authors;
+			listView.Columns.Add(authorsColumn);
+
+			// Version
+			var versionColumn = new ListViewColumn("Version", new TextCellView(version));
+			versionColumn.CanResize = true;
+			versionColumn.SortDataField = version;
+			listView.Columns.Add(versionColumn);
+
+			// Remote version
+			var remoteVersionColumn = new ListViewColumn("RemoteVersion", new TextCellView(remoteVersion));
+			remoteVersionColumn.CanResize = true;
+			remoteVersionColumn.SortDataField = remoteVersion;
+			listView.Columns.Add(remoteVersionColumn);
 
 			PackStart(listView, true);
 		}

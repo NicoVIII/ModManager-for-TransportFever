@@ -28,25 +28,29 @@ namespace TpfModManager.Gui {
 				var dialog = new SelectFolderDialog("Choose folder with mod archives");
 				dialog.Run(mainWindow);
 				var folderName = dialog.Folder;
-				if (folderName != "") {
+				if (folderName != null && folderName != "") {
 					foreach (var file in Directory.GetFiles(folderName)) {
 						// TODO write function for this
 						switch (manager.Install(Path.Combine(folderName, file))) {
 							case InstallationResult.Success:
 								modList.Update();
-								MessageDialog.ShowMessage("Installation complete.");
+								MessageDialog.ShowMessage(file + ":\nInstallation complete.");
 								break;
 							case InstallationResult.AlreadyInstalled:
-								MessageDialog.ShowMessage("Mod is already installed.");
+								MessageDialog.ShowMessage(file + ":\nMod is already installed.");
 								break;
 							case InstallationResult.ModInvalid:
-								MessageDialog.ShowMessage("Something is wrong with this mod :(");
+								MessageDialog.ShowMessage(file + ":\nSomething is wrong with this mod :(");
 								break;
 							case InstallationResult.NotSupported:
-								MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
+								MessageDialog.ShowMessage(file + "\nSadly this mod is not supported yet.");
+								break;
+							case InstallationResult.NotAnArchive:
+								// Nothing to do
 								break;
 						}
 					}
+					MessageDialog.ShowMessage("Bulk installation complete.");
 				}
 			};
 			installMenu.Items.Add(installFromFolderItem);
@@ -70,6 +74,9 @@ namespace TpfModManager.Gui {
 							break;
 						case InstallationResult.NotSupported:
 							MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
+							break;
+						case InstallationResult.NotAnArchive:
+							MessageDialog.ShowMessage("This file is not a valid archive.");
 							break;
 					}
 				}
