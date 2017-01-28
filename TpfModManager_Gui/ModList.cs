@@ -74,20 +74,23 @@ namespace TpfModManager.Gui {
 		}
 
 		private void GenerateModImagePng() {
-			// Generate png if necessary
-			DevILSharp.IL.Init();
-			// TODO remove png on update
-			foreach (Mod m in modManager.ModList) {
-				if (m.Image != "") {
-					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
-					var pngPath = Path.ChangeExtension(imagePath, "png");
+			try {
+				// Generate png if necessary
+				DevILSharp.IL.Init();
+				// TODO remove png on update
+				foreach (Mod m in modManager.ModList) {
+					if (m.Image != "") {
+						var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
+						var pngPath = Path.ChangeExtension(imagePath, "png");
 
-					if (!File.Exists(pngPath)) {
-						var image = DevILSharp.Image.Load(imagePath);
-						image.Save(pngPath, DevILSharp.ImageType.Png);
+						if (!File.Exists(pngPath)) {
+							var image = DevILSharp.Image.Load(imagePath);
+							image.Save(pngPath, DevILSharp.ImageType.Png);
+						}
 					}
 				}
-			}
+			} catch (FileNotFoundException) {
+			}	
 		}
 
 		public void Update() {
@@ -105,7 +108,9 @@ namespace TpfModManager.Gui {
 				if (m.Image != "") {
 					var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
 					var pngPath = Path.ChangeExtension(imagePath, "png");
-					store.SetValue(r, icon, Image.FromFile(pngPath).WithBoxSize(80));
+					if (File.Exists(pngPath)) {
+						store.SetValue(r, icon, Image.FromFile(pngPath).WithBoxSize(80));
+					}
 				}
 
 				// Name
