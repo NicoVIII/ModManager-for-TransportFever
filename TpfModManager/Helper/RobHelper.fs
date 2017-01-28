@@ -43,6 +43,15 @@ let map f =
 let tee f x = 
     f x; x 
 
+// convert a dead-end function into a switch
+let switchTee f =
+    switch (tee f)
+
+let perform f x =
+    match f x with
+    | Ok () -> Ok x
+    | Error error -> Error error
+
 // convert a one-track function into a switch with exception handling
 let tryCatch f exnHandler x =
     try
@@ -62,21 +71,12 @@ let plus addSuccess addFailure switch1 switch2 x =
     | Ok _ , Error f2    -> Error f2
     | Error f1, Error f2 -> Error (addFailure f1 f2)
 
+let boolVault falseError boolFunc arg =
+    match boolFunc arg with
+    | true -> Ok arg
+    | false -> fail falseError
+
 let optionToResult noneError optionValue =
     match optionValue with
     | None -> Error noneError
     | Some some -> Ok some
-
-(*let combineBoth res1 res2 =
-    match res1,res2 with
-    | Ok o1, Ok o2       -> Ok ()
-    | Error f1, Ok _     -> Error f1
-    | Ok _ , Error f2    -> Error f2
-    | Error f1, Error f2 -> Error (f1 @ f2)
-
-let combineErrors res1 res2 =
-    match res1,res2 with
-    | Ok (), Ok ()      -> Ok ()
-    | Error f1, Ok _     -> Error f1
-    | Ok _ , Error f2    -> Error f2
-    | Error f1, Error f2 -> Error (f1 @ f2)*)

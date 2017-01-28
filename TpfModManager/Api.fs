@@ -46,7 +46,8 @@ type Mod(``internal``: ModList.Mod) =
         | Some i -> i
         with get, set
     member val Folder =
-        ``internal``.folder
+        let (Types.Folder folder) = ``internal``.folder
+        folder
         with get, set
     member val Name =
         ``internal``.name
@@ -80,7 +81,7 @@ module private ModApi =
                 ``mod``.Authors
                 |> Array.toList
                 |> List.map AuthorApi.deconvert;
-            ModList.Mod.folder = ``mod``.Folder;
+            ModList.Mod.folder = Types.Folder ``mod``.Folder;
             ModList.Mod.image =
                 match ``mod``.Image with
                 | "" -> None
@@ -128,7 +129,6 @@ type ModManager() =
                 |> List.map (function ``mod`` -> {``mod`` with remoteVersion = TpfNet.lookUpRemoteVersion csv ``mod``})
                 |> List.map ModApi.convert
                 |> List.toArray
-
     member x.Check() =
         x.ModList <-
             ModList.createModListFromPath x.Settings.TpfModPath
@@ -160,3 +160,11 @@ type ModManager() =
             | Installation.ExtractionFailed ->
                 printfn "%A" error
                 failwith "error"
+    member x.Uninstall(folder) =
+        match Installation.uninstall (x.ModList |> Array.toList |> List.map ModApi.deconvert) x.Settings.TpfModPath (Types.Folder folder) with
+        | Ok modList ->
+            x.ModList <-
+                modList
+                |> List.map ModApi.convert
+                |> List.toArray
+        | Error error -> ()

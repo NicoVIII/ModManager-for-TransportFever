@@ -17,13 +17,14 @@ namespace TpfModManager.Gui {
 		DataField<string> updateAvailable = new DataField<string>();
 		DataField<string> remoteVersion = new DataField<string>();
 		DataField<int> tpfNetId = new DataField<int>();
+		DataField<string> folder = new DataField<string>();
 
 		public ModList(ModManager modManager) {
 			this.modManager = modManager;
 
 			listView = new ListView();
 			listView.GridLinesVisible = GridLines.Horizontal;
-			store = new ListStore(icon, name, authors, version, updateAvailable, remoteVersion, tpfNetId);
+			store = new ListStore(icon, name, authors, version, updateAvailable, remoteVersion, tpfNetId, folder);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
@@ -63,33 +64,57 @@ namespace TpfModManager.Gui {
 
 			// Add menu handler
 			Menu contextMenu = new Menu();
+
 			MenuItem openModUrlItem = new MenuItem("Open mod url");
 			contextMenu.Items.Add(openModUrlItem);
-			EventHandler lastHandler = null;
+			contextMenu.Items.Add(new SeparatorMenuItem());
+
+			MenuItem uninstallItem = new MenuItem("Uninstall");
+			contextMenu.Items.Add(uninstallItem);
+
+			EventHandler lastModUrlHandler = null;
+			EventHandler uninstallHandler = null;
+
+			// Menu handling
 			listView.ButtonPressed += delegate (object sender, ButtonEventArgs e) {
 				int row = listView.GetRowAtPosition(new Point(e.X, e.Y));
 				if (e.Button == PointerButton.Right && row >= 0) {
 					// Set actual row to selected
 					listView.SelectRow(row);
 					contextMenu.Popup(listView, e.X, e.Y);
+
+					// Open mod url
 					if (store.GetValue(row, tpfNetId) > 0) {
 						openModUrlItem.Sensitive = true;
 						// Remove previous handler
-						if (lastHandler != null) {
-							openModUrlItem.Clicked -= lastHandler;
+						if (lastModUrlHandler != null) {
+							openModUrlItem.Clicked -= lastModUrlHandler;
 						}
-						lastHandler = delegate {
-							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/"+store.GetValue(row, tpfNetId));
+						lastModUrlHandler = delegate {
+							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/" + store.GetValue(row, tpfNetId));
 						};
-						openModUrlItem.Clicked += lastHandler;
+						openModUrlItem.Clicked += lastModUrlHandler;
 					} else {
 						openModUrlItem.Sensitive = false;
 						// Remove previous handler
-						if (lastHandler != null) {
-							openModUrlItem.Clicked -= lastHandler;
-							lastHandler = null;
+						if (lastModUrlHandler != null) {
+							openModUrlItem.Clicked -= lastModUrlHandler;
+							lastModUrlHandler = null;
 						}
 					}
+
+					// Uninstall
+					if (uninstallHandler != null) {
+						uninstallItem.Clicked -= uninstallHandler;
+					}
+					uninstallHandler = delegate {
+						if (MessageDialog.Confirm("Do you really want to uninstall this mod?", Command.Yes, false)) {
+							modManager.Uninstall(store.GetValue(row, folder));
+							Update();
+							MessageDialog.ShowMessage("Mod successfully uninstalled!");
+						}
+					};
+					uninstallItem.Clicked += uninstallHandler;
 				}
 			};
 		}
@@ -98,7 +123,6 @@ namespace TpfModManager.Gui {
 			try {
 				// Generate png if necessary
 				DevILSharp.IL.Init();
-				// TODO remove png on update
 				foreach (Mod m in modManager.ModList) {
 					if (m.Image != "") {
 						var imagePath = Path.Combine(modManager.Settings.TpfModPath, m.Folder, m.Image);
@@ -114,7 +138,7 @@ namespace TpfModManager.Gui {
 			catch (FileNotFoundException) {
 				// Nothing to do
 			}
-			// HACK library is available, but not found :(
+			// HACK macOS: library is available, but not found :(
 			catch (DllNotFoundException) {
 				// Nothing to do
 			}
@@ -173,6 +197,9 @@ namespace TpfModManager.Gui {
 
 				// TpfNetId (invisible)
 				store.SetValue(r, tpfNetId, m.TpfNetId);
+
+				// Folder
+				store.SetValue(r, folder, m.Folder);
 			}
 		}
 	}

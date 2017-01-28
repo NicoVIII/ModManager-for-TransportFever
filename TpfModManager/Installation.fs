@@ -5,6 +5,7 @@ open SharpCompress.Archives
 open SharpCompress.Readers
 open System
 open System.IO
+open Types
 
 module Installation =
     type InstallationError = 
@@ -15,6 +16,10 @@ module Installation =
         | ModListError
         | NotAnArchive
 
+    type UninstallError =
+        | ModNotInstalled
+        | FolderDoesNotExist
+    
     let getModFolderFromArchive (handler :IArchive) =
         let getTopLevelFolders list (entry :IArchiveEntry) =
             let determineDirectorySeperator (path :string) =
@@ -38,13 +43,16 @@ module Installation =
             |> List.fold getTopLevelFolders []
         match topLevelDirectories with
         | [directory] -> 
-            Ok directory
+            Ok (Folder directory)
         | list ->
             if list |> List.exists (fun el -> el = "mod.lua") then
                 // TODO determine modname
                 Error NoFolderIncluded
             else 
                 Error ModInvalid
+
+    let isModInstalled modList folder =
+        List.exists (fun (``mod`` :Mod) -> ``mod``.folder = folder) modList
 
     let install modList tpfPath (modArchivePath :string) =
         let getArchiveHandler (modArchivePath :string) =
@@ -57,25 +65,27 @@ module Installation =
             let folder = getModFolderFromArchive modArchivePath
             match folder with
             | Ok folder ->
-                Ok (List.exists (fun (``mod`` :Mod) -> ``mod``.folder = folder) modList)
+                Ok (isModInstalled modList folder)
             | Error err ->
                 Error err
-
-        let performInstallation tpfPath (handler :IArchive) =
+        
+        let extractArchive (handler :IArchive) =
             try
                 use reader = handler.ExtractAllEntries()
                 let eo = new ExtractionOptions()
                 eo.ExtractFullPath <- true
                 reader.WriteAllToDirectory (tpfPath, eo)
                 reader.Dispose()
-                let getNewMod =
-                    getModFolderFromArchive
-                    >> map (PathHelper.combine tpfPath)
-                    >> bind (ModList.createModFromFolder >> optionToResult ModListError)
-                getNewMod handler
+                Ok ()
             with
             | :? System.IO.IOException ->
                 Error ExtractionFailed
+
+        let performInstallation tpfPath =
+            perform extractArchive
+            >=> getModFolderFromArchive
+            >=> switch (function Folder folder -> PathHelper.combine tpfPath folder)
+            >=> (ModList.createModFromFolder >> optionToResult ModListError)
        
         match getArchiveHandler modArchivePath with
         // Not an archive
@@ -100,3 +110,20 @@ module Installation =
             | Error error ->
                 handler.Dispose()
                 Error error
+    
+    let private removeModFromModList modList (``mod`` :Mod) =
+        List.filter (function m -> not (``mod`` = m)) modList
+
+    let private getModByFolder modList folder =
+        List.tryFind (function ``mod`` -> ``mod``.folder = folder) modList
+        |> optionToResult ModNotInstalled
+
+    let private uninstallPerform modList tpfPath =
+        getModByFolder modList
+        >=> switchTee (function {folder = Folder folder} -> Directory.Delete(Path.Combine(tpfPath, folder), true))
+
+    let uninstall modList tpfPath =
+        boolVault FolderDoesNotExist (function (Folder folder) -> Path.Combine (tpfPath,folder) |> Directory.Exists)
+        >=> uninstallPerform modList tpfPath
+        >=> switch (removeModFromModList modList)
+        >=> switch (tee saveModList)

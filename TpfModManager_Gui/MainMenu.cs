@@ -31,10 +31,11 @@ namespace TpfModManager.Gui {
 				if (folderName != null && folderName != "") {
 					foreach (var file in Directory.GetFiles(folderName)) {
 						// TODO write function for this
+						// TODO move messages to the end!
 						switch (manager.Install(Path.Combine(folderName, file))) {
 							case InstallationResult.Success:
 								modList.Update();
-								MessageDialog.ShowMessage(file + ":\nInstallation complete.");
+								//MessageDialog.ShowMessage(file + ":\nInstallation complete.");
 								break;
 							case InstallationResult.AlreadyInstalled:
 								MessageDialog.ShowMessage(file + ":\nMod is already installed.");
