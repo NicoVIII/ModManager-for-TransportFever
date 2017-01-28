@@ -60,7 +60,9 @@ type Mod(``internal``: ModList.Mod) =
         new Version(``internal``.version)
         with get, set
     member val TpfNetId =
-        ``internal``.tpfNetId
+        match ``internal``.tpfNetId with
+        | None -> -1
+        | Some id -> id
         with get, set
     member val RemoteVersion =
         match ``internal``.remoteVersion with
@@ -84,7 +86,10 @@ module private ModApi =
                 | "" -> None
                 | image -> Some image
             ModList.Mod.version = {major = ``mod``.Version.Major; minor = ``mod``.Version.Minor}
-            ModList.Mod.tpfNetId = ``mod``.TpfNetId
+            ModList.Mod.tpfNetId =
+                match ``mod``.TpfNetId with
+                | -1 -> None
+                | id -> Some id
             ModList.Mod.remoteVersion =
                 match ``mod``.RemoteVersion with
                 | null -> None

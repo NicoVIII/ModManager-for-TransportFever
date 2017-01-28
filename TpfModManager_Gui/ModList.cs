@@ -16,13 +16,14 @@ namespace TpfModManager.Gui {
 		DataField<string> version = new DataField<string>();
 		DataField<string> updateAvailable = new DataField<string>();
 		DataField<string> remoteVersion = new DataField<string>();
+		DataField<int> tpfNetId = new DataField<int>();
 
 		public ModList(ModManager modManager) {
 			this.modManager = modManager;
 
 			listView = new ListView();
 			listView.GridLinesVisible = GridLines.Horizontal;
-			store = new ListStore(icon, name, authors, version, updateAvailable, remoteVersion);
+			store = new ListStore(icon, name, authors, version, updateAvailable, remoteVersion, tpfNetId);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
@@ -62,13 +63,33 @@ namespace TpfModManager.Gui {
 
 			// Add menu handler
 			Menu contextMenu = new Menu();
-			contextMenu.Items.Add(new MenuItem("Open mod url"));
+			MenuItem openModUrlItem = new MenuItem("Open mod url");
+			contextMenu.Items.Add(openModUrlItem);
+			EventHandler lastHandler = null;
 			listView.ButtonPressed += delegate (object sender, ButtonEventArgs e) {
 				int row = listView.GetRowAtPosition(new Point(e.X, e.Y));
 				if (e.Button == PointerButton.Right && row >= 0) {
 					// Set actual row to selected
 					listView.SelectRow(row);
 					contextMenu.Popup(listView, e.X, e.Y);
+					if (store.GetValue(row, tpfNetId) > 0) {
+						openModUrlItem.Sensitive = true;
+						// Remove previous handler
+						if (lastHandler != null) {
+							openModUrlItem.Clicked -= lastHandler;
+						}
+						lastHandler = delegate {
+							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/"+store.GetValue(row, tpfNetId));
+						};
+						openModUrlItem.Clicked += lastHandler;
+					} else {
+						openModUrlItem.Sensitive = false;
+						// Remove previous handler
+						if (lastHandler != null) {
+							openModUrlItem.Clicked -= lastHandler;
+							lastHandler = null;
+						}
+					}
 				}
 			};
 		}
@@ -149,6 +170,9 @@ namespace TpfModManager.Gui {
 					updateAvailableString = "";
 				}
 				store.SetValue(r, updateAvailable, updateAvailableString);
+
+				// TpfNetId (invisible)
+				store.SetValue(r, tpfNetId, m.TpfNetId);
 			}
 		}
 	}
