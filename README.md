@@ -2,7 +2,7 @@
 Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de) with support for TransportFeverNet as mod source (https://www.transportfever.net).
 
 ## Prerequisites
-* Mono (http://www.mono-project.com) or .NET v4.5
+* Mono v4.0 (http://www.mono-project.com) or .NET v4.5
 * GtkSharp (http://www.mono-project.com/docs/gui/gtksharp/)
 
 ## Installation
