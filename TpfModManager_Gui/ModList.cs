@@ -89,8 +89,14 @@ namespace TpfModManager.Gui {
 						}
 					}
 				}
-			} catch (FileNotFoundException) {
-			}	
+			}
+			catch (FileNotFoundException) {
+				// Nothing to do
+			}
+			// HACK library is available, but not found :(
+			catch (DllNotFoundException) {
+				// Nothing to do
+			}
 		}
 
 		public void Update() {
