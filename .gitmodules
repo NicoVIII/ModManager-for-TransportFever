@@ -10,3 +10,6 @@
 [submodule "ThirdParty/XWT"]
 	path = ThirdParty/XWT
 	url = https://github.com/mono/xwt
+[submodule "ThirdParty/DevIL"]
+	path = ThirdParty/DevIL
+	url = https://github.com/DentonW/DevIL
