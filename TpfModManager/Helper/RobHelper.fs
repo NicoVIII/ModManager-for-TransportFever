@@ -63,6 +63,15 @@ let tryCatch f exnHandler x =
 let doubleMap successFunc failureFunc =
     either (successFunc >> succeed) (failureFunc >> fail)
 
+let teeSwitch f x =
+    match x with
+    | Ok x ->
+        match f x with
+        | Ok _ -> x
+        | Error e -> Error e
+    | Error e ->
+        Error e
+
 // add two switches in parallel
 let plus addSuccess addFailure switch1 switch2 x = 
     match (switch1 x),(switch2 x) with
@@ -70,11 +79,6 @@ let plus addSuccess addFailure switch1 switch2 x =
     | Error f1, Ok _     -> Error f1
     | Ok _ , Error f2    -> Error f2
     | Error f1, Error f2 -> Error (addFailure f1 f2)
-
-let boolVault falseError boolFunc arg =
-    match boolFunc arg with
-    | true -> Ok arg
-    | false -> fail falseError
 
 let optionToResult noneError optionValue =
     match optionValue with

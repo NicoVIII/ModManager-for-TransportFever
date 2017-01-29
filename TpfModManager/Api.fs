@@ -1,5 +1,7 @@
 ﻿namespace TpfModManager
 
+type ConfirmDelegate = delegate of string -> bool
+
 [<AllowNullLiteral>]
 type Settings(``internal``: SettingsModule.T) =
     let mutable ``internal`` = ``internal``
@@ -74,6 +76,9 @@ type Mod(``internal``: ModList.Mod) =
 module private ModApi =
     let convert ``mod`` =
         new Mod(``mod``)
+    let convertList mods =
+        List.map convert mods
+        |> List.toArray
     let deconvert (``mod`` :Mod) =
         {
             ModList.Mod.name = ``mod``.Name;
@@ -97,6 +102,9 @@ module private ModApi =
                 | version -> 
                     Some {major = version.Major; minor = version.Minor}
         }
+    let deconvertList (mods :Mod[]) =
+        Array.toList mods
+        |> List.map deconvert
 
 type InstallationResult =
     | Success = 0
@@ -104,6 +112,7 @@ type InstallationResult =
     | ModInvalid = 2
     | NotAnArchive = 3
     | NotSupported = 4
+    | Upgrade = 5
 
 type ModManager() =
     let csv = TpfNet.getCSV()
@@ -123,9 +132,7 @@ type ModManager() =
         | None -> ()
         | Some csv ->
             x.ModList <-
-                x.ModList
-                |> Array.toList
-                |> List.map ModApi.deconvert
+                ModApi.deconvertList x.ModList
                 |> List.map (function ``mod`` -> {``mod`` with remoteVersion = TpfNet.lookUpRemoteVersion csv ``mod``})
                 |> List.map ModApi.convert
                 |> List.toArray
@@ -134,7 +141,7 @@ type ModManager() =
             ModList.createModListFromPath x.Settings.TpfModPath
             |> List.map ModApi.convert
             |> List.toArray
-    member x.Install(modArchivePath) =
+    member x.Install(modArchivePath, upgradeCallback :ConfirmDelegate) =
         let modList =
             x.ModList
             |> Array.toList
@@ -148,16 +155,20 @@ type ModManager() =
             InstallationResult.Success
         | Error error ->
             match error with
-            | Installation.AlreadyInstalled ->
-                InstallationResult.AlreadyInstalled
-            | Installation.ModInvalid ->
+            | Installation.InstallationModAlreadyInstalled (Types.Folder folder) ->
+                if upgradeCallback.Invoke(folder) then
+                    x.Upgrade(Types.Folder folder, modArchivePath)
+                    InstallationResult.Upgrade
+                else
+                    InstallationResult.AlreadyInstalled
+            | Installation.InstallationModInvalid ->
                 InstallationResult.ModInvalid
-            | Installation.NotAnArchive ->
+            | Installation.FileNotAnArchive ->
                 InstallationResult.NotAnArchive
-            | Installation.ModListError
-            | Installation.NoFolderIncluded ->
+            | Installation.InstallationModListError
+            | Installation.InstallationNoFolderInArchive ->
                 InstallationResult.NotSupported
-            | Installation.ExtractionFailed ->
+            | Installation.InstallationExtractionFailed ->
                 printfn "%A" error
                 failwith "error"
     member x.Uninstall(folder) =
@@ -167,4 +178,8 @@ type ModManager() =
                 modList
                 |> List.map ModApi.convert
                 |> List.toArray
+        | Error error -> ()
+    member x.Upgrade(folder, modArchivePath) =
+        match Installation.upgrade (x.ModList |> ModApi.deconvertList) x.Settings.TpfModPath folder modArchivePath with
+        | Ok modList -> x.ModList <- ModApi.convertList modList
         | Error error -> ()

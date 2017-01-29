@@ -7,7 +7,7 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "TpfModManager", "TpfModMana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TpfModManager_Gui", "TpfModManager_Gui\TpfModManager_Gui.csproj", "{AE3E7034-2D27-4525-89F8-905E44E2AEBB}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "TPFMM", "TPFMM\TPFMM.fsproj", "{8DB32CDB-96EF-49ED-A393-2F682935DFA9}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "TPFMM", "TPFMM\TPFMM.fsproj", "{A1D90B85-4D29-437A-9BAF-ED014F66FF36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Debug|x86.Build.0 = Debug|x86
 		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.ActiveCfg = Release|x86
 		{AE3E7034-2D27-4525-89F8-905E44E2AEBB}.Release|x86.Build.0 = Release|x86
-		{8DB32CDB-96EF-49ED-A393-2F682935DFA9}.Debug|x86.ActiveCfg = Debug|x86
-		{8DB32CDB-96EF-49ED-A393-2F682935DFA9}.Debug|x86.Build.0 = Debug|x86
-		{8DB32CDB-96EF-49ED-A393-2F682935DFA9}.Release|x86.ActiveCfg = Release|x86
-		{8DB32CDB-96EF-49ED-A393-2F682935DFA9}.Release|x86.Build.0 = Release|x86
+		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Debug|x86.ActiveCfg = Debug|x86
+		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Debug|x86.Build.0 = Debug|x86
+		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Release|x86.ActiveCfg = Release|x86
+		{A1D90B85-4D29-437A-9BAF-ED014F66FF36}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

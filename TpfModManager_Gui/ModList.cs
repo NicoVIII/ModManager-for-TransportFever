@@ -83,9 +83,10 @@ namespace TpfModManager.Gui {
 					listView.SelectRow(row);
 					contextMenu.Popup(listView, e.X, e.Y);
 
-					// Open mod url
+					// Open mod url / Upgrade
 					if (store.GetValue(row, tpfNetId) > 0) {
 						openModUrlItem.Sensitive = true;
+
 						// Remove previous handler
 						if (lastModUrlHandler != null) {
 							openModUrlItem.Clicked -= lastModUrlHandler;
@@ -96,6 +97,7 @@ namespace TpfModManager.Gui {
 						openModUrlItem.Clicked += lastModUrlHandler;
 					} else {
 						openModUrlItem.Sensitive = false;
+
 						// Remove previous handler
 						if (lastModUrlHandler != null) {
 							openModUrlItem.Clicked -= lastModUrlHandler;

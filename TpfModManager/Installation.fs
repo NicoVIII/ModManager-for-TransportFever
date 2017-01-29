@@ -9,17 +9,27 @@ open Types
 
 module Installation =
     type InstallationError = 
-        | ModInvalid
-        | NoFolderIncluded
-        | ExtractionFailed
-        | AlreadyInstalled
-        | ModListError
-        | NotAnArchive
+        | InstallationModInvalid
+        | InstallationNoFolderInArchive
+        | InstallationExtractionFailed
+        | InstallationModAlreadyInstalled of Folder
+        | InstallationModListError
+        | FileNotAnArchive
 
     type UninstallError =
-        | ModNotInstalled
-        | FolderDoesNotExist
+        | UninstallModNotInstalled
+        | UninstallFolderDoesNotExist
+
+    type UpgradeError =
+        | InstallError of InstallationError
+        | UninstallError of UninstallError
     
+    let private getArchiveHandler (modArchivePath :string) =
+        try
+            Ok (ArchiveFactory.Open modArchivePath)
+        with
+        | :? InvalidOperationException -> Error FileNotAnArchive
+
     let getModFolderFromArchive (handler :IArchive) =
         let getTopLevelFolders list (entry :IArchiveEntry) =
             let determineDirectorySeperator (path :string) =
@@ -47,27 +57,23 @@ module Installation =
         | list ->
             if list |> List.exists (fun el -> el = "mod.lua") then
                 // TODO determine modname
-                Error NoFolderIncluded
+                Error InstallationNoFolderInArchive
             else 
-                Error ModInvalid
+                Error InstallationModInvalid
 
     let isModInstalled modList folder =
         List.exists (fun (``mod`` :Mod) -> ``mod``.folder = folder) modList
 
-    let install modList tpfPath (modArchivePath :string) =
-        let getArchiveHandler (modArchivePath :string) =
-            try
-                Some (ArchiveFactory.Open modArchivePath)
-            with
-            | :? InvalidOperationException -> None
-
-        let checkIfModIsAlreadyInstalled modList modArchivePath =
-            let folder = getModFolderFromArchive modArchivePath
+    let install modList tpfPath modArchivePath =
+        let findInstalledMod modList handler =
+            let folder = getModFolderFromArchive handler
             match folder with
             | Ok folder ->
-                Ok (isModInstalled modList folder)
+                match isModInstalled modList folder with
+                | true -> Some folder
+                | false -> None
             | Error err ->
-                Error err
+                None
         
         let extractArchive (handler :IArchive) =
             try
@@ -79,51 +85,39 @@ module Installation =
                 Ok ()
             with
             | :? System.IO.IOException ->
-                Error ExtractionFailed
+                Error InstallationExtractionFailed
 
         let performInstallation tpfPath =
             perform extractArchive
             >=> getModFolderFromArchive
             >=> switch (function Folder folder -> PathHelper.combine tpfPath folder)
-            >=> (ModList.createModFromFolder >> optionToResult ModListError)
+            >=> (ModList.createModFromFolder >> optionToResult InstallationModListError)
        
-        match getArchiveHandler modArchivePath with
-        // Not an archive
-        | None -> Error NotAnArchive
-        | Some handler ->
-            match checkIfModIsAlreadyInstalled modList handler with
-            | Ok result ->
-                match result with
-                | true ->
-                    // TODO upgrade
-                    Error AlreadyInstalled
-                | false ->
-                    match performInstallation tpfPath handler with
-                    | Ok ``mod`` ->
-                        handler.Dispose()
-                        let modList' = modList @ [``mod``]
-                        saveModList modList'
-                        Ok modList'
-                    | Error error ->
-                        handler.Dispose()
-                        Error error
-            | Error error ->
-                handler.Dispose()
-                Error error
+        getArchiveHandler modArchivePath
+        >>= (function handler -> match findInstalledMod modList handler with
+                                 | Some ``mod`` -> Error (InstallationModAlreadyInstalled ``mod``)
+                                 | None -> Ok handler)
+        >>= performInstallation tpfPath
+        >>= switch (function ``mod`` -> modList @ [``mod``])
+        >>= switch (tee saveModList)
     
     let private removeModFromModList modList (``mod`` :Mod) =
         List.filter (function m -> not (``mod`` = m)) modList
 
     let private getModByFolder modList folder =
         List.tryFind (function ``mod`` -> ``mod``.folder = folder) modList
-        |> optionToResult ModNotInstalled
+        |> optionToResult UninstallModNotInstalled
 
-    let private uninstallPerform modList tpfPath =
-        getModByFolder modList
-        >=> switchTee (function {folder = Folder folder} -> Directory.Delete(Path.Combine(tpfPath, folder), true))
+    let private uninstallPerform modList tpfPath folder =
+        getModByFolder modList folder
+        >>= switchTee (function {folder = Folder folder} -> Directory.Delete(Path.Combine(tpfPath, folder), true))
 
-    let uninstall modList tpfPath =
-        boolVault FolderDoesNotExist (function (Folder folder) -> Path.Combine (tpfPath,folder) |> Directory.Exists)
-        >=> uninstallPerform modList tpfPath
-        >=> switch (removeModFromModList modList)
-        >=> switch (tee saveModList)
+    let uninstall modList tpfPath folder =
+        uninstallPerform modList tpfPath folder
+        >>= switch (removeModFromModList modList)
+        >>= switch (tee saveModList)
+
+    let upgrade modList tpfPath folder modArchivePath =
+        uninstall modList tpfPath folder
+        |> doubleMap id (function err -> UninstallError err)
+        >>= ((function modList -> install modList tpfPath modArchivePath) >> doubleMap id (function err -> InstallError err))

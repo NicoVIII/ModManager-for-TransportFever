@@ -4,6 +4,8 @@ using Xwt;
 
 namespace TpfModManager.Gui {
 	public class MainMenu : Menu {
+		ConfirmDelegate upgradeCallback = (folder) => MessageDialog.Confirm("Do you really want to upgrade the mod in the folder '" + folder + "'?", Command.Yes);
+
 		public MainMenu(ModManager manager, Window mainWindow, ModList modList) {
 			MenuItem fileItem = new MenuItem("File");
 
@@ -32,7 +34,7 @@ namespace TpfModManager.Gui {
 					foreach (var file in Directory.GetFiles(folderName)) {
 						// TODO write function for this
 						// TODO move messages to the end!
-						switch (manager.Install(Path.Combine(folderName, file))) {
+						switch (manager.Install(Path.Combine(folderName, file), upgradeCallback)) {
 							case InstallationResult.Success:
 								modList.Update();
 								//MessageDialog.ShowMessage(file + ":\nInstallation complete.");
@@ -62,10 +64,14 @@ namespace TpfModManager.Gui {
 				dialog.Run(mainWindow);
 				var fileName = dialog.FileName;
 				if (fileName != null) {
-					switch (manager.Install(fileName)) {
+					switch (manager.Install(fileName, upgradeCallback)) {
 						case InstallationResult.Success:
 							modList.Update();
 							MessageDialog.ShowMessage("Installation complete.");
+							break;
+						case InstallationResult.Upgrade:
+							modList.Update();
+							MessageDialog.ShowMessage("Mod was successfully upgraded.");
 							break;
 						case InstallationResult.AlreadyInstalled:
 							MessageDialog.ShowMessage("Mod is already installed.");
