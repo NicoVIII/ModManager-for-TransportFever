@@ -62,6 +62,87 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Autor(en) ähnelt.
+        /// </summary>
+        internal static string List_Authors {
+            get {
+                return ResourceManager.GetString("List_Authors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Öffne Ordner ähnelt.
+        /// </summary>
+        internal static string List_ContextMenu_OpenFolder {
+            get {
+                return ResourceManager.GetString("List_ContextMenu_OpenFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Öffne Webseite ähnelt.
+        /// </summary>
+        internal static string List_ContextMenu_OpenUrl {
+            get {
+                return ResourceManager.GetString("List_ContextMenu_OpenUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Deinstallieren ähnelt.
+        /// </summary>
+        internal static string List_ContextMenu_Uninstall {
+            get {
+                return ResourceManager.GetString("List_ContextMenu_Uninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
+        /// </summary>
+        internal static string List_Name {
+            get {
+                return ResourceManager.GetString("List_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Version auf Server ähnelt.
+        /// </summary>
+        internal static string List_RemoteVersion {
+            get {
+                return ResourceManager.GetString("List_RemoteVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Update? ähnelt.
+        /// </summary>
+        internal static string List_Update {
+            get {
+                return ResourceManager.GetString("List_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ja ähnelt.
+        /// </summary>
+        internal static string List_Update_Yes {
+            get {
+                return ResourceManager.GetString("List_Update_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Version ähnelt.
+        /// </summary>
+        internal static string List_Version {
+            get {
+                return ResourceManager.GetString("List_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Beenden ähnelt.
         /// </summary>
         internal static string Menu_Exit {

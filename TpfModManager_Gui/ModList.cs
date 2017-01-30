@@ -31,31 +31,31 @@ namespace TpfModManager.Gui {
 			listView.Columns.Add("", icon);
 
 			// Name
-			var nameColumn = new ListViewColumn("Name", new TextCellView(name));
+			var nameColumn = new ListViewColumn(Resources.Localisation.List_Name, new TextCellView(name));
 			nameColumn.CanResize = true;
 			nameColumn.SortDataField = name;
 			listView.Columns.Add(nameColumn);
 
 			// Author(s)
-			var authorsColumn = new ListViewColumn("Author(s)", new TextCellView(authors));
+			var authorsColumn = new ListViewColumn(Resources.Localisation.List_Authors, new TextCellView(authors));
 			authorsColumn.CanResize = true;
 			authorsColumn.SortDataField = authors;
 			listView.Columns.Add(authorsColumn);
 
 			// Version
-			var versionColumn = new ListViewColumn("Version", new TextCellView(version));
+			var versionColumn = new ListViewColumn(Resources.Localisation.List_Version, new TextCellView(version));
 			versionColumn.CanResize = true;
 			versionColumn.SortDataField = version;
 			listView.Columns.Add(versionColumn);
 
 			// Update available
-			var updateColumn = new ListViewColumn("Update\navailable", new TextCellView(updateAvailable));
+			var updateColumn = new ListViewColumn(Resources.Localisation.List_Update, new TextCellView(updateAvailable));
 			updateColumn.CanResize = true;
 			updateColumn.SortDataField = updateAvailable;
 			listView.Columns.Add(updateColumn);
 
 			// Remote version
-			var remoteVersionColumn = new ListViewColumn("RemoteVersion", new TextCellView(remoteVersion));
+			var remoteVersionColumn = new ListViewColumn(Resources.Localisation.List_RemoteVersion, new TextCellView(remoteVersion));
 			remoteVersionColumn.CanResize = true;
 			remoteVersionColumn.SortDataField = remoteVersion;
 			listView.Columns.Add(remoteVersionColumn);
@@ -65,13 +65,13 @@ namespace TpfModManager.Gui {
 			// Add menu handler
 			Menu contextMenu = new Menu();
 
-			MenuItem openModUrlItem = new MenuItem("Open mod url");
+			MenuItem openModUrlItem = new MenuItem(Resources.Localisation.List_ContextMenu_OpenUrl);
 			contextMenu.Items.Add(openModUrlItem);
-			MenuItem openModFolderItem = new MenuItem("Open folder");
+			MenuItem openModFolderItem = new MenuItem(Resources.Localisation.List_ContextMenu_OpenFolder);
 			contextMenu.Items.Add(openModFolderItem);
 			contextMenu.Items.Add(new SeparatorMenuItem());
 
-			MenuItem uninstallItem = new MenuItem("Uninstall");
+			MenuItem uninstallItem = new MenuItem(Resources.Localisation.List_ContextMenu_Uninstall);
 			contextMenu.Items.Add(uninstallItem);
 
 			EventHandler modUrlHandler = null;
@@ -204,7 +204,7 @@ namespace TpfModManager.Gui {
 				// Update available
 				string updateAvailableString;
 				if (m.RemoteVersion != null && (m.RemoteVersion.Major > m.Version.Major || m.RemoteVersion.Major == m.Version.Major && m.RemoteVersion.Minor > m.Version.Minor)) {
-					updateAvailableString = "X";
+					updateAvailableString = Resources.Localisation.List_Update_Yes;
 				} else {
 					updateAvailableString = "";
 				}

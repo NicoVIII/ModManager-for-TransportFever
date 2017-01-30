@@ -30,4 +30,31 @@
 	<data name="Menu_Install" xml:space="preserve">
 		<value>Installieren</value>
 	</data>
+	<data name="List_Name" xml:space="preserve">
+		<value>Name</value>
+	</data>
+	<data name="List_Authors" xml:space="preserve">
+		<value>Autor(en)</value>
+	</data>
+	<data name="List_Version" xml:space="preserve">
+		<value>Version</value>
+	</data>
+	<data name="List_RemoteVersion" xml:space="preserve">
+		<value>Version auf Server</value>
+	</data>
+	<data name="List_Update" xml:space="preserve">
+		<value>Update?</value>
+	</data>
+	<data name="List_ContextMenu_Uninstall" xml:space="preserve">
+		<value>Deinstallieren</value>
+	</data>
+	<data name="List_ContextMenu_OpenFolder" xml:space="preserve">
+		<value>Öffne Ordner</value>
+	</data>
+	<data name="List_ContextMenu_OpenUrl" xml:space="preserve">
+		<value>Öffne Webseite</value>
+	</data>
+	<data name="List_Update_Yes" xml:space="preserve">
+		<value>Ja</value>
+	</data>
 </root>
