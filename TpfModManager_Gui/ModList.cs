@@ -80,8 +80,9 @@ namespace TpfModManager.Gui {
 				int row = listView.GetRowAtPosition(new Point(e.X, e.Y));
 				if (e.Button == PointerButton.Right && row >= 0) {
 					// Set actual row to selected
-					listView.SelectRow(row);
-					contextMenu.Popup(listView, e.X, e.Y);
+					listView.SelectRow(row);                    
+					// HACK fix position of popup
+					contextMenu.Popup(listView, e.X + 20, e.Y + 40);
 
 					// Open mod url / Upgrade
 					if (store.GetValue(row, tpfNetId) > 0) {
