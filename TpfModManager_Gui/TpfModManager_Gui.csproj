@@ -42,6 +42,9 @@
     <Compile Include="Resources\Localisation.Designer.cs">
       <DependentUpon>Localisation.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Localisation.fr.Designer.cs">
+      <DependentUpon>Localisation.fr.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Localisation.de.Designer.cs">
       <DependentUpon>Localisation.de.resx</DependentUpon>
     </Compile>
@@ -147,6 +150,10 @@
     <EmbeddedResource Include="Resources\Localisation.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Localisation.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Localisation.fr.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Localisation.fr.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

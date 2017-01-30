@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Menu_File" xml:space="preserve">
+		<value>Fichier</value>
+	</data>
+	<data name="Menu_Install" xml:space="preserve">
+		<value>Installer</value>
+	</data>
+	<data name="Menu_Exit" xml:space="preserve">
+		<value>Quitter</value>
+	</data>
+	<data name="List_Name" xml:space="preserve">
+		<value>Nom</value>
+	</data>
+	<data name="List_Authors" xml:space="preserve">
+		<value>Auteur(s)</value>
+	</data>
+	<data name="List_Update" xml:space="preserve">
+		<value>Mise à jour</value>
+	</data>
+	<data name="List_ContextMenu_Uninstall" xml:space="preserve">
+		<value>Désinstaller</value>
+	</data>
+	<data name="List_Update_Yes" xml:space="preserve">
+		<value>Oui</value>
+	</data>
+	<data name="List_Version" xml:space="preserve">
+		<value>Version</value>
+	</data>
+</root>

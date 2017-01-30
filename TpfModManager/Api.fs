@@ -117,7 +117,7 @@ type InstallationResult =
 type ModManager() =
     let csv = TpfNet.getCSV()
     member val LanguageKey =
-        System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName
+        System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName
         with get, set
     member val Settings =
         SettingsModule.loadSettings()

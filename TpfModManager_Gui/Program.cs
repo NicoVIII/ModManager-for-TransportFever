@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Globalization;
 using System.Resources;
+using System.Threading;
 using Xwt;
 using Xwt.Drawing;
 
 namespace TpfModManager.Gui {
 	class Program {
-		static ModManager modManager = new ModManager();
+		static ModManager modManager;
 		static ModList modList;
 
 		[STAThread]
@@ -42,7 +44,12 @@ namespace TpfModManager.Gui {
 				Height = 600
 			};
 			mainWindow.Show();
+
+			// Initialise components
+			modManager = new ModManager();
 			modList = new ModList(modManager);
+
+			// Initialise menu
 			mainWindow.MainMenu = new MainMenu(modManager, mainWindow, modList);
 
 			// Set up Tpf mods Path
@@ -51,7 +58,7 @@ namespace TpfModManager.Gui {
 				folderDialog.Run(mainWindow);
 				var folder = folderDialog.Folder;
 				// TODO look into this
-				if (folder != null && folder.EndsWith("mods")) {
+				if (folder != null && Path.GetFileName(folder) == "mods") {
 					// Update TpfModPath
 					Settings settings = new Settings();
 					settings.TpfModPath = folderDialog.Folder;
