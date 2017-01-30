@@ -130,6 +130,10 @@ module ModList =
             let version = getVersion path luaInfo
             Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = luaInfo.tpfNetId; remoteVersion = None}
 
+    let changeTpfNetId tpfNetId folder modList =
+        let ``mod`` = List.find (fun ``mod`` -> ``mod``.folder = folder) modList
+        ListHelper.updateAll modList ``mod`` {``mod`` with tpfNetId = Some tpfNetId}
+
     let createModListFromPath langKey path =
         Directory.GetDirectories(path)
         |> Array.toList

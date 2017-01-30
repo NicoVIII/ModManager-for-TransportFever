@@ -9,6 +9,8 @@ open Types
 open Tuple2Helper
 
 module Lua =
+    let tpfNetIdIdentifiers = ["tfnetId"; "tpfnetId"]
+
     type LuaInfo = {name: string; authors: Author list; minorVersion: int; tpfNetId: int option}
 
     let private getScriptWithoutStringsLua =
@@ -115,7 +117,7 @@ module Lua =
                 | id when id > 0 -> Some id
                 | id -> None
         
-        ["tfnetId"]
+        tpfNetIdIdentifiers
         |> List.map (getTpfNetIdWithIdentifier table)
         |> List.fold (fun result id ->
                 match result with

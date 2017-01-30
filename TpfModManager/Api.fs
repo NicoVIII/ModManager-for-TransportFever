@@ -173,6 +173,10 @@ type ModManager() =
             | Installation.InstallationExtractionFailed ->
                 printfn "%A" error
                 failwith "error"
+    member x.ChangeTpfNetId(tpfNetId, folder) =
+        x.ModList <-
+            ModList.changeTpfNetId tpfNetId (Types.Folder folder) (x.ModList |> ModApi.deconvertList)
+            |> ModApi.convertList
     member x.Uninstall(folder) =
         match Installation.uninstall (x.ModList |> Array.toList |> List.map ModApi.deconvert) x.Settings.TpfModPath (Types.Folder folder) with
         | Ok modList ->

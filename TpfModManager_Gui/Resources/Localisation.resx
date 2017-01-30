@@ -57,4 +57,7 @@
 	<data name="List_Update_Yes" xml:space="preserve">
 		<value>Yes</value>
 	</data>
+	<data name="List_TpfNetId" xml:space="preserve">
+		<value>TpfnetId</value>
+	</data>
 </root>

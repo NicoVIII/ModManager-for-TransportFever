@@ -116,6 +116,15 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die TpfnetId ähnelt.
+        /// </summary>
+        internal static string List_TpfNetId {
+            get {
+                return ResourceManager.GetString("List_TpfNetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Update? ähnelt.
         /// </summary>
         internal static string List_Update {

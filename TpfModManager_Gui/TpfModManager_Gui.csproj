@@ -42,11 +42,11 @@
     <Compile Include="Resources\Localisation.Designer.cs">
       <DependentUpon>Localisation.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Localisation.fr.Designer.cs">
-      <DependentUpon>Localisation.fr.resx</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Localisation.de.Designer.cs">
       <DependentUpon>Localisation.de.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Localisation.fr.Designer.cs">
+      <DependentUpon>Localisation.fr.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
