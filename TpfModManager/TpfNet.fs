@@ -10,7 +10,12 @@ module TpfNet =
     let getCSV() =
         match TpfNetOptions.csvPath with
         | "" -> None
-        | csv -> TpfNetCsv.Load csv |> Some
+        | csv ->
+            try
+                TpfNetCsv.Load csv |> Some
+            with
+            | :? System.Net.WebException -> None
+            | :? System.IO.IOException -> None
 
     // TODO add error types
     let lookUpRemoteVersion (csv :TpfNetCsv) ``mod`` =
