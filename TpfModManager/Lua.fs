@@ -16,12 +16,31 @@ module Lua =
         script.DoString(@"function _ (s) return s; end") |> ignore
         script
 
-    let private getScriptWithStringsLua (langKey :string) stringsLua modLua =
+    let private addEnglishFallback langKey (localisationTable :Table) translationPairs =
+        let keyDoesNotExist (key :DynValue) (tablePairList :TablePair list)=
+            List.exists (fun (p :TablePair) -> p.Key = key) tablePairList
+            |> not
+
+        match langKey with
+        | "en" -> translationPairs
+        | _ ->
+            match localisationTable.Get("en").Table with
+            | null -> translationPairs
+            | englishTable ->
+                englishTable.Pairs
+                |> Seq.toList
+                |> List.filter (function (pair :TablePair) -> keyDoesNotExist pair.Key translationPairs)
+                |> (@) translationPairs
+
+    let rec private getScriptWithStringsLua (langKey :string) stringsLua modLua =
         let script = new Script()
         script.DoFile(stringsLua) |> ignore
         let value = script.Globals.["data"] |> script.Call 
         let translations = value.Table.Get(langKey).Table
-        if not (translations = null) then
+        match (langKey, translations) with
+        | ("en", null) -> getScriptWithoutStringsLua
+        | (_, null) -> getScriptWithStringsLua "en" stringsLua modLua
+        | (_, translations) ->
             // Build custom _-function
             let luaFunction =
                 let buildIfClause (beginning, first) (keyValuePair :TablePair) =
@@ -44,13 +63,12 @@ module Lua =
 
                 translations.Pairs
                 |> Seq.toList
+                |> addEnglishFallback langKey value.Table
                 |> List.fold buildIfClause ("function _(s)\n", true)
                 |> first
                 |> (+) <| "else return s end\nend"
             script.DoString(luaFunction) |> ignore
             script
-        else
-            getScriptWithoutStringsLua
 
     let private callModLua modLua (script :Script) =
         (* let tpfPath =
