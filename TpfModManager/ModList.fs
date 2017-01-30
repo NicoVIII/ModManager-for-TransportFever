@@ -100,7 +100,7 @@ module ModList =
             (ModListJson.Load modListPath)
             |> Convert.fromJson
 
-    let createModFromFolder path =
+    let createModFromFolder langKey path =
         let getFolderFromPath (path :string) =
             Path.GetFileName path
             |> Folder
@@ -121,7 +121,7 @@ module ModList =
             {major = getMajor path; minor = luaInfo.minorVersion}
         
         // TODO use language specific names/descriptions
-        let luaInfo = Lua.getInfoFromLuaFiles "en" path
+        let luaInfo = Lua.getInfoFromLuaFiles langKey path
         match luaInfo with
         | None -> None
         | Some luaInfo ->
@@ -130,12 +130,12 @@ module ModList =
             let version = getVersion path luaInfo
             Some {name = luaInfo.name; authors = luaInfo.authors; folder = folder; image = image; version = version; tpfNetId = luaInfo.tpfNetId; remoteVersion = None}
 
-    let createModListFromPath path =
+    let createModListFromPath langKey path =
         Directory.GetDirectories(path)
         |> Array.toList
         |> List.filter (fun dir -> Regex.IsMatch(dir, folderRegex))
         |> List.filter (fun dir -> not (Regex.IsMatch(dir, Regex.Escape((System.Convert.ToString Path.DirectorySeparatorChar)+"urbangames_"))))
-        |> List.map createModFromFolder
+        |> List.map (createModFromFolder langKey)
         |> List.filter Option.isSome
         |> List.map OptionHelper.unwrap
         |> saveModList

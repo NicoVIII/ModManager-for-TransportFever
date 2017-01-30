@@ -116,7 +116,9 @@ type InstallationResult =
 
 type ModManager() =
     let csv = TpfNet.getCSV()
-
+    member val LanguageKey =
+        System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName
+        with get, set
     member val Settings =
         SettingsModule.loadSettings()
         |> SettingsApi.convert
@@ -138,7 +140,7 @@ type ModManager() =
                 |> List.toArray
     member x.Check() =
         x.ModList <-
-            ModList.createModListFromPath x.Settings.TpfModPath
+            ModList.createModListFromPath x.LanguageKey x.Settings.TpfModPath
             |> List.map ModApi.convert
             |> List.toArray
     member x.Install(modArchivePath, upgradeCallback :ConfirmDelegate) =
@@ -146,7 +148,7 @@ type ModManager() =
             x.ModList
             |> Array.toList
             |> List.map ModApi.deconvert
-        match Installation.install modList x.Settings.TpfModPath modArchivePath with
+        match Installation.install x.LanguageKey modList x.Settings.TpfModPath modArchivePath with
         | Ok result ->
             x.ModList <-
                 result
@@ -180,6 +182,6 @@ type ModManager() =
                 |> List.toArray
         | Error error -> ()
     member x.Upgrade(folder, modArchivePath) =
-        match Installation.upgrade (x.ModList |> ModApi.deconvertList) x.Settings.TpfModPath folder modArchivePath with
+        match Installation.upgrade x.LanguageKey (x.ModList |> ModApi.deconvertList) x.Settings.TpfModPath folder modArchivePath with
         | Ok modList -> x.ModList <- ModApi.convertList modList
         | Error error -> ()

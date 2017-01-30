@@ -64,7 +64,7 @@ module Installation =
     let isModInstalled modList folder =
         List.exists (fun (``mod`` :Mod) -> ``mod``.folder = folder) modList
 
-    let install modList tpfPath modArchivePath =
+    let install langKey modList tpfPath modArchivePath =
         let findInstalledMod modList handler =
             let folder = getModFolderFromArchive handler
             match folder with
@@ -87,17 +87,17 @@ module Installation =
             | :? System.IO.IOException ->
                 Error InstallationExtractionFailed
 
-        let performInstallation tpfPath =
+        let performInstallation langKey tpfPath =
             perform extractArchive
             >=> getModFolderFromArchive
             >=> switch (function Folder folder -> PathHelper.combine tpfPath folder)
-            >=> (ModList.createModFromFolder >> optionToResult InstallationModListError)
+            >=> (ModList.createModFromFolder langKey >> optionToResult InstallationModListError)
        
         getArchiveHandler modArchivePath
         >>= (function handler -> match findInstalledMod modList handler with
                                  | Some ``mod`` -> Error (InstallationModAlreadyInstalled ``mod``)
                                  | None -> Ok handler)
-        >>= performInstallation tpfPath
+        >>= performInstallation langKey tpfPath
         >>= switch (function ``mod`` -> modList @ [``mod``])
         >>= switch (tee saveModList)
     
@@ -117,7 +117,7 @@ module Installation =
         >>= switch (removeModFromModList modList)
         >>= switch (tee saveModList)
 
-    let upgrade modList tpfPath folder modArchivePath =
+    let upgrade langKey modList tpfPath folder modArchivePath =
         uninstall modList tpfPath folder
         |> doubleMap id (function err -> UninstallError err)
-        >>= ((function modList -> install modList tpfPath modArchivePath) >> doubleMap id (function err -> InstallError err))
+        >>= ((function modList -> install langKey modList tpfPath modArchivePath) >> doubleMap id (function err -> InstallError err))
