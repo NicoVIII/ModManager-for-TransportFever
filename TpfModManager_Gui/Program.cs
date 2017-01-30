@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using TpfModManager;
+using System.Resources;
 using Xwt;
 using Xwt.Drawing;
 
@@ -11,7 +11,10 @@ namespace TpfModManager.Gui {
 
 		[STAThread]
 		static void Main(string[] args) {
-			string title = "TPF-ModManager v0.1.0-alpha.6";
+			// TODO use of console
+			Console.WriteLine("In this alpha version this console is shown for better debugging. In a release version this console will be gone!");
+
+			string title = "TPF-ModManager v0.1.0-alpha.7";
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {

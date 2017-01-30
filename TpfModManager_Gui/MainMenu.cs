@@ -7,12 +7,12 @@ namespace TpfModManager.Gui {
 		ConfirmDelegate upgradeCallback = (folder) => MessageDialog.Confirm("Do you really want to upgrade the mod in the folder '" + folder + "'?", Command.Yes);
 
 		public MainMenu(ModManager manager, Window mainWindow, ModList modList) {
-			MenuItem fileItem = new MenuItem("File");
+			MenuItem fileItem = new MenuItem(Resources.Localisation.Menu_File);
 
 			// Submenu "File"
 			Menu fileMenu = new Menu();
 
-			MenuItem checkItem = new MenuItem("Search for installed mods");
+			MenuItem checkItem = new MenuItem(Resources.Localisation.Menu_Search);
 			checkItem.Clicked += (sender, e) => {
 				manager.Check();
 				modList.Update();
@@ -21,11 +21,11 @@ namespace TpfModManager.Gui {
 			fileMenu.Items.Add(checkItem);
 
 			// Submenu "File/Install"
-			MenuItem installItem = new MenuItem("Install");
+			MenuItem installItem = new MenuItem(Resources.Localisation.Menu_Install);
 			Menu installMenu = new Menu();
 			installItem.SubMenu = installMenu;
 
-			MenuItem installFromFolderItem = new MenuItem("From folder...");
+			MenuItem installFromFolderItem = new MenuItem(Resources.Localisation.Menu_Install_FromFolder);
 			installFromFolderItem.Clicked += (sender, e) => {
 				var dialog = new SelectFolderDialog("Choose folder with mod archives");
 				dialog.Run(mainWindow);
@@ -58,7 +58,7 @@ namespace TpfModManager.Gui {
 			};
 			installMenu.Items.Add(installFromFolderItem);
 
-			MenuItem installFromFileItem = new MenuItem("From file...");
+			MenuItem installFromFileItem = new MenuItem(Resources.Localisation.Menu_Install_FromFile);
 			installFromFileItem.Clicked += (sender, e) => {
 				var dialog = new OpenFileDialog("Choose mod archive");
 				dialog.Run(mainWindow);
@@ -90,14 +90,10 @@ namespace TpfModManager.Gui {
 			};
 			installMenu.Items.Add(installFromFileItem);
 
-			MenuItem installFromUrlItem = new MenuItem("From url...");
-			installFromUrlItem.Sensitive = false;
-			installMenu.Items.Add(installFromUrlItem);
-
 			fileMenu.Items.Add(installItem);
 			fileMenu.Items.Add(new SeparatorMenuItem());
 
-			MenuItem exitItem = new MenuItem("Exit");
+			MenuItem exitItem = new MenuItem(Resources.Localisation.Menu_Exit);
 			exitItem.Clicked += (sender, e) => {
 				Application.Exit();
 			};
