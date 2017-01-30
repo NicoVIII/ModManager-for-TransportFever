@@ -67,12 +67,15 @@ namespace TpfModManager.Gui {
 
 			MenuItem openModUrlItem = new MenuItem("Open mod url");
 			contextMenu.Items.Add(openModUrlItem);
+			MenuItem openModFolderItem = new MenuItem("Open folder");
+			contextMenu.Items.Add(openModFolderItem);
 			contextMenu.Items.Add(new SeparatorMenuItem());
 
 			MenuItem uninstallItem = new MenuItem("Uninstall");
 			contextMenu.Items.Add(uninstallItem);
 
-			EventHandler lastModUrlHandler = null;
+			EventHandler modUrlHandler = null;
+			EventHandler modFolderHandler = null;
 			EventHandler uninstallHandler = null;
 
 			// Menu handling
@@ -89,22 +92,31 @@ namespace TpfModManager.Gui {
 						openModUrlItem.Sensitive = true;
 
 						// Remove previous handler
-						if (lastModUrlHandler != null) {
-							openModUrlItem.Clicked -= lastModUrlHandler;
+						if (modUrlHandler != null) {
+							openModUrlItem.Clicked -= modUrlHandler;
 						}
-						lastModUrlHandler = delegate {
+						modUrlHandler = delegate {
 							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/" + store.GetValue(row, tpfNetId));
 						};
-						openModUrlItem.Clicked += lastModUrlHandler;
+						openModUrlItem.Clicked += modUrlHandler;
 					} else {
 						openModUrlItem.Sensitive = false;
 
 						// Remove previous handler
-						if (lastModUrlHandler != null) {
-							openModUrlItem.Clicked -= lastModUrlHandler;
-							lastModUrlHandler = null;
+						if (modUrlHandler != null) {
+							openModUrlItem.Clicked -= modUrlHandler;
+							modUrlHandler = null;
 						}
 					}
+
+					// Open folder
+					if (modFolderHandler != null) {
+						openModFolderItem.Clicked -= modFolderHandler;
+					}
+					modFolderHandler = delegate {
+						System.Diagnostics.Process.Start(Path.Combine(modManager.Settings.TpfModPath, store.GetValue(row, folder)));
+					};
+					openModFolderItem.Clicked += modFolderHandler;
 
 					// Uninstall
 					if (uninstallHandler != null) {
