@@ -11,8 +11,8 @@ module ModList =
     let modListPath = "mods.json"
     let folderRegex = ".*_([0-9][0-9]*)$"
 
-    type Version = {major: int; minor: int}
-    type Mod = {name: string; authors: Author list; folder: Folder; image: string option; version: Version; tpfNetId: int option; remoteVersion: Version option}
+    type Version = {major: VersionNumber; minor: VersionNumber}
+    type Mod = {name: string; authors: Author list; folder: Folder; image: string option; version: Version; tpfNetId: TpfNetId option; remoteVersion: Version option}
     type ModListJson = JsonProvider<""" { "mods": [{ "name": "modname", "authors": [{"name": "author1", "tpfNetId": 12345}], "folder": "author_mod_version", "image": "image_00.tga", "major": 1, "minor": 2, "tpfNetId": 12345 }] } """>
 
     module private Convert =
@@ -26,22 +26,22 @@ module ModList =
                 let tpfNetId =
                     match jsonAuthor.TpfNetId with
                     | -1 -> None
-                    | id -> Some id
+                    | id -> Some (tpfNetId id)
                 {Author.name = jsonAuthor.Name; tpfNetId = tpfNetId}
 
             let convertAuthors =
                 Array.toList
                 >> List.map convertAuthor
 
-            let convertTpfNetId tpfNetId =
-                match tpfNetId with
-                | -1 -> None
-                | id -> Some id
+            let convertTpfNetId tpfnetId =
+                match tpfnetId with
+                | id when id < 0 -> None
+                | id -> Some (tpfNetId id)
 
             let convertMod (modJson :ModListJson.Mod) =
                 {name = modJson.Name; authors = convertAuthors modJson.Authors;
                  folder = Folder modJson.Folder; image = convertImage modJson.Image;
-                 version = {major = modJson.Major; minor = modJson.Minor};
+                 version = {major = versionNumber modJson.Major; minor = versionNumber modJson.Minor};
                  tpfNetId = convertTpfNetId modJson.TpfNetId; remoteVersion = None }
 
         let fromJson (json :ModListJson.Root) =
@@ -60,21 +60,21 @@ module ModList =
                 let tpfNetId' =
                     match tpfNetId with
                     | None -> -1
-                    | Some id -> id
+                    | Some id -> int id
                 new ModListJson.Author(name, tpfNetId')
 
             let convertAuthors =
                 List.map convertAuthor
                 >> List.toArray
 
-            let convertTpfNetId tpfNetId =
-                match tpfNetId with
+            let convertTpfNetId tpfnetId =
+                match tpfnetId with
                 | None -> -1
-                | Some id -> id
+                | Some id -> int id
 
             let convertMod ``mod`` =
                 let {name = name; authors = authors; folder = Folder folder; image = image; version = {major = major; minor = minor}; tpfNetId = tpfNetId} = ``mod``
-                new ModListJson.Mod(name, convertAuthors authors, folder, convertImage image, major, minor, convertTpfNetId tpfNetId)
+                new ModListJson.Mod(name, convertAuthors authors, folder, convertImage image, int major, int minor, convertTpfNetId tpfNetId)
 
         let toJson modList =
             let mods =
@@ -116,7 +116,7 @@ module ModList =
         let getVersion path (luaInfo :Lua.LuaInfo) =
             let getMajor path =
                 let m = Regex.Match(path, folderRegex)
-                int (m.Groups.Item(1).Value)
+                versionNumberFromString (m.Groups.Item(1).Value)
 
             {major = getMajor path; minor = luaInfo.minorVersion}
         
@@ -133,7 +133,6 @@ module ModList =
     let changeTpfNetId tpfNetId folder modList =
         let ``mod`` = List.find (fun ``mod`` -> ``mod``.folder = folder) modList
         ListHelper.updateAll modList ``mod`` {``mod`` with tpfNetId = Some tpfNetId}
-        |> tee saveModList
 
     let createModListFromPath langKey path =
         Directory.GetDirectories(path)
@@ -143,4 +142,3 @@ module ModList =
         |> List.map (createModFromFolder langKey)
         |> List.filter Option.isSome
         |> List.map OptionHelper.unwrap
-        |> tee (saveModList)

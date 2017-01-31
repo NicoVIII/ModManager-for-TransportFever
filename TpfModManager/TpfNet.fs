@@ -3,6 +3,7 @@
 open FSharp.Data
 open ModList
 open RegexHelper
+open Types
 
 module TpfNet =
     type TpfNetCsv = CsvProvider<"ID|UID|UNAME|MODTITLE|IMAGEID|TIME|LASTEDITTIME|VERSION|STATUS|FILEID|FILENAME|CATEGORYID|DOWNLOADTOTAL|DOWNLOAD\n1|1|example|example|example|1|1|1.0.0|example|1|example|1|1|1", "|">
@@ -22,7 +23,7 @@ module TpfNet =
         let parseVersion version =
             match version with
             | Regex "^([0-9]+)\.([0-9]+)$" wellFormed ->
-                Some {major = wellFormed.Item 0 |> System.Convert.ToInt32; minor = wellFormed.Item 1 |> System.Convert.ToInt32}
+                Some {major = wellFormed.Item 0 |> versionNumberFromString; minor = wellFormed.Item 1 |> versionNumberFromString}
             | _ ->
                 None
 
@@ -33,7 +34,7 @@ module TpfNet =
             let modRow =
                 csv.Rows
                 |> Seq.toList
-                |> List.tryFind (function row -> row.ID = id)
+                |> List.tryFind (function row -> row.ID = int id)
             match modRow with
             | None ->
                 None

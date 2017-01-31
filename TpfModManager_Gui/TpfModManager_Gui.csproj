@@ -131,6 +131,9 @@
     <Reference Include="DevILSharp">
       <HintPath>..\packages\DevILSharp.0.0.13\lib\net45\DevILSharp.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core.3.1.2.5\lib\net40\FSharp.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

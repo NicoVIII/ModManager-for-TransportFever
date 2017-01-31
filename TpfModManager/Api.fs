@@ -65,7 +65,7 @@ type Mod(``internal``: ModList.Mod) =
     member val TpfNetId =
         match ``internal``.tpfNetId with
         | None -> -1
-        | Some id -> id
+        | Some id -> int id
         with get, set
     member val RemoteVersion =
         match ``internal``.remoteVersion with
@@ -95,7 +95,7 @@ module private ModApi =
             ModList.Mod.tpfNetId =
                 match ``mod``.TpfNetId with
                 | -1 -> None
-                | id -> Some id
+                | id -> Some (Types.tpfNetId id)
             ModList.Mod.remoteVersion =
                 match ``mod``.RemoteVersion with
                 | null -> None
@@ -141,19 +141,17 @@ type ModManager() =
     member x.Check() =
         x.ModList <-
             ModList.createModListFromPath x.LanguageKey x.Settings.TpfModPath
-            |> List.map ModApi.convert
-            |> List.toArray
+            |> tee ModList.saveModList
+            |> ModApi.convertList
     member x.Install(modArchivePath, upgradeCallback :ConfirmDelegate) =
         let modList =
             x.ModList
-            |> Array.toList
-            |> List.map ModApi.deconvert
+            |> ModApi.deconvertList
         match Installation.install x.LanguageKey modList x.Settings.TpfModPath modArchivePath with
         | Ok result ->
             x.ModList <-
                 result
-                |> List.map ModApi.convert
-                |> List.toArray
+                |> ModApi.convertList
             InstallationResult.Success
         | Error error ->
             match error with
@@ -173,19 +171,20 @@ type ModManager() =
             | Installation.InstallationExtractionFailed ->
                 printfn "%A" error
                 failwith "error"
-    member x.ChangeTpfNetId(tpfNetId, folder) =
+    member x.ChangeTpfNetId(tpfnetId, folder) =
         x.ModList <-
-            ModList.changeTpfNetId tpfNetId (Types.Folder folder) (x.ModList |> ModApi.deconvertList)
+            ModList.changeTpfNetId (Types.tpfNetId tpfnetId) (Types.Folder folder) (x.ModList |> ModApi.deconvertList)
+            |> tee ModList.saveModList
             |> ModApi.convertList
     member x.Uninstall(folder) =
         match Installation.uninstall (x.ModList |> Array.toList |> List.map ModApi.deconvert) x.Settings.TpfModPath (Types.Folder folder) with
         | Ok modList ->
             x.ModList <-
                 modList
-                |> List.map ModApi.convert
-                |> List.toArray
+                |> ModApi.convertList
         | Error error -> ()
     member x.Upgrade(folder, modArchivePath) =
         match Installation.upgrade x.LanguageKey (x.ModList |> ModApi.deconvertList) x.Settings.TpfModPath folder modArchivePath with
-        | Ok modList -> x.ModList <- ModApi.convertList modList
+        | Ok modList ->
+            x.ModList <- ModApi.convertList modList
         | Error error -> ()

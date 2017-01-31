@@ -16,7 +16,7 @@ namespace TpfModManager.Gui {
 		DataField<string> version = new DataField<string>();
 		DataField<string> updateAvailable = new DataField<string>();
 		DataField<string> remoteVersion = new DataField<string>();
-		DataField<string> tpfNetId = new DataField<string>();
+		DataField<string> tpfnetId = new DataField<string>();
 		DataField<string> folder = new DataField<string>();
 
 		private void removeClickedHandler(MenuItem item, EventHandler handler) {
@@ -29,7 +29,7 @@ namespace TpfModManager.Gui {
 
 			listView = new ListView();
 			listView.GridLinesVisible = GridLines.Horizontal;
-			store = new ListStore(icon, name, authors, tpfNetId, version, updateAvailable, remoteVersion, folder);
+			store = new ListStore(icon, name, authors, tpfnetId, version, updateAvailable, remoteVersion, folder);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
@@ -48,10 +48,10 @@ namespace TpfModManager.Gui {
 			listView.Columns.Add(authorsColumn);
 
 			// TpfnetId
-			var tpfNetIdCellView = new TextCellView(tpfNetId) {};
+			var tpfNetIdCellView = new TextCellView(tpfnetId) {};
 			var tpfNetIdColumn = new ListViewColumn(Resources.Localisation.List_TpfNetId, tpfNetIdCellView);
 			tpfNetIdColumn.CanResize = true;
-			tpfNetIdColumn.SortDataField = tpfNetId;
+			tpfNetIdColumn.SortDataField = tpfnetId;
 			listView.Columns.Add(tpfNetIdColumn);
 
 			// Version
@@ -104,13 +104,13 @@ namespace TpfModManager.Gui {
 					contextMenu.Popup(listView, e.X + 20, e.Y + 40);
 
 					// Open mod url
-					if (store.GetValue(row, tpfNetId) != "" && int.Parse(store.GetValue(row, tpfNetId)) > 0) {
+					if (store.GetValue(row, tpfnetId) != "" && int.Parse(store.GetValue(row, tpfnetId)) > 0) {
 						openModUrlItem.Sensitive = true;
 
 						// Remove previous handler
 						removeClickedHandler(openModUrlItem, modUrlHandler);
 						modUrlHandler = delegate {
-							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/" + store.GetValue(row, tpfNetId));
+							System.Diagnostics.Process.Start("https://transportfever.net/filebase/index.php/Entry/" + store.GetValue(row, tpfnetId));
 						};
 						openModUrlItem.Clicked += modUrlHandler;
 					} else {
@@ -127,7 +127,7 @@ namespace TpfModManager.Gui {
 					// Change tpfNetId
 					removeClickedHandler(changeTpfNetIdItem, changeTpfNetIdHandler);
 					changeTpfNetIdHandler = delegate {
-						var dialog = new NumberInputDialog(Resources.Localisation.List_ChangeTpfNetId_Input, store.GetValue(row, tpfNetId));
+						var dialog = new NumberInputDialog(Resources.Localisation.List_ChangeTpfNetId_Input, store.GetValue(row, tpfnetId));
 						dialog.Title = store.GetValue(row, folder);
 						if (dialog.Run(mainWindow) == Command.Ok) {
 							modManager.ChangeTpfNetId(dialog.Number, store.GetValue(row, folder));
@@ -229,9 +229,9 @@ namespace TpfModManager.Gui {
 
 				// TpfNetId (invisible)
 				if (m.TpfNetId > 0)
-					store.SetValue(r, tpfNetId, m.TpfNetId.ToString());
+					store.SetValue(r, tpfnetId, m.TpfNetId.ToString());
 				else
-					store.SetValue(r, tpfNetId, "");
+					store.SetValue(r, tpfnetId, "");
 
 				// Folder
 				store.SetValue(r, folder, m.Folder);

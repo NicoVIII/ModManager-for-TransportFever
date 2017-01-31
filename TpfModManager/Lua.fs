@@ -11,7 +11,7 @@ open Tuple2Helper
 module Lua =
     let tpfNetIdIdentifiers = ["tfnetId"; "tpfnetId"]
 
-    type LuaInfo = {name: string; authors: Author list; minorVersion: int; tpfNetId: int option}
+    type LuaInfo = {name: string; authors: Author list; minorVersion: uint16; tpfNetId: TpfNetId option}
 
     let private getScriptWithoutStringsLua =
         let script = new Script()
@@ -114,7 +114,7 @@ module Lua =
                 None
             else
                 match int (field.Number) with
-                | id when id > 0 -> Some id
+                | id when id > 0 -> Some (tpfNetId id)
                 | id -> None
         
         tpfNetIdIdentifiers
@@ -143,7 +143,7 @@ module Lua =
                     |> List.rev
                 with
                 | :? NullReferenceException -> []
-            let minor = info.Get("minorVersion").Number |> int
+            let minor = info.Get("minorVersion").Number |> int |> versionNumber
             let tpfNetId = getTpfNetId info
 
             Some {name = name; authors = authors; minorVersion = minor; tpfNetId = tpfNetId}

@@ -13,3 +13,12 @@
 [submodule "ThirdParty/DevIL"]
 	path = ThirdParty/DevIL
 	url = https://github.com/DentonW/DevIL
+[submodule "ThirdParty/FsCheck"]
+	path = ThirdParty/FsCheck
+	url = https://github.com/fscheck/FsCheck.git
+[submodule "ThirdParty/FsUnit"]
+	path = ThirdParty/FsUnit
+	url = https://github.com/fsprojects/FsUnit.git
+[submodule "ThirdParty/NUnit"]
+	path = ThirdParty/NUnit
+	url = https://github.com/nunit/nunit.git
