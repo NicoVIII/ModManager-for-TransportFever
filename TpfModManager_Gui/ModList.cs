@@ -128,6 +128,7 @@ namespace TpfModManager.Gui {
 					removeClickedHandler(changeTpfNetIdItem, changeTpfNetIdHandler);
 					changeTpfNetIdHandler = delegate {
 						var dialog = new NumberInputDialog(Resources.Localisation.List_ChangeTpfNetId_Input, store.GetValue(row, tpfNetId));
+						dialog.Title = store.GetValue(row, folder);
 						if (dialog.Run(mainWindow) == Command.Ok) {
 							modManager.ChangeTpfNetId(dialog.Number, store.GetValue(row, folder));
 							listView.UnselectAll();
