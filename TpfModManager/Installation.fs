@@ -64,7 +64,7 @@ module Installation =
     let isModInstalled modList folder =
         List.exists (fun (``mod`` :Mod) -> ``mod``.folder = folder) modList
 
-    let install langKey modList tpfPath modArchivePath =
+    let installWithTpfnetId langKey modList tpfPath (tpfnetId :TpfNetId option) modArchivePath =
         let findInstalledMod modList handler =
             let folder = getModFolderFromArchive handler
             match folder with
@@ -98,18 +98,21 @@ module Installation =
                                  | Some ``mod`` -> Error (InstallationModAlreadyInstalled ``mod``)
                                  | None -> Ok handler)
         >>= performInstallation langKey tpfPath
+        >>= switch (function ``mod`` -> if tpfnetId.IsSome then {``mod`` with tpfNetId = tpfnetId} else ``mod``)
         >>= switch (function ``mod`` -> modList @ [``mod``])
         >>= switch (tee saveModList)
+
+    let install langKey modList tpfPath modArchivePath =
+        installWithTpfnetId langKey modList tpfPath None modArchivePath
     
     let private removeModFromModList modList (``mod`` :Mod) =
         List.filter (function m -> not (``mod`` = m)) modList
 
     let private getModByFolder modList folder =
         List.tryFind (function ``mod`` -> ``mod``.folder = folder) modList
-        |> optionToResult UninstallModNotInstalled
 
     let private uninstallPerform modList tpfPath folder =
-        getModByFolder modList folder
+        (getModByFolder modList folder |> optionToResult UninstallModNotInstalled)
         >>= switchTee (function {folder = Folder folder} -> Directory.Delete(Path.Combine(tpfPath, folder), true))
 
     let uninstall modList tpfPath folder =
@@ -118,6 +121,9 @@ module Installation =
         >>= switch (tee saveModList)
 
     let upgrade langKey modList tpfPath folder modArchivePath =
-        uninstall modList tpfPath folder
-        |> doubleMap id (function err -> UninstallError err)
-        >>= ((function modList -> install langKey modList tpfPath modArchivePath) >> doubleMap id (function err -> InstallError err))
+        match getModByFolder modList folder with
+        | None -> Error (UninstallError UninstallModNotInstalled)
+        | Some {tpfNetId = tpfnetId} ->
+            uninstall modList tpfPath folder
+            |> doubleMap id (function err -> UninstallError err)
+            >>= ((function modList -> installWithTpfnetId langKey modList tpfPath tpfnetId modArchivePath) >> doubleMap id (function err -> InstallError err))
