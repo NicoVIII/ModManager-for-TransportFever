@@ -25,13 +25,20 @@ namespace TpfModManager {
 					input.Text = Number.ToString();
 				}
 			};
-			input.Activated += Ok;
+			input.Activated += delegate {
+				PreOk();
+				Respond(Command.Ok);
+				Dispose();
+			};
 			contentContainer.PackStart(input);
 
 			DialogButton ok = new DialogButton(Command.Ok);
 			DialogButton cancel = new DialogButton(Command.Cancel);
 
-			ok.Clicked += Ok;
+			ok.Clicked += delegate {
+				PreOk();
+				Dispose();
+			};
 			cancel.Clicked += delegate {
 				Dispose();
 			};
@@ -41,12 +48,11 @@ namespace TpfModManager {
 			DefaultCommand = Command.Ok;
 		}
 
-		private void Ok(object sender, EventArgs args) {
+		private void PreOk() {
 			int i;
 			if (int.TryParse(input.Text, out i)) {
 				Number = i;
 			}
-			Dispose();
 		}
 	}
 }
