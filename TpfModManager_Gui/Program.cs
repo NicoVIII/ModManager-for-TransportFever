@@ -47,7 +47,7 @@ namespace TpfModManager.Gui {
 
 			// Initialise components
 			modManager = new ModManager();
-			modList = new ModList(modManager);
+			modList = new ModList(modManager, mainWindow);
 
 			// Initialise menu
 			mainWindow.MainMenu = new MainMenu(modManager, mainWindow, modList);

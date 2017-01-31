@@ -57,4 +57,7 @@
 	<data name="List_Update_Yes" xml:space="preserve">
 		<value>Ja</value>
 	</data>
+	<data name="List_ContextMenu_ChangeTpfNetId" xml:space="preserve">
+		<value>Ändere tpfnetID</value>
+	</data>
 </root>

@@ -58,6 +58,12 @@
 		<value>Yes</value>
 	</data>
 	<data name="List_TpfNetId" xml:space="preserve">
-		<value>TpfnetId</value>
+		<value>TpfnetID</value>
+	</data>
+	<data name="List_ContextMenu_ChangeTpfNetId" xml:space="preserve">
+		<value>Change tpfnetID</value>
+	</data>
+	<data name="List_ChangeTpfNetId_Input" xml:space="preserve">
+		<value>Input TpfNetId</value>
 	</data>
 </root>

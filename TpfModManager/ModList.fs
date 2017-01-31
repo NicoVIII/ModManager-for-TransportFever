@@ -133,6 +133,7 @@ module ModList =
     let changeTpfNetId tpfNetId folder modList =
         let ``mod`` = List.find (fun ``mod`` -> ``mod``.folder = folder) modList
         ListHelper.updateAll modList ``mod`` {``mod`` with tpfNetId = Some tpfNetId}
+        |> tee saveModList
 
     let createModListFromPath langKey path =
         Directory.GetDirectories(path)
@@ -142,5 +143,4 @@ module ModList =
         |> List.map (createModFromFolder langKey)
         |> List.filter Option.isSome
         |> List.map OptionHelper.unwrap
-        |> saveModList
-        loadModList()
+        |> tee (saveModList)

@@ -24,7 +24,7 @@ namespace TpfModManager.Gui {
 				item.Clicked -= handler;
 		}
 
-		public ModList(ModManager modManager) {
+		public ModList(ModManager modManager, Window mainWindow) {
 			this.modManager = modManager;
 
 			listView = new ListView();
@@ -76,16 +76,20 @@ namespace TpfModManager.Gui {
 
 			// Add menu handler
 			Menu contextMenu = new Menu();
-
 			MenuItem openModUrlItem = new MenuItem(Resources.Localisation.List_ContextMenu_OpenUrl);
 			contextMenu.Items.Add(openModUrlItem);
 			MenuItem openModFolderItem = new MenuItem(Resources.Localisation.List_ContextMenu_OpenFolder);
 			contextMenu.Items.Add(openModFolderItem);
 			contextMenu.Items.Add(new SeparatorMenuItem());
 
+			MenuItem changeTpfNetIdItem = new MenuItem(Resources.Localisation.List_ContextMenu_ChangeTpfNetId);
+			contextMenu.Items.Add(changeTpfNetIdItem);
+			contextMenu.Items.Add(new SeparatorMenuItem());
+
 			MenuItem uninstallItem = new MenuItem(Resources.Localisation.List_ContextMenu_Uninstall);
 			contextMenu.Items.Add(uninstallItem);
 
+			EventHandler changeTpfNetIdHandler = null;
 			EventHandler modUrlHandler = null;
 			EventHandler modFolderHandler = null;
 			EventHandler uninstallHandler = null;
@@ -99,8 +103,8 @@ namespace TpfModManager.Gui {
 					// HACK fix position of popup
 					contextMenu.Popup(listView, e.X + 20, e.Y + 40);
 
-					// Add tpfNetId / Open mod url
-					if (int.Parse(store.GetValue(row, tpfNetId)) > 0) {
+					// Open mod url
+					if (store.GetValue(row, tpfNetId) != "" && int.Parse(store.GetValue(row, tpfNetId)) > 0) {
 						openModUrlItem.Sensitive = true;
 
 						// Remove previous handler
@@ -114,18 +118,26 @@ namespace TpfModManager.Gui {
 					}
 
 					// Open folder
-					if (modFolderHandler != null) {
-						openModFolderItem.Clicked -= modFolderHandler;
-					}
+					removeClickedHandler(openModFolderItem, modFolderHandler);
 					modFolderHandler = delegate {
 						System.Diagnostics.Process.Start(Path.Combine(modManager.Settings.TpfModPath, store.GetValue(row, folder)));
 					};
 					openModFolderItem.Clicked += modFolderHandler;
 
+					// Change tpfNetId
+					removeClickedHandler(changeTpfNetIdItem, changeTpfNetIdHandler);
+					changeTpfNetIdHandler = delegate {
+						var dialog = new NumberInputDialog(Resources.Localisation.List_ChangeTpfNetId_Input, store.GetValue(row, tpfNetId));
+						if (dialog.Run(mainWindow) == Command.Ok) {
+							modManager.ChangeTpfNetId(dialog.Number, store.GetValue(row, folder));
+							listView.UnselectAll();
+							Update();
+						}
+					};
+					changeTpfNetIdItem.Clicked += changeTpfNetIdHandler;
+
 					// Uninstall
-					if (uninstallHandler != null) {
-						uninstallItem.Clicked -= uninstallHandler;
-					}
+					removeClickedHandler(uninstallItem, uninstallHandler);
 					uninstallHandler = delegate {
 						if (MessageDialog.Confirm("Do you really want to uninstall this mod?", Command.Yes, false)) {
 							modManager.Uninstall(store.GetValue(row, folder));

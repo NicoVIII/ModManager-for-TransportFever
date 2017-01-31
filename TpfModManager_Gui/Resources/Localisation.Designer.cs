@@ -71,6 +71,24 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Input TpfNetId ähnelt.
+        /// </summary>
+        internal static string List_ChangeTpfNetId_Input {
+            get {
+                return ResourceManager.GetString("List_ChangeTpfNetId_Input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Change tpfnetID ähnelt.
+        /// </summary>
+        internal static string List_ContextMenu_ChangeTpfNetId {
+            get {
+                return ResourceManager.GetString("List_ContextMenu_ChangeTpfNetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open folder ähnelt.
         /// </summary>
         internal static string List_ContextMenu_OpenFolder {
@@ -116,7 +134,7 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die TpfnetId ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die TpfnetID ähnelt.
         /// </summary>
         internal static string List_TpfNetId {
             get {
