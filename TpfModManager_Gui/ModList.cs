@@ -9,6 +9,7 @@ namespace TpfModManager.Gui {
 
 		ListView listView;
 		ListStore store;
+		Window mainWindow;
 
 		DataField<Image> icon = new DataField<Image>();
 		DataField<string> name = new DataField<string>();
@@ -19,17 +20,21 @@ namespace TpfModManager.Gui {
 		DataField<string> tpfnetId = new DataField<string>();
 		DataField<string> folder = new DataField<string>();
 
-		private void removeClickedHandler(MenuItem item, EventHandler handler) {
-			if (handler != null)
-				item.Clicked -= handler;
-		}
-
 		public ModList(ModManager modManager, Window mainWindow) {
 			this.modManager = modManager;
+			this.mainWindow = mainWindow;
+
+			store = new ListStore(icon, name, authors, tpfnetId, version, updateAvailable, remoteVersion, folder);
+
+			initialiseListView();
+		}
+
+		void initialiseListView() {
+			if (listView != null)
+				Remove(listView);
 
 			listView = new ListView();
 			listView.GridLinesVisible = GridLines.Horizontal;
-			store = new ListStore(icon, name, authors, tpfnetId, version, updateAvailable, remoteVersion, folder);
 
 			listView.SelectionMode = SelectionMode.Multiple;
 			listView.DataSource = store;
@@ -48,8 +53,7 @@ namespace TpfModManager.Gui {
 			listView.Columns.Add(authorsColumn);
 
 			// TpfnetId
-			var tpfNetIdCellView = new TextCellView(tpfnetId) {};
-			var tpfNetIdColumn = new ListViewColumn(Resources.Localisation.List_TpfNetId, tpfNetIdCellView);
+			var tpfNetIdColumn = new ListViewColumn(Resources.Localisation.List_TpfNetId, new TextCellView(tpfnetId));
 			tpfNetIdColumn.CanResize = true;
 			tpfNetIdColumn.SortDataField = tpfnetId;
 			listView.Columns.Add(tpfNetIdColumn);
@@ -71,6 +75,12 @@ namespace TpfModManager.Gui {
 			remoteVersionColumn.CanResize = true;
 			remoteVersionColumn.SortDataField = remoteVersion;
 			listView.Columns.Add(remoteVersionColumn);
+
+			// Remote version
+			var folderColumn = new ListViewColumn(Resources.Localisation.List_Folder, new TextCellView(folder));
+			folderColumn.CanResize = true;
+			folderColumn.SortDataField = folder;
+			listView.Columns.Add(folderColumn);
 
 			PackStart(listView, true);
 
@@ -99,7 +109,7 @@ namespace TpfModManager.Gui {
 				int row = listView.GetRowAtPosition(new Point(e.X, e.Y));
 				if (e.Button == PointerButton.Right && row >= 0) {
 					// Set actual row to selected
-					listView.SelectRow(row);                    
+					listView.SelectRow(row);
 					// HACK fix position of popup
 					contextMenu.Popup(listView, e.X + 20, e.Y + 40);
 
@@ -131,7 +141,6 @@ namespace TpfModManager.Gui {
 						dialog.Title = store.GetValue(row, folder);
 						if (dialog.Run(mainWindow) == Command.Ok) {
 							modManager.ChangeTpfNetId(dialog.Number, store.GetValue(row, folder));
-							listView.UnselectAll();
 							Update();
 						}
 					};
@@ -151,7 +160,12 @@ namespace TpfModManager.Gui {
 			};
 		}
 
-		private void GenerateModImagePng() {
+		void removeClickedHandler(MenuItem item, EventHandler handler) {
+			if (handler != null)
+				item.Clicked -= handler;
+		}
+
+		void GenerateModImagePng() {
 			try {
 				// Generate png if necessary
 				DevILSharp.IL.Init();
@@ -227,13 +241,14 @@ namespace TpfModManager.Gui {
 				}
 				store.SetValue(r, updateAvailable, updateAvailableString);
 
-				// TpfNetId (invisible)
+				// TpfNetId
 				if (m.TpfNetId > 0)
 					store.SetValue(r, tpfnetId, m.TpfNetId.ToString());
 				else
 					store.SetValue(r, tpfnetId, "");
 
 				// Folder
+				Console.WriteLine("+ " + m.Folder);
 				store.SetValue(r, folder, m.Folder);
 			}
 		}

@@ -116,6 +116,15 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Folder ähnelt.
+        /// </summary>
+        internal static string List_Folder {
+            get {
+                return ResourceManager.GetString("List_Folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
         /// </summary>
         internal static string List_Name {

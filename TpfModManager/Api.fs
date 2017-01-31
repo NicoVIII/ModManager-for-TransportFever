@@ -136,8 +136,7 @@ type ModManager() =
             x.ModList <-
                 ModApi.deconvertList x.ModList
                 |> List.map (function ``mod`` -> {``mod`` with remoteVersion = TpfNet.lookUpRemoteVersion csv ``mod``})
-                |> List.map ModApi.convert
-                |> List.toArray
+                |> ModApi.convertList
     member x.Check() =
         x.ModList <-
             ModList.createModListFromPath x.LanguageKey x.Settings.TpfModPath

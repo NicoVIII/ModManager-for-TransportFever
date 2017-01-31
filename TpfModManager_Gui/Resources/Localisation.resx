@@ -66,4 +66,7 @@
 	<data name="List_ChangeTpfNetId_Input" xml:space="preserve">
 		<value>Input TpfNetId</value>
 	</data>
+	<data name="List_Folder" xml:space="preserve">
+		<value>Folder</value>
+	</data>
 </root>

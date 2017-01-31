@@ -60,4 +60,7 @@
 	<data name="List_ContextMenu_ChangeTpfNetId" xml:space="preserve">
 		<value>Ändere tpfnetID</value>
 	</data>
+	<data name="List_Folder" xml:space="preserve">
+		<value>Ordner</value>
+	</data>
 </root>
