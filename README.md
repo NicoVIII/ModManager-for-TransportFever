@@ -1,4 +1,7 @@
-# TransportFever-ModManager
+# ModManager for TransportFever
+[![GitHub issues](https://img.shields.io/github/issues/NicoVIII/ModManager-for-TransportFever.svg)](https://github.com/NicoVIII/ModManager-for-TransportFever/issues)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/NicoVIII/ModManager-for-TransportFever/development/LICENSE.txt)
+
 Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de) with support for TransportFeverNet as mod source (https://www.transportfever.net).
 
 ## Prerequisites
@@ -9,7 +12,7 @@ Attempt to create a tool to support users managing their mods for TransportFever
 1. Download the .zip file and extract it at any place you wish. Be aware that the application will create some files at its location.
 2. Start the Application
 
-**For linux and mac users:** You have to use Mono to start the program. You can call it from console with "mono TpfModManager_Gui.exe".
+**For linux and mac users:** You have to use Mono to start the program. You can call it from console with "mono ModManagerTpf_Gui.exe".
   
 ## Development
 ### Versioning
