@@ -8,3 +8,4 @@ before_build:
 install:
   - git submodule update --init --recursive
 clone_folder: C:\tpfmm
+test: off
