@@ -16,7 +16,7 @@ namespace TpfModManager.Gui {
 			// TODO use of console
 			Console.WriteLine("In this alpha version this console is shown for better debugging. In a release version this console will be gone!");
 
-			string title = "TPF-ModManager v0.1.0-alpha.7";
+			string title = "TPF-ModManager v0.1.0-alpha.8";
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
 			switch (id) {
