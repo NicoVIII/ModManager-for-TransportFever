@@ -73,18 +73,18 @@
     </None>
     <None Include="packages.config" />
     <None Include="..\LICENSE.txt">
-      <Link>license\LICENSE.txt</Link>
+      <Link>licenses\LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\ThirdParty\XWT\LICENSE.txt">
-      <Link>license\Xwt_LICENSE.txt</Link>
+      <Link>licenses\Xwt_LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\ThirdParty\DevIL\LICENSE">
-      <Link>license\DevIL_LICENSE</Link>
+      <Link>licenses\DevIL_LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="license\DevILSharp_LICENSE.txt">
+    <None Include="licenses\DevILSharp_LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\DevIL.dll">
@@ -138,7 +138,7 @@
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="lib\" />
-    <Folder Include="license\" />
+    <Folder Include="licenses\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Localisation.resx">
@@ -149,4 +149,24 @@
     <EmbeddedResource Include="Resources\Localisation.fr.resx"></EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <LibFiles Include="$(OutputPath)/*.dll" />
+      <LibFiles Include="$(OutputPath)/*.dll.config" />
+    </ItemGroup>
+	<ItemGroup>
+	  <TrashFiles Include="$(OutputPath)/*.xml" />
+	  <TrashFiles Include="$(OutputPath)/*.pdb" />
+	</ItemGroup>
+    <Copy SourceFiles="@(LibFiles)" DestinationFolder="$(OutputPath)/lib" />
+    <Delete Files="@(LibFiles)" />
+    <Delete Files="@(TrashFiles)" />
+  </Target>
+  <Target Name="AfterClean">
+	<ItemGroup>
+	  <CustFiles Include="$(OutputPath)/*.json" />
+	</ItemGroup>
+    <Delete Files="@(CustFiles)" />
+    <RemoveDir Directories="$(OutputPath)/de;$(OutputPath)/fr;$(OutputPath)/lib;$(OutputPath)/licenses" />
+  </Target>
 </Project>
