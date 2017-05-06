@@ -1,5 +1,6 @@
 # ModManager for TransportFever
-[![GitHub issues](https://img.shields.io/github/issues/NicoVIII/ModManager-for-TransportFever.svg)](https://github.com/NicoVIII/ModManager-for-TransportFever/issues)
+[![GitHub release](https://img.shields.io/github/release/NicoVIII/ModManager-for-TransportFever.svg)](https://github.com/NicoVIII/ModManager-for-TransportFever/releases)
+[![Github Releases](https://img.shields.io/github/downloads/NicoVIII/ModManager-for-TransportFever/latest/total.svg)](https://github.com/NicoVIII/ModManager-for-TransportFever/releases)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/NicoVIII/ModManager-for-TransportFever/development/LICENSE.txt)
 
 Attempt to create a tool to support users managing their mods for TransportFever (http://www.transportfever.de) with support for TransportFeverNet as mod source (https://www.transportfever.net).
@@ -15,6 +16,10 @@ Attempt to create a tool to support users managing their mods for TransportFever
 **For linux and mac users:** You have to use Mono to start the program. You can call it from console with "mono ModManagerTpf_Gui.exe".
   
 ## Development
+[![Build status](https://ci.appveyor.com/api/projects/status/fpgnqym8sppyo770/branch/develop?svg=true)](https://ci.appveyor.com/project/NicoVIII/modmanager-for-transportfever/branch/develop)
+[![Build Status](https://travis-ci.org/NicoVIII/ModManager-for-TransportFever.svg?branch=develop)](https://travis-ci.org/NicoVIII/ModManager-for-TransportFever)
+[![GitHub issues](https://img.shields.io/github/issues/NicoVIII/ModManager-for-TransportFever.svg)](https://github.com/NicoVIII/ModManager-for-TransportFever/issues)
+
 ### Versioning
 I will try to stick to Semantic Versioning 2.0.0 (http://semver.org/spec/v2.0.0.html).
 
