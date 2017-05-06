@@ -30,7 +30,7 @@
     <NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TpfModManager\TpfModManager.fsproj">
+    <ProjectReference Include="..\TpfModManager\ModManagerTpf.fsproj">
       <Project>{E550C556-AEB7-490D-9D9C-39C4B568A868}</Project>
       <Name>ModManagerTpf</Name>
     </ProjectReference>
@@ -131,9 +131,6 @@
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.3.1.2.5\lib\net40\FSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ModManagerTpf">
-      <HintPath>..\TpfModManager\bin\Release\ModManagerTpf.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -168,6 +165,6 @@
 	  <CustFiles Include="$(OutputPath)/*.json" />
 	</ItemGroup>
     <Delete Files="@(CustFiles)" />
-    <RemoveDir Directories="$(OutputPath)/de;$(OutputPath)/fr;$(OutputPath)/lib;$(OutputPath)/licenses" />
+    <RemoveDir Directories="$(OutputPath)/de;$(OutputPath)/en-US;$(OutputPath)/fr;$(OutputPath)/lib;$(OutputPath)/licenses" />
   </Target>
 </Project>

@@ -71,25 +71,25 @@
     <Compile Include="Api.fs" />
     <None Include="packages.config" />
     <None Include="..\ThirdParty\FSharp.Data\LICENSE.md">
-      <Link>license\FSharp.Data_LICENSE.md</Link>
+      <Link>licenses\FSharp.Data_LICENSE.md</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\ThirdParty\FSharp\LICENSE">
-      <Link>license\FSharp_LICENSE</Link>
+      <Link>licenses\FSharp_LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\LICENSE.txt">
-      <Link>license\LICENSE.txt</Link>
+      <Link>licenses\LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\ThirdParty\SharpCompress\LICENSE.txt">
-      <Link>license\SharpCompress_LICENSE.txt</Link>
+      <Link>licenses\SharpCompress_LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helper\" />
-    <Folder Include="license\" />
+    <Folder Include="licenses\" />
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
 </Project>
