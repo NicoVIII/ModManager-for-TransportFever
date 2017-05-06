@@ -7,7 +7,7 @@ open NUnit.Framework
 open FsUnit
 open FsCheck
 
-[<TestFixture>]
+(*[<TestFixture>]
 type Test() =
     let (.=.) left right = left = right |@ sprintf "%A = %A" left right
 
@@ -29,4 +29,4 @@ type Test() =
             let {ModList.Mod.folder = folder} = mod'
             ModList.changeTpfNetId tpfNetId folder (mod'::modList') .=. {mod' with tpfNetId = Some tpfNetId}::modList'
 
-        Check.QuickThrowOnFailure property
+        Check.QuickThrowOnFailure property*)
