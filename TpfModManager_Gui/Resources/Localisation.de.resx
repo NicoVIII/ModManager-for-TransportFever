@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -62,5 +62,53 @@
 	</data>
 	<data name="List_Folder" xml:space="preserve">
 		<value>Ordner</value>
+	</data>
+	<data name="Search_Complete" xml:space="preserve">
+		<value>Suche abgeschlossen.</value>
+	</data>
+	<data name="Install_ChooseFolder" xml:space="preserve">
+		<value>Wähle einen Ordner mit Mod-Archiven</value>
+	</data>
+	<data name="Install_AlreadyInstalled" xml:space="preserve">
+		<value>Mod ist bereits installiert.</value>
+	</data>
+	<data name="Install_ModInvalid" xml:space="preserve">
+		<value>Irgendwas ist mit diesem Mod schiefgelaufen :(</value>
+	</data>
+	<data name="Install_NotSupported" xml:space="preserve">
+		<value>Traurigerweise wird dieser Mod noch nicht unterstützt.</value>
+	</data>
+	<data name="Install_BulkComplete" xml:space="preserve">
+		<value>Massen-Installation abgeschlossen.</value>
+	</data>
+	<data name="List_ChangeTpfNetId_Input" xml:space="preserve">
+		<value>Gib TpfNetId ein</value>
+	</data>
+	<data name="Install_UpgradeComplete" xml:space="preserve">
+		<value>Mod wurde erfolgreich geupgradet.</value>
+	</data>
+	<data name="Install_ChooseArchive" xml:space="preserve">
+		<value>Wähle ein Mod-Archiv</value>
+	</data>
+	<data name="Install_NotAnArchive" xml:space="preserve">
+		<value>Diese Datei ist kein gültiges Archiv.</value>
+	</data>
+	<data name="Install_Complete" xml:space="preserve">
+		<value>Installation abgeschlossen.</value>
+	</data>
+	<data name="Uninstall_Confirm" xml:space="preserve">
+		<value>Möchtest du diese Mod wirklich deinstallieren?</value>
+	</data>
+	<data name="Uninstall_Complete" xml:space="preserve">
+		<value>Mod erfolgreich deinstalliert!</value>
+	</data>
+	<data name="Setup_ChooseModFolder" xml:space="preserve">
+		<value>Wähle den TPF "mods"-Ordner</value>
+	</data>
+	<data name="Setup_PleaseSetPath" xml:space="preserve">
+		<value>Bitte setze den Pfad zum "mods"-Ordner von Transport Fever!</value>
+	</data>
+	<data name="Install_UpgradeConfirm" xml:space="preserve">
+		<value>Möchtest du wirklich die Mod im '{0}'-Ordner upgraden?</value>
 	</data>
 </root>

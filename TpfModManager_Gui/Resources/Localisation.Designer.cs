@@ -62,6 +62,96 @@ namespace TpfModManager.Resources {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Mod is already installed. ähnelt.
+        /// </summary>
+        internal static string Install_AlreadyInstalled {
+            get {
+                return ResourceManager.GetString("Install_AlreadyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Bulk installation complete. ähnelt.
+        /// </summary>
+        internal static string Install_BulkComplete {
+            get {
+                return ResourceManager.GetString("Install_BulkComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Choose mod archive ähnelt.
+        /// </summary>
+        internal static string Install_ChooseArchive {
+            get {
+                return ResourceManager.GetString("Install_ChooseArchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Choose folder with mod archives ähnelt.
+        /// </summary>
+        internal static string Install_ChooseFolder {
+            get {
+                return ResourceManager.GetString("Install_ChooseFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Installation complete. ähnelt.
+        /// </summary>
+        internal static string Install_Complete {
+            get {
+                return ResourceManager.GetString("Install_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Something is wrong with this mod :( ähnelt.
+        /// </summary>
+        internal static string Install_ModInvalid {
+            get {
+                return ResourceManager.GetString("Install_ModInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die This file is not a valid archive. ähnelt.
+        /// </summary>
+        internal static string Install_NotAnArchive {
+            get {
+                return ResourceManager.GetString("Install_NotAnArchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sadly this mod is not supported yet. ähnelt.
+        /// </summary>
+        internal static string Install_NotSupported {
+            get {
+                return ResourceManager.GetString("Install_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Mod was successfully upgraded. ähnelt.
+        /// </summary>
+        internal static string Install_UpgradeComplete {
+            get {
+                return ResourceManager.GetString("Install_UpgradeComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to upgrade the mod in the folder &apos;{0}&apos;? ähnelt.
+        /// </summary>
+        internal static string Install_UpgradeConfirm {
+            get {
+                return ResourceManager.GetString("Install_UpgradeConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Author(s) ähnelt.
         /// </summary>
         internal static string List_Authors {
@@ -229,6 +319,51 @@ namespace TpfModManager.Resources {
         internal static string Menu_Search {
             get {
                 return ResourceManager.GetString("Menu_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Search complete. ähnelt.
+        /// </summary>
+        internal static string Search_Complete {
+            get {
+                return ResourceManager.GetString("Search_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select TPF &quot;mods&quot; folder ähnelt.
+        /// </summary>
+        internal static string Setup_ChooseModFolder {
+            get {
+                return ResourceManager.GetString("Setup_ChooseModFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Please set the path to Transport Fever&apos;s &apos;mods&apos; folder! ähnelt.
+        /// </summary>
+        internal static string Setup_PleaseSetPath {
+            get {
+                return ResourceManager.GetString("Setup_PleaseSetPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Mod successfully uninstalled! ähnelt.
+        /// </summary>
+        internal static string Uninstall_Complete {
+            get {
+                return ResourceManager.GetString("Uninstall_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Do you really want to uninstall this mod? ähnelt.
+        /// </summary>
+        internal static string Uninstall_Confirm {
+            get {
+                return ResourceManager.GetString("Uninstall_Confirm", resourceCulture);
             }
         }
     }

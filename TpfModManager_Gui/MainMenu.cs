@@ -4,7 +4,7 @@ using Xwt;
 
 namespace TpfModManager.Gui {
 	public class MainMenu : Menu {
-		ConfirmDelegate upgradeCallback = (folder) => MessageDialog.Confirm("Do you really want to upgrade the mod in the folder '" + folder + "'?", Command.Yes);
+		ConfirmDelegate upgradeCallback = (folder) => MessageDialog.Confirm(string.Format(Resources.Localisation.Install_UpgradeConfirm, folder), Command.Yes);
 
 		public MainMenu(ModManager manager, Window mainWindow, ModList modList) {
 			MenuItem fileItem = new MenuItem(Resources.Localisation.Menu_File);
@@ -16,7 +16,7 @@ namespace TpfModManager.Gui {
 			checkItem.Clicked += (sender, e) => {
 				manager.Check();
 				modList.Update();
-				MessageDialog.ShowMessage(mainWindow, "Search complete.");
+				MessageDialog.ShowMessage(mainWindow, Resources.Localisation.Search_Complete);
 			};
 			fileMenu.Items.Add(checkItem);
 
@@ -27,7 +27,7 @@ namespace TpfModManager.Gui {
 
 			MenuItem installFromFolderItem = new MenuItem(Resources.Localisation.Menu_Install_FromFolder);
 			installFromFolderItem.Clicked += (sender, e) => {
-				var dialog = new SelectFolderDialog("Choose folder with mod archives");
+				var dialog = new SelectFolderDialog(Resources.Localisation.Install_ChooseFolder);
 				dialog.Run(mainWindow);
 				var folderName = dialog.Folder;
 				if (folderName != null && folderName != "") {
@@ -37,53 +37,53 @@ namespace TpfModManager.Gui {
 						switch (manager.Install(Path.Combine(folderName, file), upgradeCallback)) {
 							case InstallationResult.Success:
 								modList.Update();
-								//MessageDialog.ShowMessage(file + ":\nInstallation complete.");
+								//MessageDialog.ShowMessage(file + ":\n" + Resources.Localisation.Install_Complete);
 								break;
 							case InstallationResult.AlreadyInstalled:
-								MessageDialog.ShowMessage(file + ":\nMod is already installed.");
+								MessageDialog.ShowMessage(file + ":\n" + Resources.Localisation.Install_AlreadyInstalled);
 								break;
 							case InstallationResult.ModInvalid:
-								MessageDialog.ShowMessage(file + ":\nSomething is wrong with this mod :(");
+								MessageDialog.ShowMessage(file + ":\n" + Resources.Localisation.Install_ModInvalid);
 								break;
 							case InstallationResult.NotSupported:
-								MessageDialog.ShowMessage(file + "\nSadly this mod is not supported yet.");
+								MessageDialog.ShowMessage(file + "\n" + Resources.Localisation.Install_NotSupported);
 								break;
 							case InstallationResult.NotAnArchive:
 								// Nothing to do
 								break;
 						}
 					}
-					MessageDialog.ShowMessage("Bulk installation complete.");
+					MessageDialog.ShowMessage(Resources.Localisation.Install_BulkComplete);
 				}
 			};
 			installMenu.Items.Add(installFromFolderItem);
 
 			MenuItem installFromFileItem = new MenuItem(Resources.Localisation.Menu_Install_FromFile);
 			installFromFileItem.Clicked += (sender, e) => {
-				var dialog = new OpenFileDialog("Choose mod archive");
+				var dialog = new OpenFileDialog(Resources.Localisation.Install_ChooseArchive);
 				dialog.Run(mainWindow);
 				var fileName = dialog.FileName;
 				if (fileName != null) {
 					switch (manager.Install(fileName, upgradeCallback)) {
 						case InstallationResult.Success:
 							modList.Update();
-							MessageDialog.ShowMessage("Installation complete.");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_Complete);
 							break;
 						case InstallationResult.Upgrade:
 							modList.Update();
-							MessageDialog.ShowMessage("Mod was successfully upgraded.");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_UpgradeComplete);
 							break;
 						case InstallationResult.AlreadyInstalled:
-							MessageDialog.ShowMessage("Mod is already installed.");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_AlreadyInstalled);
 							break;
 						case InstallationResult.ModInvalid:
-							MessageDialog.ShowMessage("Something is wrong with this mod :(");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_ModInvalid);
 							break;
 						case InstallationResult.NotSupported:
-							MessageDialog.ShowMessage("Sadly this mod is not supported yet.");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_NotSupported);
 							break;
 						case InstallationResult.NotAnArchive:
-							MessageDialog.ShowMessage("This file is not a valid archive.");
+							MessageDialog.ShowMessage(Resources.Localisation.Install_NotAnArchive);
 							break;
 					}
 				}

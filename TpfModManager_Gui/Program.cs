@@ -16,6 +16,9 @@ namespace TpfModManager.Gui {
 			// TODO use of console
 			Console.WriteLine("In this alpha version this console is shown for better debugging. In a release version this console will be gone!");
 
+			// Set up language
+			System.Threading.Thread.CurrentThread.CurrentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
 			string title = "TPF-ModManager v0.1.0-alpha.7";
 			// Init Gui
 			PlatformID id = Environment.OSVersion.Platform;
@@ -54,7 +57,7 @@ namespace TpfModManager.Gui {
 
 			// Set up Tpf mods Path
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
-				var folderDialog = new SelectFolderDialog("Select TPF mods folder");
+				var folderDialog = new SelectFolderDialog(Resources.Localisation.Setup_ChooseModFolder);
 				folderDialog.Run(mainWindow);
 				var folder = folderDialog.Folder;
 				// TODO look into this
@@ -70,7 +73,7 @@ namespace TpfModManager.Gui {
 
 			// Load UI
 			if (modManager.Settings == null || modManager.Settings.TpfModPath == "") {
-				MessageDialog.ShowError(mainWindow, "Please set the path to Transport Fever's 'mods' folder!");
+				MessageDialog.ShowError(mainWindow, Resources.Localisation.Setup_PleaseSetPath);
 			} else {
 				modList.Update();
 

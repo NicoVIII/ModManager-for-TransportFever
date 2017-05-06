@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -68,5 +68,50 @@
 	</data>
 	<data name="List_Folder" xml:space="preserve">
 		<value>Folder</value>
+	</data>
+	<data name="Search_Complete" xml:space="preserve">
+		<value>Search complete.</value>
+	</data>
+	<data name="Install_ChooseFolder" xml:space="preserve">
+		<value>Choose folder with mod archives</value>
+	</data>
+	<data name="Install_AlreadyInstalled" xml:space="preserve">
+		<value>Mod is already installed.</value>
+	</data>
+	<data name="Install_ModInvalid" xml:space="preserve">
+		<value>Something is wrong with this mod :(</value>
+	</data>
+	<data name="Install_NotSupported" xml:space="preserve">
+		<value>Sadly this mod is not supported yet.</value>
+	</data>
+	<data name="Install_BulkComplete" xml:space="preserve">
+		<value>Bulk installation complete.</value>
+	</data>
+	<data name="Install_Complete" xml:space="preserve">
+		<value>Installation complete.</value>
+	</data>
+	<data name="Install_UpgradeComplete" xml:space="preserve">
+		<value>Mod was successfully upgraded.</value>
+	</data>
+	<data name="Install_ChooseArchive" xml:space="preserve">
+		<value>Choose mod archive</value>
+	</data>
+	<data name="Install_NotAnArchive" xml:space="preserve">
+		<value>This file is not a valid archive.</value>
+	</data>
+	<data name="Uninstall_Confirm" xml:space="preserve">
+		<value>Do you really want to uninstall this mod?</value>
+	</data>
+	<data name="Uninstall_Complete" xml:space="preserve">
+		<value>Mod successfully uninstalled!</value>
+	</data>
+	<data name="Setup_ChooseModFolder" xml:space="preserve">
+		<value>Select TPF "mods" folder</value>
+	</data>
+	<data name="Setup_PleaseSetPath" xml:space="preserve">
+		<value>Please set the path to Transport Fever's 'mods' folder!</value>
+	</data>
+	<data name="Install_UpgradeConfirm" xml:space="preserve">
+		<value>Do you really want to upgrade the mod in the folder '{0}'?</value>
 	</data>
 </root>

@@ -149,10 +149,10 @@ namespace TpfModManager.Gui {
 					// Uninstall
 					removeClickedHandler(uninstallItem, uninstallHandler);
 					uninstallHandler = delegate {
-						if (MessageDialog.Confirm("Do you really want to uninstall this mod?", Command.Yes, false)) {
+						if (MessageDialog.Confirm(Resources.Localisation.Uninstall_Confirm, Command.Yes, false)) {
 							modManager.Uninstall(store.GetValue(row, folder));
 							Update();
-							MessageDialog.ShowMessage("Mod successfully uninstalled!");
+							MessageDialog.ShowMessage(Resources.Localisation.Uninstall_Complete);
 						}
 					};
 					uninstallItem.Clicked += uninstallHandler;
