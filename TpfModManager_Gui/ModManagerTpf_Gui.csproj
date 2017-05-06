@@ -157,6 +157,7 @@
 	<ItemGroup>
 	  <TrashFiles Include="$(OutputPath)/*.xml" />
 	  <TrashFiles Include="$(OutputPath)/*.pdb" />
+	  <TrashFiles Include="$(OutputPath)/*.mdb" />
 	</ItemGroup>
     <Copy SourceFiles="@(LibFiles)" DestinationFolder="$(OutputPath)/lib" />
     <Delete Files="@(LibFiles)" />
